@@ -1,0 +1,293 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="Apttus_Specialty_Operation">
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="specialtyOperationsId" type="String" /> 
+        <aura:attribute name="isAccess" type="boolean"/>
+    <aura:attribute name="spricing" type="Specialty_Pricing__c[]" />
+    <aura:attribute name="picklistFields" type="Map" default="{}" />
+    <aura:attribute name="years" type="String[]" />
+	<aura:attribute name="hiv" type="String[]" />
+    <aura:attribute name="lob" type="String[]" />
+    <aura:attribute name="PharmB" type="String[]" />
+    <aura:attribute name="PriceL" type="String[]" />
+    <aura:attribute name="X340BPharm" type="String[]" />
+    <aura:attribute name="compareLogic" type="Boolean" default="false"/>   
+    <aura:attribute name="brandbasic" type="String[]" />
+    <aura:attribute name="brandrate" type="String"/>
+    <aura:attribute name="branddispensingfee" type="String"/>
+    <aura:attribute name="genericbasic" type="String[]" />
+    <aura:attribute name="genericrate" type="String"/>
+    <aura:attribute name="macmodeled" type="String[]" />
+    <aura:attribute name="nonmacrate" type="String"/>	
+	<aura:attribute name="NMarketBR" type="String"/>
+	<aura:attribute name="NMarketGR" type="String"/>
+	<aura:attribute name="Network" type="String"/>
+	<aura:attribute name="LDDRate" type="String"/>
+	<aura:attribute name="BioRate" type="String"/>
+	<aura:attribute name="Method" type="String[]" />
+	<aura:attribute name="Timeframe" type="String[]" />
+	<aura:attribute name="Level" type="String[]" />
+	<aura:attribute name="CustomLanguage" type="Boolean" default="false"/>
+	<aura:attribute name="NonCVS" type="Boolean" default="false"/>
+	<aura:attribute name="AllowSpecialty" type="Boolean" default="false"/>
+    <aura:attribute name="CalenderYear" type="Boolean" default="false"/>
+	<aura:attribute name="BioIntoBrands" type="Boolean" default="false"/>
+	<aura:attribute name="MatchGenerics" type="Boolean" default="false"/>
+    <aura:attribute name="objInfo" type="String" default="Specialty_Pricing__c" />
+    <aura:attribute name="clickEdit" type="Boolean" default="true" />
+    <aura:attribute name="visible" type="Boolean" default="false" />
+    <aura:attribute name="editvisible" type="Boolean" default="true" />
+    <aura:attribute name="readonly" type="Boolean" default="true" />
+    <aura:attribute name="readonlynetchoice" type="Boolean" default="true" />	
+    <aura:attribute name="clickEditModal" type="Boolean" default="false" />
+    <aura:attribute name="params" type="String" />
+    <aura:attribute name="isDeleteAlertOpen" type="Boolean" default="false" />
+
+    
+   <!-- <lightning:card title="" > -->
+        <div id="Lp" class="slds-col slds-size_2-of-12"></div>
+        <aura:if isTrue="{!v.clickEditModal}">
+             <c:Apttus_Edit_SPricing_Vf aura:id="EditPricing" params="{!v.params}" />  
+        </aura:if>
+       <lightning:layout class="text-label--small" >
+          <lightning:layoutItem padding="horizontal-small" flexibility="grow" class="" size="1">
+                <div class="size" style="padding-top: 31px;font-size: medium;font-weight: 600;width: max-content;" >
+                    <aura:unescapedHtml value="{!v.spricing.Link__c}"/>
+                    </div>
+        </lightning:layoutItem>
+                 <div class="text-heading--small"/>
+                <lightning:layoutItem padding="horizontal-medium" class="selectlist" flexibility="grow" size="1">
+                <lightning:select disabled="{!v.readonly}" class="selectlist" name="year" label="Year" required="false" >
+                    <option value="{!v.spricing.Year__c}" text="{!v.spricing.Year__c}"></option>
+                </lightning:select>
+                </lightning:layoutItem> 
+           <div class="text-heading--small"/>
+                <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="1">
+                <lightning:select disabled="{!v.readonly}" name="lob" label="LOB" required="false" >
+                    <option value="{!v.stpricing.LOB__c}" text="{!v.spricing.LOB__c}"></option>
+                </lightning:select>
+                </lightning:layoutItem>
+           <div class="text-heading--small"/>
+                <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="2">
+                <lightning:select disabled="{!v.readonly}" name="PharmB" label="Pharmacy Benefit" required="false" >
+                    <option value="{!v.stpricing.Pharmacy_Benefit__c}" text="{!v.spricing.Pharmacy_Benefit__c}"></option>
+                </lightning:select>
+                </lightning:layoutItem>
+           <div class="text-heading--small"/>
+                       <lightning:layoutItem padding="horizontal-small" flexibility="grow" size="2">
+                <lightning:select disabled="{!v.readonly}" name="PriceL" label="Price List" required="false" >
+                    <option value="{!v.stpricing.Price_List__c}" text="{!v.spricing.Price_List__c}"></option>
+                </lightning:select>
+                </lightning:layoutItem>
+			<div class="text-heading--small"/>
+                <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="2">
+                <lightning:select disabled="{!v.readonly}" name="hiv" label="Select Open Specialty Therapy Class(es)" required="false" >
+                    <option value="{!v.stpricing.Open_HIV__c}" text="{!v.spricing.Open_HIV__c}"></option>
+                </lightning:select>
+                </lightning:layoutItem>
+           <div class="text-heading--small"/>
+                <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="2">
+                <lightning:select disabled="{!v.readonly}" name="X340BPharm" label="340B Pharmacy Setup" required="false" >
+                    <option value="{!v.spricing.X340B_Pharmacy_Setup__c}" text="{!v.spricing.X340B_Pharmacy_Setup__c}"></option>
+                </lightning:select>
+                </lightning:layoutItem>
+
+   <aura:if isTrue="{!v.isAccess}">
+           <lightning:layoutItem padding="horizontal-small" flexibility="grow" size="2">
+               <div class="" style="padding-top;">  
+                   <lightning:button aura:id="clickEdit" value="clickEdit" label="Edit Pricing" 
+                                     variant="brand"
+                                     class="slds-button"
+                                     onclick="{!c.clickEdit}"/> 
+               </div>            
+           </lightning:layoutItem>
+           </aura:if>
+           
+           </lightning:layout>
+        <div class="slds-m-top_medium"></div>
+        <div class="slds-grid slds-gutters">    
+            <div class="slds-col slds-size_2-of-12">
+                <span>
+                    <lightning:card title="Brand Pricing" class="text-heading--small" > 
+                        <lightning:layout horizontalAlign="left" class="text-label--small" title = "Brand Pricing" multipleRows="true">
+                            <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="12">
+                                <lightning:select disabled="{!v.readonly}" name="brandbasic" label="Brand Basic" required="false">
+                                <option value="{!v.spricing.Brand_Basis__c}" text="{!v.spricing.Brand_Basis__c}"></option>
+                                </lightning:select>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="5">
+                            	<lightning:input disabled="{!v.readonly}" type="number" label="Rate" style="width: 96px;" name="brandrate" required="false" value="{!v.spricing.Brand_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="7">
+                            	<lightning:input disabled="{!v.readonly}" type="number" label="Disp. Fee"  name="branddispensingfee" formatter="currency"  step="0.01" value="{!v.spricing.Brand_Dispensing_Fee__c}"/>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </lightning:card>
+                </span>
+            </div>
+            <div class="slds-col slds-size_3-of-12">
+        		<span>
+                <lightning:card title="Generic Pricing" class="text-heading--small" > 
+                    <lightning:layout horizontalAlign="right" class="text-label--small" verticalAlign="end" title = "Generic Pricing" multipleRows="true">
+                        <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="7">
+                            <lightning:select disabled="{!v.readonly}" name="genericbasic" label="Generic Basic" required="false">
+                                <option value="{!v.spricing.Generic_Basis__c}" text="{!v.spricing.Generic_Basis__c}"></option>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="5">
+                            <lightning:select disabled="{!v.readonly}" name="macmodeled" label="MAC Modeled" required="false">
+                                    <option value="{!v.spricing.MAC_Modeled__c}" text="{!v.spricing.MAC_Modeled__c}"></option>
+                            </lightning:select>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="3">
+                        	<lightning:input disabled="{!v.readonly}" type="number" label="Rate" style="width: 90px;"  name="genericrate" value="{!v.spricing.Generic_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                        </lightning:layoutItem>     
+                        <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="4">
+                        	<lightning:input disabled="{!v.readonly}" type="number" label="Disp. Fee" class="slds-grid–vertical-align-end" name="gendispensingfee" formatter="currency"  step="0.01" value="{!v.spricing.Generic_Dispensing_Fee__c}"/>
+                        </lightning:layoutItem>	
+                        <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="5">
+                        	<lightning:input disabled="{!v.readonly}" type="number" label="Non-MAC Rate" name="nonmacrate" value="{!v.spricing.Non_MAC_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                        </lightning:layoutItem> 
+                    </lightning:layout>
+                    
+                </lightning:card>
+                </span>
+            </div>        
+            <div class="slds-col slds-size_3-of-12">
+                <span>
+                    <lightning:card title="Guarantee Reconciliation" class="text-heading--small"> 
+                        <lightning:layout class="text-label--small" horizontalAlign="right" verticalAlign="end" title = "Guarantee Exclusions" multipleRows="true">
+                            <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="6">
+                                <lightning:select disabled="{!v.readonly}" name="Method" label="Method" required="false">
+                                        <option value="{!v.spricing.Method__c}" text="{!v.spricing.Method__c}"></option>
+                                </lightning:select>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="6">
+                                <lightning:select disabled="{!v.readonly}" name="TimeFrame" label="TimeFrame" required="false">
+                                        <option value="{!v.spricing.Timeframe__c}" text="{!v.spricing.Timeframe__c}"></option>
+                                </lightning:select>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="6">
+                                <lightning:select disabled="{!v.readonly}" name="Level" label="Level" required="false">
+                                        <option value="{!v.spricing.Level__c}" text="{!v.spricing.Level__c}"></option>
+                                </lightning:select>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="6" >
+                                        <div class="slds-align_absolute-center" >
+                                            <lightning:input disabled="{!v.readonly}" label="Custom Language Needed to Limit Pe->" type="checkbox" name="CustomLanguage" checked="{!v.spricing.Custom_Language_Neeeded_to_Limit_Pena__c}"/>
+                                        </div>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                     </lightning:card>
+                 </span>  
+             </div>
+             <div class="slds-col slds-size_4-of-12">
+     			<span>
+                    <lightning:card title="Non-CVS Pharmacies" class="text-heading--small"> 
+                        <lightning:layout class="text-label--small" horizontalAlign="left" verticalAlign="end" title = "Non-CVS Pharmacies" multipleRows="true">
+                            <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="6" >
+                                    <div class="slds-align_absolute-center" >
+                                    <lightning:input disabled="{!v.readonly}" type="checkbox"  label="Allow Specialty To Be Dispensed At Ot-->" name="AllowSpecialty" checked="{!v.spricing.Allow_Specialty_To_Be_Dispensed_At_Ot__c}"/>
+                                    </div>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem class ="field-margins" padding="horizontal-medium" flexibility="grow" size="6" >
+                            		<lightning:input disabled="{!v.readonly}" type="text" label="Network ID" class="slds-grid–vertical-align-end" name="Network" value="{!v.spricing.Network_ID__c}"/>
+                            </lightning:layoutItem>
+                            <lightning:layoutItem class ="field-margin" padding="horizontal-medium"  flexibility="grow" size="6">
+                            </lightning:layoutItem>
+                            <lightning:layoutItem class ="field-margin" padding="horizontal-medium"  flexibility="grow" size="6">
+                                    <lightning:select disabled="{!v.readonly}" name="NonCVS" label="Non-CVS Specialty Pric. Mirror" required="false">
+                                            <option value="{!v.spricing.Non_CVS_Specialty_Pricing_Should_Mirror__c}" text="{!v.spricing.Non_CVS_Specialty_Pricing_Should_Mirror__c}"></option>
+                                    </lightning:select>
+                            </lightning:layoutItem>
+                        </lightning:layout>
+                    </lightning:card>
+              </span>
+            </div>    
+    </div>
+    
+    <div style="margin: 1rem 0;"></div>
+   
+    <div class="slds-grid slds-gutters">    
+    <div class="slds-col slds-size_8-of-12">
+        <span>
+            <lightning:layout  class="text-label--small" horizontalAlign="left">
+                <lightning:layoutItem class="black-checkbox" padding="horizontal-medium" flexibility="grow" size="3">
+                        <lightning:input disabled="{!v.readonly}" type="checkbox"  label="Specialty Compare Logic On?" name="compareLogic" checked="{!v.spricing.Specialty_Compare_Logic_On__c}"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="3">
+                        <lightning:input class="black-checkbox" disabled="{!v.readonly}" type="checkbox"  label="Biosimilars Into Brands?" name="BioIntoBrands" checked="{!v.spricing.Biosimilars_Into_Brands__c}"/>
+                </lightning:layoutItem>
+                <lightning:layoutItem class="black-checkbox" padding="horizontal-medium" flexibility="grow" size="3" >                      
+                        <lightning:input disabled="{!v.readonly}" type="checkbox"  label="Match Generics to Brands?" name="MatchGenerics" checked="{!v.spricing.Match_Generics_to_Brands__c}"/>                       
+                </lightning:layoutItem>
+                <lightning:layoutItem  padding="horizontal-medium" flexibility="grow" size="4" >                        
+                        <lightning:input class="black-checkbox" disabled="{!v.readonly}" type="checkbox"  label="Calendar Year New to Market Period" name="CalendarYear" checked="{!v.spricing.Calendar_Year_New_to_Market_Period_Flag__c}"/>                                    
+                </lightning:layoutItem>
+            </lightning:layout>
+        </span>
+    </div>
+       
+        <div class="ldd">  
+            <span>
+            <lightning:layout class="text-labels--small" horizontalAlign="left">
+                <lightning:layoutItem class="margin-stop" padding="horizontal-medium" flexibility="grow" size="5">
+                <span class="text-heading--small">New To Market Rates:</span> 
+                </lightning:layoutItem>	
+                <lightning:layoutItem class="margin-align" padding="horizontal-medium" flexibility="grow" size="2">
+                 <lightning:input disabled="{!v.readonly}" type="number"  label="Brands"  name="NMarketBR" value="{!v.spricing.New_to_Market_Brand_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                </lightning:layoutItem>	
+                <lightning:layoutItem  class="margin-align" padding="horizontal-medium" flexibility="grow" size="2">
+                 <lightning:input disabled="{!v.readonly}" type="number"  label="Generics"  name="NMarketGR" value="{!v.spricing.New_to_Market_Generic_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                </lightning:layoutItem>	
+                <lightning:layoutItem class="margin-align" padding="horizontal-medium" flexibility="grow" size="2">
+                 <lightning:input disabled="{!v.readonly}" type="number"  label="LDD " name="LDDRate" value="{!v.spricing.Limited_Distribution_Drug_LDD_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                </lightning:layoutItem>	
+                <lightning:layoutItem class="margin-align ldd-noaccess" padding="horizontal-medium" flexibility="grow" size="2">
+                 <lightning:input disabled="{!v.readonly}" type="number"  label="LDD-NoAccess" name="LDDRate" value="{!v.spricing.LDD_No_Access_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                </lightning:layoutItem>	
+                <lightning:layoutItem class="margin-align" padding="horizontal-medium" flexibility="grow" size="2">
+                 <lightning:input disabled="{!v.readonly}" type="number"  label="Biosimilar" class="slds-grid–vertical-align-end" name="BioRate" value="{!v.spricing.Biosimilar_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                </lightning:layoutItem>	
+            </lightning:layout>
+             </span>
+          
+            </div>
+      
+        </div>
+  
+        <div class="slds-col slds-size_3-of-5">  
+             <hr style="width: 163%; margin: 1rem 0;"></hr>
+             <span>
+                 <lightning:card class="text-label--small">
+                     
+                    <c:Apttus_SP_Guarantee_Parent isAccess="{!v.isAccess}" spriceid="{!v.spricing.Id}"/>
+                 </lightning:card>
+             </span>
+        </div> 
+           
+        <aura:if isTrue="{!v.isDeleteAlertOpen}">
+        <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container" style="Width: 31%;">
+                <div class="slds-modal__header">
+                    <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                        X
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="header99" class="slds-text-heading--medium">Delete Specialty Pricing Record</h2>
+                </div>
+                <div class="slds-modal__content slds-p-around--medium">
+                    <center><p>
+                        Are you sure you want to delete the selected record(s).
+                        </p>
+                    </center>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                    <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteRecord}">Delete</lightning:button>                    
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>        
+    </aura:if>
+    <!--</lightning:card> -->
+ </aura:component>

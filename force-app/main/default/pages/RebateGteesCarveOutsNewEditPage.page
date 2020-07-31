@@ -1,0 +1,65 @@
+<apex:page standardController="Rebate_Gtees_Specialty_Class_Carve_Outs__c" extensions="RebateGteesCarveOutsNewEditClass" id="pg" lightningStylesheets="true">
+<script>
+    function setFocusOnLoad() {
+        document.getElementById('{!$Component.pg.frm.PB.PBS2.PBSI1.year}').focus();
+        document.getElementById('{!$Component.pg.frm.PB.PBS2.SpecFormId}').disabled={!disaSpecFormulary};
+    }   
+</script>
+
+    <apex:form id="frm">
+        <apex:pagemessages id="pmsg"></apex:pagemessages>
+        <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+        
+        <apex:pageBlock title="Rebate Gtees Specialty Class Carve Out Edit" id="PB">
+            <apex:pageBlockSection title="Rebate Gtees Specialty Class Carve Outs Detail" id="PBS1">
+                <apex:outputField value="{!rebCarOutObj.FAF_ID__c}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:outputField value="{!rebCarOutObj.Rebate_Operations__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Specialty Therapeutic Class Rebate Carve-out Guarantee" id="PBS2">
+                 <!-- Defect fix for Year required-->
+                 <apex:pageBlockSectionItem id="PBSI1">
+                   <apex:outputLabel for="yearPnl" value="Year" />
+                   <apex:outputPanel id="yearPnl">
+                      <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                       
+                       <apex:selectList value="{!rebCarOutObj.Year__c}"  required="true" label="Year" id="year" size="1">
+                       <apex:selectOptions value="{!yearList}" />
+                        </apex:selectList>
+                         </div> 
+                   </apex:outputPanel>
+               </apex:pageBlockSectionItem>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebCarOutObj.LOB2__c}" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebCarOutObj.Drug_Therapy_Class_2__c}" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebCarOutObj.Plan_Design__c}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebCarOutObj.Specialty_Formulary__c}" id="SpecFormId"  />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebCarOutObj.Specialty_Dollar_Amount__c}" rendered="{!NOT(percentBool)}"/>
+                <apex:inputField value="{!rebCarOutObj.Specialty_Percentage_Amount__c}" rendered="{!percentBool}"/>
+                <apex:inputField value="{!rebCarOutObj.Specialty_Retail_Dollar_Amt__c}" rendered="{!NOT(percentBool)}"/>
+                <apex:inputField value="{!rebCarOutObj.Specialty_Retail_Percentage_Amount__c}" rendered="{!percentBool}"/>
+            </apex:pageBlockSection>
+        <apex:pageBlockButtons >
+            <apex:commandButton action="{!saveUpdaterebCarOutObj}" title="Save" value="Save" reRender="pmsg, PB" oncomplete="window.scrollTo(0, 0);" status="status"/>
+            <apex:commandButton action="{!Cancel}" title="Cancel" value="Cancel" immediate="true"/>
+        </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

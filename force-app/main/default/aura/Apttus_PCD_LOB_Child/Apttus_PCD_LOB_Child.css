@@ -1,0 +1,126 @@
+.THIS .innercontainer  
+{
+    background-color: white;
+    width:90%;
+    padding: 0px;
+    margin-top: 0rem;
+    padding-top: 0px;
+    padding-bottom:0px;
+}
+.THIS .slds-card_boundary
+{
+  border: 2px solid rgb(219, 219, 219);
+}
+.THIS .hidden
+{
+  outline: none;
+  border: none;
+  width: 100%;
+  padding: 0px;
+  margin-top: 0rem;
+  padding-top: 0px;
+  padding-bottom:0px;
+}
+.THIS .modalwidth  
+{
+    width: 100%;
+    background-color: lightyellow;
+
+}
+.THIS .greyfont  
+{
+    color: grey;
+
+}
+.THIS .modalmargin 
+{
+    padding-left: 4px;
+    margin-left: 4px;
+    padding-right: 4px;
+    margin-right: 4px;
+    padding-top: 4px;
+    margin-top: 4px;
+
+}
+.THIS .fontsize
+{
+  font-size: 13pt;
+}
+.THIS .position
+{
+  font-size: 10pt;
+  left: 90%;
+  padding: 1px;
+  margin-right: 1px;
+}
+.THIS .marginleft
+{
+  padding-left: 2px;
+  margin-left: 2px;
+}
+.THIS .linkfontsize
+{
+  font-size: 10pt;
+}
+.THIS .viewdoc
+{
+  font-size: 10.5pt;
+}
+.THIS .doc
+{
+  font-size: 5pt;
+}
+.THIS .borderheight
+{
+  height: 10rem;
+}
+.THIS .outerborderblue
+{
+  border: 3px solid rgb(127, 181, 253);
+  width:90%;
+  padding-left: 0px;
+  padding-right: 0px;
+  padding-top: 0px;
+  padding-bottom:0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  margin-bottom:0px;
+  
+}
+.THIS .fontcolor
+{
+    color:  rgb(0,161,218);
+}
+
+.THIS .messagebox  
+{
+    background-color: rgb(207,217,250);
+    width:96%;
+    padding-left: 1px;
+    margin-left: 1rem;
+}
+
+.THIS .inactivemessagebox  
+{
+    background-color: rgb(234,234,234);
+    width:96%;
+    padding-left: 1px;
+    margin-left: 1rem;
+    padding-bottom: 2px;
+    margin-bottom: 2rem;
+}
+
+.THIS .fontblack
+{
+    color:  black;
+    font-size: 12pt;
+}
+.THIS .button
+{
+     background-color:  rgb(86,120,237);
+     color:  white;
+     font-size: 10pt;
+     padding-bottom: 0.5px;
+     margin-bottom: 0.5rem;
+}

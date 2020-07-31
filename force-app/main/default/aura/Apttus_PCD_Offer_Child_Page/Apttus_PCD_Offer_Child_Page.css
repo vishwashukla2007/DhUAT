@@ -1,0 +1,49 @@
+.THIS .container  {
+    background-color: white;
+    width:100%;
+    left:0.5%;
+    margin-top: 0rem;
+}
+.THIS .slds-card_boundary
+{
+     margin-top: 0rem;
+}
+.THIS .innercontainer  
+{   background-color: white;
+    border: none;
+    width:99%;
+    left:0.5%;
+    padding: 0px;
+    margin-top: 0rem;
+    padding-top: 0px;
+    padding-bottom:0px;
+}
+.THIS .nopadding  
+{
+    margin-top: 0rem;
+    background-color: white;
+}
+.THIS .slds-card 
+{
+    margin-top: 0rem;
+    background-color: white;
+}
+.THIS .slds-card_boundary 
+{
+   margin-top: 0rem;
+}
+.THIS.slds-card 
+{
+   margin-top: 0rem;
+}
+.THIS .bordercolor 
+{
+    margin-top: 0rem;
+    padding-top: 0rem;
+    border-left: 4px solid blue;
+    background-color: rgb(218,235,250);
+}
+.THIS .backcolor 
+{
+    background-color: lightblue;
+}

@@ -1,0 +1,15 @@
+<apex:page standardController="Specialty_Legacy_Drug_Level_pricing__c" extensions="SpecialtyLDLPricingDeleteClass"  lightningStylesheets="true" action="{!deleteRecord}" >
+    <apex:form >
+    <apex:pageMessages />
+
+      <apex:pageBlock title="Specialty Legacy Drug Level Pricing">
+            <apex:pageMessage summary="Platform Specific record(s) exist with 'Specialty Pharmacy Benefit & Price List' value(s) which is/are being updated/removed on Specialty Legacy Drug Level Pricing. Please modify the platform specifics records which are utilizing the specific Specialty 'Pharmacy Benefit' and 'Price List' value combination." 
+    severity="FATAL" strength="3" rendered="{!showErrorMessage}"/>
+    <apex:pageMessage summary="Platform Specific record(s) exist with 'Specialty Pharmacy Benefit & Price List' value(s) which is/are being updated/removed on Specialty Legacy Drug Level Pricing. Please modify the platform specifics records which are utilizing the specific Specialty 'Pharmacy Benefit' and 'Price List' value combination."
+    severity="FATAL" strength="3" rendered="{!showErrorMessageNone}"/>
+            <apex:pageBlockButtons location="bottom">
+            <apex:commandButton immediate="true" action="{!Cancel}"  value="Cancel" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>  
+</apex:page>

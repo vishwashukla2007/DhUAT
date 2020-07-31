@@ -1,0 +1,283 @@
+<apex:page standardController="Mail_Pricing__c" lightningStylesheets="true" extensions="MailPricingEditController" 
+        title="Mail Pricing Edit" name="Mail Pricing Edit">
+    <apex:pageMessages id="errmsg" />
+    
+    <script>
+        function setFocusOnLoad() {
+            document.getElementById('{!$Component.theForm.pb.pbmp1.pbmp.year}').focus();
+        }   
+    </script>    
+ <!-- Script to handle field dependencies -->
+  <script>
+        
+      function brandBasisDependency( brandBasisId )
+      {
+         
+         brandBasisVal = document.getElementById(brandBasisId).value; 
+         brandRate = document.getElementById('{!$Component.theForm.pb.pbsBGP.brandRate}');
+         nonPrefBrandRate = document.getElementById('{!$Component.theForm.pb.pbsBGP.nonPrefBrandRate}');
+         rebatePlanDesign = document.getElementById('{!$Component.theForm.pb.pbsBGP.rebatePlanDesign}');
+         prefBrandRate = document.getElementById('{!$Component.theForm.pb.pbsBGP.prefBrandRate}');
+         
+        genericBasisId=document.getElementById('{!$Component.theForm.pb.pbsBGP.genericbasis}');
+        macModeled=document.getElementById('{!$Component.theForm.pb.pbsBGP.macModeled}');
+          nonMACGenRate=document.getElementById('{!$Component.theForm.pb.pbsBGP.nonMACGenRate}');
+          genericRate=document.getElementById('{!$Component.theForm.pb.pbsBGP.genericRate}');
+          brandDisFee=document.getElementById('{!$Component.theForm.pb.pbsBGP.brndDisFee}');
+          genDisFee=document.getElementById('{!$Component.theForm.pb.pbsBGP.genDisFee}');
+          
+          macModeled.disabled=false;
+          nonMACGenRate.disabled=false;
+          genericRate.disabled=false;
+         
+         brandRate.disabled = false;
+         prefBrandRate.disabled = false;
+         nonPrefBrandRate.disabled = false;
+         rebatePlanDesign.disabled = false;
+         genericBasisId.disabled=false;
+         brandDisFee.disabled=false;
+         genDisFee.disabled=false;
+         
+         if( brandBasisVal == 'Standard Brand Discount' )
+         {
+             
+             prefBrandRate.disabled = true;
+             prefBrandRate.value = '';
+             nonPrefBrandRate.disabled = true;
+             nonPrefBrandRate.value = '';
+             rebatePlanDesign.disabled = true;
+             rebatePlanDesign.value = '';
+         }
+         else if( brandBasisVal == 'Baked-Across All Brands' || brandBasisVal == 'Baked-RTMD at NDC 11' || brandBasisVal =='Baked-OED' )
+         {
+             prefBrandRate.disabled = true;
+             prefBrandRate.value = '';
+             nonPrefBrandRate.disabled = true;
+             nonPrefBrandRate.value = '';
+         }
+         else if( brandBasisVal == 'Baked-Preferred & Non-Preferred' )
+         {
+             brandRate.disabled = true;
+             brandRate.value = '';
+         }
+         else if( brandBasisVal=='N/A' ){
+            brandRate.disabled = true;
+             brandRate.value='';
+             prefBrandRate.disabled = true;
+             prefBrandRate.value='';
+             nonPrefBrandRate.disabled = true;
+             nonPrefBrandRate.value='';
+             rebatePlanDesign.disabled = true;
+             rebatePlanDesign.value='';
+             genericBasisId.disabled=true;
+             brandDisFee.disabled=true;
+             brandDisFee.value='';
+             
+         }
+      }
+      
+      function genericBasisDependency( genericbasisId )
+      {
+          genericBasisVal=document.getElementById(genericbasisId).value;
+          brandBasisVal = document.getElementById('{!$Component.theForm.pb.pbsBGP.brandBasis}').value; 
+          macModeled=document.getElementById('{!$Component.theForm.pb.pbsBGP.macModeled}');
+          nonMACGenRate=document.getElementById('{!$Component.theForm.pb.pbsBGP.nonMACGenRate}');
+          genericRate=document.getElementById('{!$Component.theForm.pb.pbsBGP.genericRate}');
+          genDisFee=document.getElementById('{!$Component.theForm.pb.pbsBGP.genDisFee}');
+          
+          macModeled.disabled=false;
+          nonMACGenRate.disabled=false;
+          genericRate.disabled=false;
+          
+          if (genericBasisVal =='Flat Generic Discount')
+          {
+              macModeled.disabled=true;
+              macModeled.value='';
+              nonMACGenRate.disabled=true;
+              nonMACGenRate.value='';
+              if(brandBasisVal=='N/A'){
+                genericRate.disabled=true;
+                genericRate.value='';
+                genDisFee.disabled=true;
+                genDisFee.value='';
+              }
+          }
+          else if(genericBasisVal=='MAC Modeled & Non-MAC')
+          {
+             genericRate.disabled=true;
+             genericRate.value='';
+             if(brandBasisVal=='N/A'){
+                genDisFee.disabled=true;
+                genDisFee.value='';
+                macModeled.disabled=true;
+                macModeled.value='';
+                nonMACGenRate.disabled=true;
+                nonMACGenRate.value='';
+              }
+          }
+         
+      }
+      
+      function saveAction()
+      {
+          var theForm = document.getElementById('{!$Component.theForm}');
+          var selects = theForm.getElementsByTagName('select');
+          for( var k in selects )
+          {
+              selects[k].disabled = false;
+          }
+          
+          var inputs = theForm.getElementsByTagName('input');
+          for( var k in inputs )
+          {
+              inputs[k].disabled = false;
+          }
+          
+      }
+          //return true;
+          
+     if('{!urlString}')
+     {
+         parent.window.location.href='{!urlString}';
+         
+     }          
+  //Workaround to work HelpText in Lightning Component    
+   function workaround() { 
+       if ((window.sfdcPage) && (sfdcPage.executeOnloadQueue)) { 
+       sfdcPage.executeOnloadQueue(); 
+                 } 
+                 } 
+    window.addEventListener('load', workaround);    
+      
+  </script>
+  
+ 
+  
+  <apex:form id="theForm"> 
+    <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+     <apex:actionFunction name="handleRequiredFields"  rerender="theForm" immediate="true" status="status" >
+         <apex:param name="pickVal" assignTo="{!Mail_Pricing__c.Brand_Basis__c}" value="" />
+      </apex:actionFunction> 
+       <apex:actionFunction name="handleRequiredFieldsGB"  rerender="theForm" immediate="true" status="status" >
+         <apex:param name="pickValue" assignTo="{!Mail_Pricing__c.Generic_Basis__c}" value="" />
+      </apex:actionFunction>
+      
+      <apex:actionFunction name="changeYearVal" action="{!changeYearMeth}" reRender="pb" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!yearval}" value="" />
+            </apex:actionFunction>
+      
+      <apex:pageBlock title="Mail Pricing Edit" id="pb">
+          <apex:pageBlockButtons >
+                <apex:commandButton action="{!saveMailPricing}"  value="Save" onclick="this.onclick=function(){return false;};saveAction();"/>              
+                <apex:commandButton immediate="true" action="{!Cancel}"  value="Cancel"  rendered="{! If(NOT(isExpandableView),true,false) }"/> <!--rendered="{!NOT(isExpandableView)}"-->
+                <apex:commandButton immediate="true" action="{!Cancel}"  value="Cancel" rendered="{! If(isExpandableView ,true,false) }" 
+                onclick="parent.window.location.href='/{!Mail_Pricing__c.FAF_Mail_Operations__c}';return false;" /><!-- rendered="{!isExpandableView}" -->
+
+          </apex:pageBlockButtons>
+          
+          <apex:pageBlockSection title="Mail Pricing Detail" columns="2">        
+               <apex:outputField id="fafid"  value="{!Mail_Pricing__c.FAF_ID__c}" />
+               <apex:outputField id="mailOp"  value="{!Mail_Pricing__c.FAF_Mail_Operations__c}" />
+          </apex:pageBlockSection>
+          
+          <apex:pageBlockSection title="Mail Pricing Information" columns="2" id="pbmp1">        
+               <!--<apex:inputField id="year" required="true"  value="{!Mail_Pricing__c.Year__c}" />-->
+               <apex:pageBlockSectionItem id="pbmp" >
+                   <apex:outputLabel for="yearPnl" value="Year" />
+                   <apex:outputPanel id="yearPnl">
+                      <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                       
+                       <apex:selectList value="{!Mail_Pricing__c.Year__c}" required="true"  label="Year" id="year" size="1" onchange="changeYearVal(this.year);">
+                       <apex:selectOptions value="{!yearOptions}" />
+                        </apex:selectList>
+                         </div> 
+                   </apex:outputPanel>
+               </apex:pageBlockSectionItem>
+              <apex:inputField id="lob" required="true"  value="{!Mail_Pricing__c.LOB__c}" /> 
+          </apex:pageBlockSection>
+          
+          <apex:pageBlockSection title="Brand & Generic Pricing" columns="2" id="pbsBGP">        
+              
+               <apex:inputField id="brandBasis" required="true" value="{!Mail_Pricing__c.Brand_Basis__c}" 
+                    onchange="brandBasisDependency(this.id);handleRequiredFields(this.value);" />
+              
+               <apex:inputField id="genericbasis" required="true" value="{!Mail_Pricing__c.Generic_Basis__c}" 
+               onchange="genericBasisDependency(this.id); handleRequiredFieldsGB(this.value); " />
+               
+               <apex:inputField id="brandRate" value="{!Mail_Pricing__c.Brand_Rate__c}"
+                    required="{!OR( Mail_Pricing__c.Brand_Basis__c = 'Standard Brand Discount', 
+                    Mail_Pricing__c.Brand_Basis__c = 'Baked-Across All Brands',Mail_Pricing__c.Brand_Basis__c = 'Baked-RTMD at NDC 11',
+                    Mail_Pricing__c.Brand_Basis__c = 'Baked-OED' )}" /> 
+               
+               <apex:inputField id="genericRate"   value="{!Mail_Pricing__c.Generic_Rate__c}"
+               required="{!AND(Mail_Pricing__c.Generic_Basis__c="Flat Generic Discount",Mail_Pricing__c.Brand_Basis__c<>'N/A')}"/>
+               
+               <apex:inputField id="prefBrandRate"  value="{!Mail_Pricing__c.Preferred_Brand_Rate__c}" 
+               required="{!Mail_Pricing__c.Brand_Basis__c = 'Baked-Preferred & Non-Preferred'}" />
+                    
+               <apex:inputField id="macModeled"  value="{!Mail_Pricing__c.MAC_Modeled__c}" />
+               <!--required="{!Mail_Pricing__c.Generic_Basis__c= 'MAC Modeled & Non-MAC'}" -->
+               
+               <apex:inputField id="nonPrefBrandRate"  value="{!Mail_Pricing__c.Non_Preferred_Brand_Rate__c}" 
+                required="{!Mail_Pricing__c.Brand_Basis__c = 'Baked-Preferred & Non-Preferred'}"/>
+                
+               <apex:inputField id="nonMACGenRate"  value="{!Mail_Pricing__c.Non_MAC_Generic_Rate__c}"
+                required="{!AND(Mail_Pricing__c.Generic_Basis__c="MAC Modeled & Non-MAC",Mail_Pricing__c.Brand_Basis__c<>'N/A')}"/>
+                
+               <apex:inputField id="brndDisFee"  value="{!Mail_Pricing__c.Brand_Dispensing_Fee__c}" 
+                required="{!OR( Mail_Pricing__c.Brand_Basis__c = 'Standard Brand Discount', 
+                    Mail_Pricing__c.Brand_Basis__c = 'Baked-Across All Brands',Mail_Pricing__c.Brand_Basis__c = 'Baked-RTMD at NDC 11',
+                    Mail_Pricing__c.Brand_Basis__c = 'Baked-OED',Mail_Pricing__c.Brand_Basis__c = 'Baked-Preferred & Non-Preferred' )}" />
+                
+               <apex:inputField id="genDisFee"  value="{!Mail_Pricing__c.Generic_Dispensing_Fee__c}" 
+               required="{!Mail_Pricing__c.Brand_Basis__c<>'N/A'}"/>
+               
+               <apex:inputField id="rebatePlanDesign"  value="{!Mail_Pricing__c.Rebate_Plan_Design__c}" 
+                required="{!OR( Mail_Pricing__c.Brand_Basis__c = 'Baked-Across All Brands',Mail_Pricing__c.Brand_Basis__c = 'Baked-RTMD at NDC 11',
+                    Mail_Pricing__c.Brand_Basis__c = 'Baked-OED',Mail_Pricing__c.Brand_Basis__c = 'Baked-Preferred & Non-Preferred')}" />
+               <apex:inputHidden id="agreement" value="{!Mail_Pricing__c.Agreement__c}"/>
+          </apex:pageBlockSection>
+          
+          <apex:pageBlockSection title="Guarantee Information" columns="2" id="pbsGI">
+              <apex:inputField id="SSGEL"   value="{!Mail_Pricing__c.SSG_Exclusion_List__c}"  required="{!NOT(disableSSG)}" />        
+               <apex:inputField id="SSsBrnd"  value="{!Mail_Pricing__c.SSGs_into_Brands__c}"  />
+               <apex:inputField id="SSGEP"  value="{!Mail_Pricing__c.SSG_Exclusivity_Period__c}" required="{!NOT(disableSSG)}" />
+          </apex:pageBlockSection>
+          <script>
+            if( {!disableSSG} )
+            {
+                document.getElementById('{!$Component.pb.pbsGI.SSGEL}').value = '';
+                document.getElementById('{!$Component.pb.pbsGI.SSGEP}').value = '';
+            }    
+            
+            document.getElementById('{!$Component.pb.pbsGI.SSGEL}').disabled = {!disableSSG};
+            document.getElementById('{!$Component.pb.pbsGI.SSGEP}').disabled = {!disableSSG};
+            
+            document.getElementById('{!$Component.pb.pbsGI.SSsBrnd}').disabled = {!disableSSGIntoBrand};
+           
+            brandBasisDependency('{!$Component.pb.pbsBGP.brandBasis}');
+            genericBasis = document.getElementById('{!$Component.theForm.pb.pbsBGP.genericbasis}');
+            if( genericBasis ){
+                genericBasis.disabled = true;
+                genericBasisDependency( genericBasis.id );
+            }
+
+            
+        </script>
+      </apex:pageBlock>
+      
+  </apex:form>
+</apex:page>

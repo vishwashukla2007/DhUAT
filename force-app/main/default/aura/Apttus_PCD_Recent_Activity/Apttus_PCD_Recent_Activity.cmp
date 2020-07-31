@@ -1,0 +1,69 @@
+<aura:component controller="Apttus_GridObjectdata" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:lightningQuickAction,lightning:isUrlAddressable" access="global" >
+ <aura:attribute name="objects" type="Object"/>	
+ <aura:attribute name="recordId" type="String"/>
+ <aura:attribute name="accountId" type="String"/>
+ <aura:attribute name="taskid" type="String"/>
+ <aura:attribute name="recordcount" type="Integer"/>
+ <aura:attribute name="disabled" type="Boolean" Default="false"/>
+ <aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}"/>
+ <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>  
+ <aura:handler event="c:Apttus_Grid_AccountId_Event" action="{!c.taskrefresh}"/>
+ <aura:handler event="c:Apttus_PCD_Document_Event" action="{!c.handleDocEvent}"/>
+    <lightning:Card class="height">
+    <div class="slds-scrollable" style="height:50rem">
+        <lightning:layout>
+          <aura:if isTrue = "{!(v.recordcount > 0)}">
+           <table style="table-layout: unset !important;" class="slds-table slds-table_bordered inner">
+            <thead>
+                <tr class="slds-text-heading_label">
+                    <th scope="col"><div class="" title="Offer">Offer</div></th>
+                    <th scope="col"><div class="" title="LOB">LOB</div></th>
+                    <th scope="col"><div class="" title="Transaction Type">Transaction Type</div></th>
+                    <th scope="col"><div class="" title="Transaction By">Transaction By</div></th>
+                    <th scope="col"><div class="" title="Transaction Date">Transaction Date</div></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Use the Apex model and controller to fetch server side data -->
+            <aura:iteration items="{!v.objects}" var="p" indexVar="index">   
+            <tr>
+            <td>
+                        <div>
+                            <a href="{!'https://'+ v.vfHost + '/lightning/r/Offer__c/' + p.OfferId +'/view'}" style="color:blue">{!p.OfferNum}</a>                         
+                        </div>      
+            </td>
+            <td>
+                        <div>
+                             <lightning:formattedText  type="text" disabled = "true" aura:id="input2"  name="input2" value="{!p.LOBDetail}"/>                         
+                        </div>      
+            </td>
+            <td>
+                        <div>
+                             <lightning:formattedText type="text" disabled = "true" aura:id="input3"  name="input3" value="{!p.Field}"/>                                
+                        </div>      
+            </td>
+            <td>
+                        <div>
+                             <lightning:formattedText type="text" disabled = "true" aura:id="input4"  name="input4" value="{!p.UserName}"/>                         
+                        </div>      
+            </td>
+            <td>
+                        <div>
+                             <lightning:formattedDateTime value="{!p.CreatedDate}" year="numeric" month="numeric" day="numeric"  hour="2-digit" minute="2-digit" timeZoneName="short" />        
+                        </div>      
+            </td>
+            </tr>
+            </aura:iteration> 
+            </tbody>
+        </table>   
+        <aura:set attribute="else">
+            <p> No Recent Transaction found.</p>
+        </aura:set>
+        </aura:if>
+       </lightning:layout>
+        <div class="slds-p-bottom_xx-large"></div>
+        <div class="slds-p-bottom_xx-large"></div>
+        <div class="slds-p-bottom_xx-large"></div>
+        </div>
+    </lightning:Card>
+</aura:component>

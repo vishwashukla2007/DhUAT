@@ -1,0 +1,351 @@
+<aura:component controller="Apttus_GridEditRebateController" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <aura:attribute name="objects" type="Rebate_Guarantee_Denorm__c" />
+    <aura:attribute name="newobject" type="Rebate_Guarantees__c" default="{'LOB2__c':'Dummy'}"/>
+    <aura:attribute name="nnameoptions" type="Object"/>
+    <aura:attribute name="ntypeoptions" type="Object"/>
+    <aura:attribute name="gstpoptions" type="Object"/>
+    <aura:attribute name="netobjects" type="Rebate_Guarantees__c" default="{'LOB2__c':'Dummy'}"/> 
+    <aura:attribute name="fafid" type="String" default="" />
+    <aura:attribute name="plan" type="String" default="" />
+    <aura:attribute name="basis" type="String" default="" />
+    <aura:attribute name="nonSpecObjects" type="Object" default="{'LOB2__c':'Dummy'}"/>
+    
+    <aura:attribute name="specForm" type="String" default="" />
+    <aura:attribute name="showInSpec" type="String" default="" />
+    <aura:attribute name="nonspecForm" type="String" default="" />
+    
+    <aura:attribute name="gstp" type="String" default="" />
+    <aura:attribute name="percentageCheck" type="Boolean" default="false" />
+    
+    <aura:attribute name="year" type="String" default="" />
+    <aura:attribute name="loboptions" type="String" default="" />
+    <aura:attribute name="lob" type="String" default="" />
+    <aura:attribute name="desc" type="String" default="" />
+    <aura:attribute name="readonly" type="Boolean" default="false" />
+    <aura:attribute name="descrequired" type="Boolean" default="false" />
+    <aura:attribute name="descreadonly" type="Boolean" default="false" /> 
+    <aura:attribute name="typereadonly" type="Boolean" default="false" /> 
+    <aura:attribute name="disablebtn" type="Boolean" default="false" /> 
+    <aura:attribute name="DisplaySpinner" type="Boolean" default="false" />
+    <aura:attribute name="pricingcount" type="Integer" default="" />
+    <aura:attribute name="pricingNonSpeccount" type="Integer" default="" />
+    <aura:attribute name="yearcount" type="Integer" default="" />
+    <aura:attribute name="recordcount" type="Integer" default="" />
+    <aura:attribute name="isDeleteAlertOpen" type="Boolean" default="false" />
+    <aura:attribute name="planDesignOption" type="String" default="" />
+    
+    <aura:attribute name="recordcount2TQ" type="Integer" default="" />
+    <aura:attribute name="recordcount3TQ" type="Integer" default="" />
+    <aura:attribute name="recordcount3TNQ" type="Integer" default="" />
+    <aura:attribute name="recordcountClosed" type="Integer" default="" />  
+    <aura:attribute name="recordcountSpec" type="Integer" default="" />  
+    
+    <aura:attribute name="savecount2TQ" type="Integer" default="0" />
+    <aura:attribute name="savecount3TQ" type="Integer" default="0" />
+    <aura:attribute name="savecount3TNQ" type="Integer" default="0" />
+    <aura:attribute name="savecountClosed" type="Integer" default="0" /> 
+    <aura:attribute name="savecountSpec" type="Integer" default="0" /> 
+    
+    
+    <aura:attribute name="is2TQSaved" type="Boolean" Default="false"/>
+    <aura:attribute name="is3TQSaved" type="Boolean" Default="false"/>
+    <aura:attribute name="is3TNQSaved" type="Boolean" Default="false"/>
+    <aura:attribute name="isClosedSaved" type="Boolean" Default="false"/>
+    <aura:attribute name="isSpecSaved" type="Boolean" Default="false"/>
+    
+    <aura:attribute name="displayMessageText" type="Boolean" Default="false"/>
+    
+    <aura:attribute name="is2TQDisabled" type="Boolean" Default="false"/>
+    <aura:attribute name="is3TQDisabled" type="Boolean" Default="false"/>
+    <aura:attribute name="is3TNQDisabled" type="Boolean" Default="false"/>
+    <aura:attribute name="isClosedDisabled" type="Boolean" Default="false"/>
+    
+    <aura:attribute name="copy2TQToGrid" type="String" default="" />
+    <aura:attribute name="copy3TQToGrid" type="String" default="" />
+    <aura:attribute name="copy3TNQToGrid" type="String" default="" />
+    <aura:attribute name="copyClosedToGrid" type="String" default="" />
+    
+    <aura:attribute name="matchToFromGrid" type="String" default="" />
+    <aura:attribute name="matchToToGrid" type="String" default="" />
+    <aura:attribute name="isSavedAndClose" type="Boolean" />
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Notify_Save_Event" action="{!c.handleSaveVerify}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Notify_Error_Event" action="{!c.handleError}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Save_Event" action="{!c.handleSave}"/>
+    <aura:handler event="c:Apttus_Grid_Refresh_Parent_Event" action="{!c.doInit}"/>
+    <aura:handler event="c:Apttus_Grid_Inactive_Parent_Event" action="{!c.displayspinner}"/>
+    
+    <aura:registerEvent name="savecomplete" type="c:Apttus_Grid_NT_Close_Event"/>
+    <aura:registerEvent name="secationEvent" type="c:Apttus_Grid_Rebate_SectionAvailableEvent"/>
+    
+    <aura:handler event="c:Apttus_Grid_Delete_RG_RowEvent" action="{!c.deletedRGRow}"/>
+     <!--anvesh-->
+    <lightning:card  class="container">
+        <lightning:layout>
+            <aura:if isTrue="{!v.DisplaySpinner}">
+                <lightning:spinner alternativeText="Saving" variant="brand" size="medium" class="slds-spinner_container"/>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </aura:if>   
+        </lightning:layout>
+        <aura:if isTrue="{!v.isDeleteAlertOpen}">
+            <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                <div class="slds-modal__container" style="Width: 31%;">
+                    <div class="slds-modal__header">
+                        <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.cancleDeleteAlert}">
+                            X
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="header99" class="slds-text-heading--medium">Delete {!v.planDesignOption}</h2>
+                    </div>
+                    <div class="slds-modal__content slds-p-around--medium">
+                        <center><p>
+                            Are you sure you want to delete {!v.planDesignOption} record(s)?
+                            </p> 
+                        </center>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <lightning:button class="slds-button slds-button--neutral" onclick="{!c.cancleDeleteAlert}">Cancel</lightning:button>
+                        <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete</lightning:button>                    
+                    </div>
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open"></div>        
+        </aura:if>
+        
+        <lightning:layout class="text-label--large" horizontalAlign="left" multipleRows="true">
+            
+                <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="">
+                        <lightning:textarea type="text"  required="true" aura:id="desc" name="Non-Specialty Formulary Display Name" value="{!v.desc}" label="Non-Specialty Formulary Display Name" class="topText"  onchange="{!c.updatedesc}" maxlength="255">
+    		     </lightning:textarea>
+             </lightning:layoutItem>
+            <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="">
+                <lightning:select disabled="{!v.readonly}" aura:id="nonspecForm" name="Forumulary" label="Non-Specialty Formulary" required="true" onchange="{!c.updateNonspecForm}">
+                    <aura:iteration items="{!v.nnameoptions}" var="opt">
+                        <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+                    </aura:iteration>
+                    <option value="{!v.objects.Non_Specialty_Formulary__c}" text="{!v.objects.Non_Specialty_Formulary__c}"></option>
+                </lightning:select>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="">
+                <lightning:select  aura:id="gstp" name="Rebates Paid" label="GSTP" disabled="{!v.typereadonly}" required="true" onchange="{!c.updateGstp}">
+                    <aura:iteration items="{!v.gstpoptions}" var="opt">
+                        <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+                    </aura:iteration>
+                    <option value="{!v.objects.GSTP__c}" text="{!v.objects.GSTP__c}"></option>
+                </lightning:select>
+            </lightning:layoutItem>
+            <!--lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="2">
+                <lightning:select  aura:id="basis" name="Rebates Paid" label="Basis" disabled="{!v.typereadonly}" required="true" onchange="{!c.updateBasis}">
+                    <aura:iteration items="{!v.ntypeoptions}" var="opt">
+                        <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+                    </aura:iteration>
+                    <option value="{!v.objects.Basis__c}" text="{!v.objects.Basis__c}"></option>
+                </lightning:select>
+            </lightning:layoutItem-->
+            <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="">
+                <lightning:select disabled="{!v.readonly}" aura:id="lob" name="LOB" label="LOB" required="true" onchange="{!c.updatelob}">
+                    <aura:iteration items="{!v.loboptions}" var="opt">
+                        <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+                    </aura:iteration>
+                    <option value="{!v.lob}" text="{!v.lob}"></option>
+                </lightning:select>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="">
+                <b><lightning:input class="myCheckbox" type="checkbox" label="2TQ" checked="{!v.nonSpecObjects.is2TQ}" 
+                                    onchange="{!c.handle2TQ}" disabled="{!v.is2TQDisabled}"/>	</b>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="">
+                <b><lightning:input class="myCheckbox" type="checkbox" label="3TQ" checked="{!v.nonSpecObjects.is3TQ}" 
+                                    onchange="{!c.handle3TQ}" disabled="{!v.is3TQDisabled}"/></b>
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="">	
+                <b><lightning:input class="myCheckbox" type="checkbox" label="3TNQ" checked="{!v.nonSpecObjects.is3TNQ}" 
+                                    onchange="{!c.handle3TNQ}" disabled="{!v.is3TNQDisabled}"/></b>	
+            </lightning:layoutItem>
+            <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="">
+                <b><lightning:input class="myCheckbox" type="checkbox" label="Closed" checked="{!v.nonSpecObjects.isClosed}" 
+                                    onchange="{!c.handleClosed}" disabled="{!v.isClosedDisabled}"/>	</b>
+            </lightning:layoutItem>
+        </lightning:layout>
+        <br/>
+        <aura:if isTrue="{!v.displayMessageText}">
+            <lightning:layout  class="width">
+                <ui:message title="" severity="info" closable="false">
+                    <div class="slds-grid slds-wrap">
+                        <lightning:icon iconName="utility:info_alt" alternativeText="Warning!" 
+                                        title="warning variant" class="icnBLue" />&nbsp;&nbsp;&nbsp;
+                        <p  style="font-size: medium;margin-top: 6px;">Complete the required entry fields and save before adding new record or Tire(s).</p>
+                    </div>
+                </ui:message>
+                
+            </lightning:layout>
+        </aura:if>
+        
+        <lightning:layout  class="width">
+            <div class="slds-scrollable">
+                <!--anvesh-->
+                <aura:if isTrue="{!v.nonSpecObjects.is2TQ}">
+                    <br/><br/>
+                    <p><b>2 TQ</b></p>
+                    <table  style="table-layout: unset !important;" class="slds-table slds-table_bordered inner">
+                        <thead>
+                            <c:Apttus_Grid_Edit_NonSpecialtyHeader percentageCheck="{!v.percentageCheck}"/>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.nonSpecObjects.rg2TQ}" var="p" indexVar="index">
+                                
+                                <c:Apttus_Grid_Edit_NonSpecialty_Child aura:id="child2TQ" objects="{!p}" percentageCheck="{!v.percentageCheck}" yearcount="{!v.yearcount}" 
+                                                                       lob="{!v.lob}" gstp="{!v.gstp}" nonspecForm="{!v.nonspecForm}" basis="{!v.basis}" 
+                                                                       planDesignOption="2TQ" currentIndex="{!index}" rebateWrapper="{!v.nonSpecObjects}" desc="{!v.desc}"/>
+                            </aura:iteration>
+                        </tbody>
+                    </table><br/>
+                    <div class="slds-grid slds-wrap">
+                        <label><b>Copy from 2TQ to</b> </label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <lightning:select aura:id="copyFrom2TQ"  name="copyFrom2TQ"  required = "false" disabled= "false" class="matchTo" variant="label-hidden">
+                            <option value="none" text="N/A"></option>
+                            <aura:if isTrue="{!v.nonSpecObjects.is3TQ}">
+                                <option value="3TQ">3TQ</option>
+                            </aura:if>
+                            <aura:if isTrue="{!v.nonSpecObjects.is3TNQ}">
+                                <option value="3TNQ">3TNQ</option>
+                            </aura:if>
+                            <aura:if isTrue="{!v.nonSpecObjects.isClosed}">
+                                <option value="Closed">Closed</option>
+                            </aura:if>
+                        </lightning:select>&nbsp;&nbsp;&nbsp;&nbsp;     
+                        <button type="button" class="slds-button slds-button_neutral" onclick="{!c.save2TQMatchTo}">Apply</button>     
+                    </div>      
+                </aura:if>
+                
+                <aura:if isTrue="{!v.nonSpecObjects.is3TQ}">
+                    <br/><br/>
+                    <p><b>3 TQ</b></p>
+                    <table  style="table-layout: unset !important;" class="slds-table slds-table_bordered inner">
+                        <thead>
+                            <c:Apttus_Grid_Edit_NonSpecialtyHeader percentageCheck="{!v.percentageCheck}"/>
+                        </thead>
+                        <tbody>
+                            
+                            <aura:iteration items="{!v.nonSpecObjects.rg3TQ}" var="p" indexVar="index">
+                                
+                                <c:Apttus_Grid_Edit_NonSpecialty_Child aura:id="child3TQ" objects="{!p}" percentageCheck="{!v.percentageCheck}" yearcount="{!v.yearcount}" 
+                                                                       lob="{!v.lob}" gstp="{!v.gstp}" nonspecForm="{!v.nonspecForm}" basis="{!v.basis}" 
+                                                                       planDesignOption="3TQ" currentIndex="{!index}" rebateWrapper="{!v.nonSpecObjects}" desc="{!v.desc}"/>
+                            </aura:iteration>
+                        </tbody>
+                    </table><br/>
+                    <div class="slds-grid slds-wrap">
+                        <label><b>Copy from 3TQ to</b> </label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <lightning:select aura:id="copyFrom3TQ"  name="copyFrom3TQ"  required = "false" disabled= "false" class="matchTo" variant="label-hidden" >
+                            <option value="none" text="N/A"></option>
+                            <aura:if isTrue="{!v.nonSpecObjects.is2TQ}">
+                                <option value="2TQ">2TQ</option>
+                            </aura:if>
+                            <aura:if isTrue="{!v.nonSpecObjects.is3TNQ}">
+                                <option value="3TNQ">3TNQ</option>
+                            </aura:if>
+                            <aura:if isTrue="{!v.nonSpecObjects.isClosed}">
+                                <option value="Closed">Closed</option>
+                            </aura:if>
+                        </lightning:select> &nbsp;&nbsp;&nbsp;&nbsp;    
+                        <button type="button" class="slds-button slds-button_neutral" onclick="{!c.save3TQMatchTo}">Apply</button>         
+                    </div>    
+                </aura:if>
+                
+                <aura:if isTrue="{!v.nonSpecObjects.is3TNQ}">
+                    <br/><br/>
+                    <p><b>3 TNQ</b></p>
+                    <table  style="table-layout: unset !important;" class="slds-table slds-table_bordered inner">
+                        <thead>
+                            <c:Apttus_Grid_Edit_NonSpecialtyHeader percentageCheck="{!v.percentageCheck}"/>
+                        </thead>
+                        <tbody>
+                            
+                            <aura:iteration items="{!v.nonSpecObjects.rg3TNQ}" var="p" indexVar="index">
+                                
+                                <c:Apttus_Grid_Edit_NonSpecialty_Child aura:id="child3TNQ" objects="{!p}" percentageCheck="{!v.percentageCheck}" yearcount="{!v.yearcount}" 
+                                                                       lob="{!v.lob}" gstp="{!v.gstp}" nonspecForm="{!v.nonspecForm}" basis="{!v.basis}" 
+                                                                       planDesignOption="3TNQ" currentIndex="{!index}"  rebateWrapper="{!v.nonSpecObjects}" desc="{!v.desc}"/>
+                            </aura:iteration>
+                        </tbody>
+                    </table><br/>
+                    <div class="slds-grid slds-wrap">
+                        <label><b>Copy from 3TNQ to </b></label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <lightning:select aura:id="copyFrom3TNQ"  name="copyFrom3TNQ"  required = "false" disabled= "false" class="matchTo" variant="label-hidden" >
+                            <option value="none" text="N/A"></option>
+                            <aura:if isTrue="{!v.nonSpecObjects.is2TQ}">
+                                <option value="2TQ">2TQ</option>
+                            </aura:if>
+                            <aura:if isTrue="{!v.nonSpecObjects.is3TQ}">
+                                <option value="3TQ">3TQ</option>
+                            </aura:if>
+                            <aura:if isTrue="{!v.nonSpecObjects.isClosed}">
+                                <option value="Closed">Closed</option>
+                            </aura:if>
+                        </lightning:select>&nbsp;&nbsp;&nbsp;&nbsp;     
+                        <button type="button" class="slds-button slds-button_neutral" onclick="{!c.save3TNQMatchTo}">Apply</button>         
+                    </div>
+                </aura:if>
+                
+                <aura:if isTrue="{!v.nonSpecObjects.isClosed}">
+                    <br/><br/>
+                    <p><b>Closed</b></p>
+                    <table  style="table-layout: unset !important;" class="slds-table slds-table_bordered inner">
+                        <thead>
+                            <c:Apttus_Grid_Edit_NonSpecialtyHeader percentageCheck="{!v.percentageCheck}"/>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.nonSpecObjects.closed}" var="p" indexVar="index">
+                                <c:Apttus_Grid_Edit_NonSpecialty_Child aura:id="childClosed" objects="{!p}" percentageCheck="{!v.percentageCheck}" yearcount="{!v.yearcount}" 
+                                                                       lob="{!v.lob}" gstp="{!v.gstp}" nonspecForm="{!v.nonspecForm}" basis="{!v.basis}" 
+                                                                       planDesignOption="Closed" currentIndex="{!index}"  rebateWrapper="{!v.nonSpecObjects}" desc="{!v.desc}"/>
+                            </aura:iteration>
+                        </tbody>
+                    </table><br/>
+                    <div class="slds-grid slds-wrap">
+                        <label><b>Copy from Closed to </b></label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <lightning:select aura:id="copyFromClosed"  name="copyFromClosed"  required = "false" disabled= "false" class="matchTo" variant="label-hidden" >
+                            <option value="none" text="N/A"></option>
+                            <aura:if isTrue="{!v.nonSpecObjects.is2TQ}">
+                                <option value="2TQ">2TQ</option>
+                            </aura:if>
+                            <aura:if isTrue="{!v.nonSpecObjects.is3TQ}">
+                                <option value="3TQ">3TQ</option>
+                            </aura:if>
+                            <aura:if isTrue="{!v.nonSpecObjects.is3TNQ}">
+                                <option value="3TNQ">3TNQ</option>
+                            </aura:if>
+                        </lightning:select>&nbsp;&nbsp;&nbsp;&nbsp;     
+                        <button type="button" class="slds-button slds-button_neutral" onclick="{!c.saveClosedMatchTo}">Apply</button>         
+                    </div>
+                </aura:if>
+                <!--aura:if isTrue="{!v.nonSpecObjects.isClosed}"-->
+                	<br/><br/>
+                    <p><b>Specialty</b></p>
+                    <table  style="table-layout: unset !important;" class="slds-table slds-table_bordered inner">
+                        <thead>
+                            <c:Apttus_Grid_Edit_SpecialtyHeader percentageCheck="{!v.percentageCheck}"/>
+                        </thead>
+                        <tbody>
+                            
+                            <aura:iteration items="{!v.nonSpecObjects.specialty}" var="p" indexVar="index">
+                                <c:Apttus_Grid_Edit_Specialty_Child aura:id="childSpec" objects="{!p}" percentageCheck="{!v.percentageCheck}" yearcount="{!v.yearcount}" 
+                                                                       planDesignOption="Specialty" currentIndex="{!index}" />
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                <!--/aura:if-->
+                <!--anvesh-->
+            </div>
+        </lightning:layout>
+        <lightning:layout>
+            <lightning:layoutitem>
+                <div class="slds-p-top_x-large"></div>
+                <lightning:button label="Add Year" disabled="{!v.disablebtn}" iconName="utility:add" iconPosition="left" class="slds-button" onclick="{!c.createAll}"/>
+            </lightning:layoutitem>
+        </lightning:layout>
+    </lightning:card>
+    
+</aura:component>

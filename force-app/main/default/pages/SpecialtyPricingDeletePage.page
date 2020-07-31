@@ -1,0 +1,13 @@
+<apex:page standardController="Specialty_Pricing__c" extensions="SpecialtyPricingDeleteClass"  lightningStylesheets="true" action="{!deleteRecord}" >
+    <apex:form >
+        <apex:pageBlock title="Specialty Pricing Detail Page">
+            <apex:pageMessage summary="Platform Specific record(s) exist with 'Specialty Pharmacy Benefit  & Price List' value(s) which is/are being updated/removed on Specialty Pricing. Please modify the platform specifics records which are utilizing the specific Specialty 'Pharmacy Benefit' and 'Price List' value combination." 
+    severity="FATAL" strength="3" rendered="{!showErrorMessage}"/>
+    <apex:pageMessage summary="Platform Specific record(s) exist with Specialty 'Pharmacy Benefit & Price List' value 'None'. Please modify the platform specifics records which are utilizing the Specialty 'Pharmacy Benefit' value of 'None' before updating the value on 'Specialty Pricing record'."
+    severity="FATAL" strength="3" rendered="{!showErrorMessageNone}"/>
+            <apex:pageBlockButtons location="bottom">
+            <apex:commandButton immediate="true" action="{!Cancel}"  value="Cancel" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>  
+</apex:page>

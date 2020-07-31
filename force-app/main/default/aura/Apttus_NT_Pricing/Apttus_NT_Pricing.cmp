@@ -1,0 +1,282 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="Apttus_NT_PricingController"  access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="networkOperationsId" type="String" />    
+    <aura:attribute name="ntpricing" type="Network_Pricing__c[]" />
+    <aura:attribute name="isAccess" type="boolean"/>
+    <aura:attribute name="picklistFields" type="Map" default="{}" />
+    <aura:attribute name="years" type="String[]" />
+    <aura:attribute name="lob" type="String[]" />
+    <aura:attribute name="objInfo" type="String" default="Network_Pricing__c" />
+    <aura:attribute name="depnedentFieldMap" type="map" description="store controller(key)--> dependent(values) picklist value as a map." />
+    <aura:attribute name="isDependentDisable" type="boolean" default="true" description="use for, make disbale depandent field." />
+    <aura:attribute name="netname" type="String[]" />
+    <aura:attribute name="mannettype" type="String[]" />
+    <aura:attribute name="nettype" type="String[]" />
+    <aura:attribute name="client" type="String[]"/>
+    <aura:attribute name="member" type="String[]" />
+    <aura:attribute name="choice" type="String[]" />
+    <aura:attribute name="adjudication" type="Boolean" default="false"/>
+    <aura:attribute name="brandbasic" type="String[]"/>
+    <aura:attribute name="brandrate" type="String"/>
+    <aura:attribute name="preferedbrandrate" type="String"/>
+    <aura:attribute name="nonpreferedbrandrate" type="String"/>
+    <aura:attribute name="branddispensingfee" type="String"/>
+    <aura:attribute name="rebateplan" type="String[]" />
+    <aura:attribute name="genericbasic" type="String[]" />
+    <aura:attribute name="genericrate" type="String"/>
+    <aura:attribute name="macmodeled" type="String[]" />
+    <aura:attribute name="nonmacgenericrate" type="String"/>
+    <aura:attribute name="gendispensingfee" type="String"/>
+    <aura:attribute name="Link" type="String"/>
+    <aura:attribute name="mirrmailbrandprice" type="Boolean" default="false"/>
+    <aura:attribute name="mirrmailgenprice" type="Boolean" default="false"/>
+    <aura:attribute name="mirrmailgurantee" type="Boolean" default="false"/>
+    <aura:attribute name="exclusionlist" type="String[]" />
+    <aura:attribute name="clickEdit" type="Boolean" default="true" />
+    <aura:attribute name="clickSave" type="Boolean" default="true" />
+    <aura:attribute name="exclusionperiod" type="String[]" />
+    <aura:attribute name="exclusionspecial" type="String[]" />
+    <aura:attribute name="readonly" type="Boolean" default="true" />
+    <aura:attribute name="clickEditModal" type="Boolean" default="false" />
+    <aura:attribute name="npParams" type="String" default="" />
+    <aura:attribute name="params" type="String" />
+    <aura:attribute name="isDeleteAlertOpen" type="Boolean" default="false" />
+    
+    <!--<lightning:card title="" > -->
+    <aura:if isTrue="{!v.clickEditModal}">
+        <c:Apttus_Edit_Pricing_Vf aura:id="EditPricing" params="{!v.params}" />  
+    </aura:if>
+    <lightning:layout horizontalAlign="center" class="text-label--medium">
+        <lightning:layoutItem padding="horizontal-small" flexibility="grow" class="pricing_link">
+            <div class="slds-form-element__control slds-form-element" style="font-weight: 600;">
+                <aura:unescapedHtml value="{!v.ntpricing.Link__c}"/>
+            </div>
+            
+        </lightning:layoutItem>
+        <lightning:layoutItem padding="horizontal-small" flexibility="grow" class="text-label--checkbox">
+            <div class="slds-align_absolute-center" >
+                <lightning:input disabled="{!v.readonly}" type="checkbox" label="Network Adjudication Logic Deviation" name="adjudication" checked="{!v.ntpricing.Network_Adjudication_Logic_Deviation__c}" />
+            </div>
+        </lightning:layoutItem>
+        <lightning:layoutItem>
+            <div class="slds-align_absolute-center">  
+                <aura:if isTrue="{!v.isAccess}">
+                    <lightning:button aura:id="clickEdit" value="clickEdit" label="Edit Pricing" 
+                                      variant="brand"
+                                      class="slds-button"
+                                      onclick="{!c.clickEdit}"/> 
+                    
+                    <!--  <lightning:button label="Delete Pricing"
+                              iconName="utility:delete"
+                              iconPosition="right"
+                              variant="destructive"
+                              onclick="{!c.deletePricing}">
+            </lightning:button> -->
+                </aura:if>
+                
+            </div>
+        </lightning:layoutItem>
+    </lightning:layout>
+    <div class="slds-m-top_medium" ></div>
+  
+    <div class="slds-grid slds-wrap">
+        <div style="padding-left: 10px;" class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--12-of-12 slds-large-size--12-of-12">
+            <table class="rowTable" >
+                <tr>
+                    <td>
+                        <lightning:select disabled="{!v.readonly}"  name="year" label="Year" required="false" >
+                            <option value="{!v.ntpricing.Year__c}" text="{!v.ntpricing.Year__c}"></option>
+                        </lightning:select>
+                    </td>
+                    <td>
+                        <lightning:select disabled="{!v.readonly}" name="lob" label="LOB" required="false" >
+                            <option value="{!v.ntpricing.LOB__c}" text="{!v.ntpricing.LOB__c}"></option>
+                        </lightning:select>
+                    </td>
+                    
+                    <td>
+                        <lightning:select disabled="{!v.readonly}" name="rno" label="Retail Network Ordinal" required="false" >
+                            <option value="{!v.ntpricing.Retail_Network_Ordinal__c}" text="{!v.ntpricing.Retail_Network_Ordinal__c}"></option>
+                        </lightning:select>
+                    </td>
+                    
+                    <td>
+                        <lightning:select disabled="{!v.readonly}" aura:id= "Network_Pricing__c.Network_Name__c" name="netname" label="Network Name" required="false" >
+                            <option value="{!v.ntpricing.Network_Name__c}" text="{!v.ntpricing.Network_Name__c}"></option>
+                        </lightning:select> 
+                    </td>
+					
+					<td>
+						<lightning:TextArea disabled="{!v.readonly}" type="text" label=" Network Description" name="netname" required="false" value="{!v.ntpricing.Custom_Network_Description__c}" title="{!v.ntpricing.Custom_Network_Description__c}" />
+                    </td>
+                    
+                    <td>
+                        <lightning:select disabled="{!v.readonly}" aura:id= "Network_Pricing__c.Managed_Network_Type__c" name="mannettype" label="Managed Network Type" required="false">
+                            <option value="{!v.ntpricing.Managed_Network_Type__c}" text="{!v.ntpricing.Managed_Network_Type__c}"></option>
+                        </lightning:select>
+                    </td>
+                    
+                    <td>
+                        <lightning:select disabled="{!v.readonly}" name="nettype" label="Network Type" required="false" >
+                            <option value="{!v.ntpricing.Network_Type__c}" text="{!v.ntpricing.Network_Type__c}"></option>
+                        </lightning:select>
+                    </td>
+                    
+                    <td>
+                        <lightning:select disabled="{!v.readonly}" name="client" label="Client" required="false">
+                            <option value="{!v.ntpricing.Client_Adjudication_Logic_Deviation__c}" text="{!v.ntpricing.Client_Adjudication_Logic_Deviation__c}"></option>
+                        </lightning:select>
+                    </td>
+                    
+                    <td>
+                        <lightning:select disabled="{!v.readonly}" name="member" label="Member" required="false" value="{!v.ntpricing.Member_Adjudication_Logic_Deviation__c}">
+                            <option value="{!v.ntpricing.Member_Adjudication_Logic_Deviation__c}" text="{!v.ntpricing.Member_Adjudication_Logic_Deviation__c}"></option>
+                        </lightning:select>
+                    </td>
+                    
+                    <td>
+                        <lightning:select disabled="{!v.readonly}" name="choice" label="Maintenance Choice" required="false" value="{!v.ntpricing.Maintenance_Choice__c}">
+                            <option value="{!v.ntpricing.Maintenance_Choice__c}" text="{!v.ntpricing.Maintenance_Choice__c}"></option>
+                        </lightning:select> 
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="slds-m-top_medium"></div>
+    
+    <div class="slds-grid slds-wrap ">
+        <div  style="padding-left: 0px;" class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--6-of-12 slds-large-size--6-of-12">
+            <header class="slds-card__header slds-grid" data-aura-rendered-by="283:411;a" style="padding-left:15px">                                                                            
+                <div class="slds-media slds-media_center slds-has-flexi-truncate" data-aura-rendered-by="284:411;a">
+                    <!--render facet: 285:411;a-->
+                    <div class="slds-media__body slds-truncate" data-aura-rendered-by="286:411;a">
+                        <h2 data-aura-rendered-by="287:411;a">
+                            <span class="slds-text-heading_small" data-aura-rendered-by="288:411;a" style="
+                                                                                                           ">
+                                <b>Brand Pricing</b>
+                            </span>
+                        </h2>
+                    </div>
+                </div>
+                <!--render facet: 290:411;a-->
+            </header>
+            
+            <!--1-->
+            <div class="slds-grid slds-wrap ">
+                <div   class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+                    <lightning:select disabled="{!v.readonly}" name="brandbasic" label="Brand Basis" required="false">
+                        <option value="{!v.ntpricing.Brand_Basis__c}" text="{!v.ntpricing.Brand_Basis__c}"></option>
+                    </lightning:select>
+                </div>
+                <div   class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--2-of-12 slds-large-size--2-of-12">
+                    <lightning:input disabled="{!v.readonly}" type="number" label="Brand Rate" name="brandrate" required="false" value="{!v.ntpricing.Brand_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                </div>
+                <div   class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--6-of-12 slds-large-size--6-of-12">
+                    <lightning:input disabled="{!v.readonly}" type="number" label="Preferred Brand Rate"  name="preferedbrandrate" value="{!v.ntpricing.Preferred_Brand_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                </div>
+            </div>
+            <div class="slds-grid slds-wrap ">
+                <div   class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+                    
+                	<!--<lightning:input disabled="{!v.readonly}" type="text" label="Brand Disp. Fee"  name="branddispensingfee" value="{!'$'+v.ntpricing.Brand_Dispensing_Fee__c}"/> -->
+                                	<lightning:input disabled="{!v.readonly}" type="number" label="Brand Disp. Fee"  name="branddispensingfee" formatter="currency"  step="0.01" value="{!v.ntpricing.Brand_Dispensing_Fee__c}"/>
+
+                </div>
+                
+                     
+                <div   class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--2-of-12 slds-large-size--2-of-12">
+                </div>
+                
+                <div   class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--3-of-12 slds-large-size--3-of-12">
+                    <lightning:input disabled="{!v.readonly}" type="number" label="Non-Preferred Brand Rate"  name="nonpreferedbrandrate" value="{!v.ntpricing.Non_Preferred_Brand_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                </div>
+                <div   class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--3-of-12 slds-large-size--3-of-12">
+                    <lightning:select disabled="{!v.readonly}" name="rebateplan" label="Rebate Plan Design" required="false">
+                        <option value="{!v.ntpricing.Rebate_Plan_Design__c}" text="{!v.ntpricing.Rebate_Plan_Design__c}"></option>
+                    </lightning:select>
+                </div>
+                
+            </div>   
+        </div>
+        
+        <div style="padding-right: 0px;padding-left: 6%;" class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--6-of-12 slds-large-size--6-of-12">
+            <div class="slds-grid slds-wrap ">
+                <div  style="padding-left: 0px;" class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--6-of-12 slds-large-size--6-of-12">
+                    <header class="slds-card__header slds-grid" data-aura-rendered-by="283:411;a" style="padding-left:15px">                                                                            
+                        <div class="slds-media slds-media_center slds-has-flexi-truncate" data-aura-rendered-by="284:411;a">
+                            <!--render facet: 285:411;a-->
+                            <div class="slds-media__body slds-truncate" data-aura-rendered-by="286:411;a">
+                                <h2 data-aura-rendered-by="287:411;a">
+                                    <span class="slds-text-heading_small" data-aura-rendered-by="288:411;a" style="
+                                                                                                                   ">
+                                        <b>Generic Pricing</b>
+                                    </span>
+                                </h2>
+                            </div>
+                        </div>
+                        <!--render facet: 290:411;a-->
+                    </header>
+                </div>
+            </div>
+            
+			 <div class="slds-grid slds-wrap ">
+                <div   class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+                    <lightning:select disabled="{!v.readonly}" name="genericbasic" label="Generic Basis" required="false">
+                        <option value="{!v.ntpricing.Generic_Basis__c}" text="{!v.ntpricing.Generic_Basis__c}"></option>
+                    </lightning:select>
+                </div>
+                
+                <div   class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--3-of-12 slds-large-size--3-of-12">
+                    <lightning:input disabled="{!v.readonly}" type="number" label="Generic Rate" name="genericrate" value="{!v.ntpricing.Generic_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                </div>
+                 
+                 <div   class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--3-of-12 slds-large-size--3-of-12">
+                    <lightning:input disabled="{!v.readonly}" type="number" label="Non-MAC Generic Rate" name="nonmacgenericrate" value="{!v.ntpricing.Non_MAC_Generic_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                </div>
+                 
+                
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-12 slds-large-size--1-of-12"></div>
+            </div>  
+            
+            
+            <!--2-->
+            
+            <div class="slds-grid slds-wrap ">
+                
+                <div   class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+                    <lightning:input disabled="{!v.readonly}" type="number" label="Generic Disp. Fee" class="slds-grid–vertical-align-end" name="gendispensingfee" formatter="currency"  step="0.01"  value="{!v.ntpricing.Generic_Dispensing_Fee__c}"/>
+                </div>
+                 
+                
+                <div   class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--3-of-12">
+                    <lightning:select disabled="{!v.readonly}" name="macmodeled" label="MAC Modeled" class="slds-grid–vertical-align-end" required="false">
+                        <option value="{!v.ntpricing.MAC_Modeled__c}" text="{!v.ntpricing.MAC_Modeled__c}"></option>
+                    </lightning:select>
+                </div>
+                
+                
+                <div   class="innercheck slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+                    <lightning:layoutItem padding="horizontal-medium" flexibility="grow">
+                        <lightning:input disabled="{!v.readonly}" type="checkbox" label="SSGs into Brands?" name="ssgintobrands" checked="{!v.ntpricing.SSGs_into_Brands__c}" />
+                    </lightning:layoutItem>       
+                </div>
+                
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-12 slds-large-size--1-of-12"></div>
+            </div>  
+            
+        </div>  
+       <div style="padding-top: 1%;" class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--6-of-12 slds-large-size--6-of-12">
+            <lightning:input disabled="{!v.readonly}" type="checkbox" label="Mirror Mail Brand Pricing" name="mirrmailbrandprice" checked="{!v.ntpricing.Mirror_Mail_Brand_Pricing__c}" />
+        </div>
+         <div style="padding-top: 1%;padding-left:7%;" class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--6-of-12 slds-large-size--6-of-12">
+              <lightning:input disabled="{!v.readonly}" type="checkbox" label="Mirror Mail Generic Pricing" name="mirrmailgenprice" checked="{!v.ntpricing.Mirror_Mail_Generic_Pricing__c}" />
+        </div>
+    </div> 
+   <hr style="margin: 1.3rem 0;"></hr>
+    <div class="slds-grid slds-wrap " >
+        <div style="padding-left: 0px;"  class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--12-of-12 slds-large-size--12-of-12">
+            <c:Apttus_Retail_Gurantee_Parent isAccess="{!v.isAccess}" ntpricing="{!v.ntpricing}" ntpriceid="{!v.ntpricing.Id}"/>
+        </div>
+    </div>
+</aura:component>

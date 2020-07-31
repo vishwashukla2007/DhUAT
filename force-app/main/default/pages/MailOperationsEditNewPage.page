@@ -1,0 +1,347 @@
+<apex:page standardController="Mail_Operations__c" lightningStylesheets="true" extensions="MailOperationsController"
+    title="Mail Operations Edit">
+    <!-- <apex:slds /> -->
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        /* The Modal (background) */
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        /* Modal Content */
+        
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 50%;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+        /* Add Animation */
+        
+        @-webkit-keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0
+            }
+            to {
+                top: 0;
+                opacity: 1
+            }
+        }
+        
+        @keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0
+            }
+            to {
+                top: 0;
+                opacity: 1
+            }
+        }
+        
+        .modal-header {
+            padding: 0px;
+            height: 29px;
+            color: #ff0000;
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+            border-top-right-radius: .25rem;
+            border-top-left-radius: .25rem;
+            border-bottom: 2px solid rgb(221, 219, 218);
+            text-align: center;
+        }
+        
+        .modal-body {
+            padding: 10px 16px;
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+            color: #3c3d3e;
+        }
+        
+        .modal-footer {
+            padding: 5px;
+            padding-right: 4px;
+            text-align: right;
+            color: #000000;
+            border-top: 2px solid rgb(221, 219, 218);
+            background-color: rgb(243, 242, 242);
+            border-bottom-left-radius: .25rem;
+            border-bottom-right-radius: .25rem;
+        }
+        
+        .button {
+            background-color: #4CAF50;
+            /* Green */
+            border: none;
+            color: white;
+            padding: 1px 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 2px 2px;
+            -webkit-transition-duration: 0.4s;
+            /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius: 20px;
+        }
+        
+        .button2 {
+            background-color: rgba(0, 68, 135, 1.0);
+            color: white;
+            border: 2px solid rgba(0, 68, 135, 1.0);
+            border-radius: 5px;
+            width: 70px;
+            height: 28px;
+        }
+        
+        .button2:hover {
+            background-color: #002080;
+            color: white;
+        }
+        
+        .button5 {
+            background-color: #555555;
+            color: white;
+            border: 2px solid #555555;
+            border-radius: 5px;
+            width: 62px;
+            height: 28px;
+        }
+        
+        .button5:hover {
+            background-color: #262626;
+            color: white;
+        }
+
+    </style>
+<style type="text/css">
+.myClass2{
+ background-color: rgba(0, 68, 135, 1.0) !important;
+            color: white !important;
+            border: 2px solid rgba(0, 68, 135, 1.0) !important;
+            border-radius: 5px;
+            width: 80px;
+            height: 34px;
+            text-align: center !important;
+}
+.myClass2:hover{
+     background-color: #262626 !important;
+            color: white !important;
+             text-align: center !important;
+}
+
+
+</style>
+
+    <script>
+       console.log(confirmModelShow);
+       function showModel( thisObj ) 
+       {
+           modal = document.getElementById('confirmModel');
+            if(confirmModelShow) 
+            { 
+                modal.style.display = 'block';
+                return false;             
+            } 
+            else 
+            {
+                modal.style.display = 'none';
+                thisObj.disabled = true;
+                //thisObj.value = 'Saving..';
+                saveOperation();
+                return false;
+            }
+        }
+        
+        var clientSelect;
+        var confirmModel;
+        var modal;
+        var confirmModelShow = false;
+        var clientValue = '{!Mail_Operations__c.Client__c}';
+        var hasExisitingMP ='{!hasExisitingMP}';
+
+        function showConfirmModel(thisObj) {
+            if (hasExisitingMP == 'true') {
+            modal = document.getElementById('confirmModel');
+
+            if ((clientValue == 'Lower of MAC or Discount' && thisObj.value !=
+                    'MAC Prevails then Discount') ||
+                (thisObj.value != 'Lower of MAC or Discount' && clientValue ==
+                    'MAC Prevails then Discount') || clientValue == 'No MAC') {
+                clientSelect = thisObj;
+                if(clientSelect.value != clientValue) {
+                        confirmModelShow = true;
+                    } else {
+                        confirmModelShow = false;
+                    }                    
+                } else {
+                    confirmModelShow = false;
+                }
+            }
+        }
+
+        function confirmClentSelection() {
+            modal.style.display = 'none';
+            clientValue = clientSelect.value;
+        }
+
+        function cancelClentSelection() {
+            modal.style.display = 'none';
+            if(clientSelect.value != clientValue) {
+            confirmModelShow = true;
+            } else {
+            confirmModelShow = false;
+            }
+        }
+
+    </script>
+    <apex:form id="theForm">
+        <apex:pageMessages id="msg"/>
+        <script>
+         function setFocusOnLoad() {
+         document.getElementById('{!$Component.theForm.pb.Mo.client}').focus();
+            }   
+        </script>        
+        <apex:outputPanel style="padding-left: 10px" />
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; width:100%;height:100%;
+                    bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+
+        <apex:actionFunction name="methodChange" immediate="true" rerender="pb" status="status">
+            <apex:param value="" name="method" assignTo="{!Mail_Operations__c.Method__c}" />
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="saveOperation" action="{!saveMailOperations}" />
+
+        <apex:outputPanel rendered="{!NOT(isMailOppExists)}" layout="none">
+            <apex:pageBlock title="Mail Operations Edit" id="pb">
+                <apex:pageBlockButtons >
+                    <apex:commandButton value="Save"  status="status" 
+                            onclick="return showModel(this);" />                    
+                    <apex:commandButton immediate="true" action="{!Cancel}" value="Cancel" />
+
+                </apex:pageBlockButtons>
+
+                <apex:pageBlockSection title="Mail Operations Detail" columns="2">
+                    <apex:outputField id="fafid" styleClass="slds-output" value="{!Mail_Operations__c.FAF_ID__c}"
+                    />
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection title="Mail Adjudication Logic" columns="2" id="Mo">
+                    <apex:inputField id="client"  required="true" value="{!Mail_Operations__c.Client__c}"
+                        onchange="showConfirmModel(this);" />
+                    <apex:inputField id="member" required="true" value="{!Mail_Operations__c.Member__c}"
+                    />
+                    <apex:inputField id="ADFPI" value="{!Mail_Operations__c.Adjust_Dispensing_Fee_for_Postage_Inc__c}"
+                    />
+                    <apex:inputField id="AAPS" value="{!Mail_Operations__c.Adjudicate_at_Actual_Package_Size__c}"
+                    />
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection title="Mail Guarantee Reconciliation" columns="2" id="MGR">
+                    <apex:inputField id="mthd" value="{!Mail_Operations__c.Method__c}" onchange="methodChange(this.value);"
+                    />
+
+                    <apex:inputField id="Timeframe" value="{!Mail_Operations__c.Time_Frame__c}" required="{!Mail_Operations__c.Method__c <> null}"
+                    />
+                    <!--required="{!AND( NOT(ISNULL(Mail_Operations__c.Method__c)),NOT(ISBLANK(Mail_Operations__c.Method__c)))}"-->
+                    <apex:inputField id="lvl" value="{!Mail_Operations__c.Level__c}" required="{!Mail_Operations__c.Method__c <> null}"
+                    />
+                    <apex:inputField id="CLNLP" value="{!Mail_Operations__c.Custom_Language_Needed_to_Limit_Pena__c}"
+                    />
+
+                    <script>
+                       
+                          var moMethodVal = '{!Mail_Operations__c.Method__c}';
+                        if (!moMethodVal) {
+                            document.getElementById(
+                                    '{!$Component.theForm.pb.MGR.Timeframe}').value =
+                                '';
+                            document.getElementById(
+                                    '{!$Component.theForm.pb.MGR.Timeframe}').disabled =
+                                true;
+                            document.getElementById(
+                                    '{!$Component.theForm.pb.MGR.lvl}').value =
+                                '';
+                            document.getElementById(
+                                    '{!$Component.theForm.pb.MGR.lvl}').disabled =
+                                true;
+                        }
+
+                    </script>
+                </apex:pageBlockSection>
+
+                <apex:pageBlockSection title="Additional Mail Information" columns="2">
+                    <apex:inputField id="mailinfo" value="{!Mail_Operations__c.Additional_Mail_Information__c}" style="width:800px"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+
+            <!--popup block -->
+            <!-- The Modal 2 -->
+            <div id="confirmModel" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>
+                            <center>WARNING</center>
+                        </h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            <center>The updating of Mail Adjudication Logic - Client value
+                                will delete/update the Generic Pricing values within
+                                the already created Mail Pricing records. Would you
+                                like to continue with the change? </center>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <apex:commandButton styleclass="button myClass2" value="Continue" action="{!saveMailOperations}" onclick="confirmClentSelection()"/>
+                        <button class="button button5" type="button" onclick="cancelClentSelection()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </apex:outputPanel>
+        <!-- end popup -->
+
+        <apex:pageBlock title="Mail Operations" rendered="{!isMailOppExists}">
+            <h1>A FAF may contain only a single Mail Operations record</h1>
+            <br/>
+            <br/>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton immediate="true" action="{!Cancel}" value="Cancel" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+
+</apex:page>

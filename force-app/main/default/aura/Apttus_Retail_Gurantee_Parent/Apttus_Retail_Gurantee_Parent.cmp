@@ -1,0 +1,156 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" 
+                controller="Apttus_NP_Retail_Gurantee" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="readonly" type="Boolean" default="true" />
+    
+    <aura:attribute name="isAccess" type="boolean"/>
+    <aura:attribute name="ntpriceid" type="String"/>
+    <aura:attribute name="params" type="String" />    
+    <aura:attribute name="clickNewModal" type="Boolean" default="false" />
+    <aura:attribute name="retailgurantee" type="Retail_Network_Guarantees__c[]" />
+    <aura:attribute name="isDeleteAlertOpen" type="Boolean" default="false" />
+    <aura:attribute name="isDeletable" type="Boolean" default="true"/>
+    <aura:attribute name="ntpricing" type="Network_Pricing__c[]" />
+    
+    
+    <div class="slds-grid slds-wrap slds-grid--pull-padded">
+        <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--12-of-12 slds-large-size--12-of-12">
+            
+            <aura:if isTrue="{!v.clickNewModal}">
+                <c:Apttus_Edit_Ret_Guarantees_Vf aura:id="NewGuarantees" params="{!v.params}"/>  
+            </aura:if>
+        </div>
+        
+        <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--6-of-12 slds-large-size--6-of-12">
+            
+            <header class="slds-card__header slds-grid" data-aura-rendered-by="335:411;a" style=" padding-left: 15px;"><div class="slds-media slds-media_center slds-has-flexi-truncate" data-aura-rendered-by="336:411;a"><!--render facet: 337:411;a--><div class="slds-media__body slds-truncate" data-aura-rendered-by="338:411;a"><h2 data-aura-rendered-by="339:411;a" ><b><span class="slds-text-heading_small" data-aura-rendered-by="340:411;a">Retail Guarantees</span></b></h2></div></div><!--render facet: 342:411;a--></header>
+        </div>
+        <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--6-of-12 slds-large-size--6-of-12">
+            
+            <aura:if isTrue="{!v.isAccess}">
+                <div style="float: right; margin-top: -25px;padding-top:25px;">
+                    <lightning:button aura:id="clickNew" value="clickNew" label="New Retail Guarantees" 
+                                      variant="brand"
+                                      class="slds-button"
+                                      onclick="{!c.clickNew}"/> 
+                </div>    
+            </aura:if>
+            
+        </div>
+        
+    </div>
+    <div style="width:100%;overflow-x:auto;">  
+        <div class="slds-grid slds-wrap " >
+            <div style="padding-left: 0px; padding-right: 0px;"  class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--11-of-12 slds-large-size--11-of-12">
+                
+                <aura:if isTrue="{!v.retailgurantee.length != 0}">
+                    <table>
+                        <tr>
+                            <td>
+                                <div class="slds-form-element__control" style="padding-left: 15px;">
+                                    <label class="slds-checkbox">
+                                        <ui:inputCheckbox aura:id="cbox" change="{!c.selectAllRecords}"/>
+                                        <span class="slds-checkbox--faux"></span>
+                                        <span class="slds-form-element__label text"></span>
+                                    </label>
+                                </div>
+                            </td>   
+                        </tr> 
+                    </table> 
+                    <table>
+                        <aura:iteration items="{!v.retailgurantee}" var="retailgurante"> 
+                            <tr>
+                                <td>
+                                    <div class="slds-form-element__control">
+                                        <div style="margin-left: 15px;">
+                                            <ui:inputCheckbox text="{!retailgurante}" aura:id="cboxRow"  change="{!c.onCheckboxSelect}"/>				
+                                        </div>
+                                    </div>
+                                </td>
+                                
+                                <td>
+                                    <c:Apttus_Retail_Gurantee isAccess="{!v.isAccess}"  retailgurantee="{!retailgurante}"/>
+                                   
+                                </td>
+                                
+                                
+                            </tr>
+                        </aura:iteration>
+                    </table>
+                    <div class="slds-grid slds-wrap slds-grid--pull-padded">
+                        <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--9-of-12 slds-large-size--9-of-12">
+                            <aura:if isTrue="{!v.isAccess}">
+                                <lightning:button aura:id="changeIt" label="Delete Retail Guarantees"
+                                                  iconName="utility:delete"
+                                                  iconPosition="right"
+                                                  variant="destructive"
+                                                  onclick="{!c.deleteSelected}">
+                                </lightning:button>
+                            </aura:if>
+                        </div>
+
+                        
+                    </div>
+                </aura:if>
+            </div>
+            <div style="padding-left: 0px;"  class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-12 slds-large-size--1-of-12">
+            </div>
+        </div>
+    </div>
+    
+    <aura:if isTrue="{!v.retailgurantee.length == 0}">
+        <ui:message title="Information" severity="info" closable="false">
+            No Retail Network Guarantees defined.
+        </ui:message>
+    </aura:if>  
+    
+    
+    <div class="slds-grid slds-wrap slds-grid--pull-padded" style="padding-top: 1%;">
+        <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--2-of-12 slds-large-size--2-of-12">
+            <lightning:select disabled="{!v.readonly}" name="exclusionlist" label=" SSG Exclusion List" required="false">
+                <option value="{!v.ntpricing.SSG_Exclusion_List__c}" text="{!v.ntpricing.SSG_Exclusion_List__c}"></option>
+            </lightning:select>
+        </div>
+        <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--2-of-12 slds-large-size--2-of-12">
+            <lightning:select disabled="{!v.readonly}" name="exclusionperiod" label=" SSG Exclusivity Period" required="false">
+                <option value="{!v.ntpricing.SSG_Exclusivity_Period__c}" text="{!v.ntpricing.SSG_Exclusivity_Period__c}"></option>
+            </lightning:select>
+        </div>
+        <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--2-of-12 slds-large-size--2-of-12">
+            <lightning:select disabled="{!v.readonly}" name="exclusionspecial" label=" Exclude Specialty" required="false">
+                <option value="{!v.ntpricing.Exclude_Specialty__c}" text="{!v.ntpricing.Exclude_Specialty__c}"></option>
+            </lightning:select>
+        </div>
+    </div>    
+    <!--   <aura:if isTrue="{!v.retailgurantee.length == 0}">
+            <ui:message title="Information" severity="info" closable="false">
+                No Retail Network Guarantees defined.
+            </ui:message>
+        </aura:if>   -->     
+    
+    <aura:if isTrue="{!v.isDeleteAlertOpen}">
+        <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container" style="Width: 31%;">
+                <div class="slds-modal__header">
+                    <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                        X
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="header99" class="slds-text-heading--medium">Delete Retail Guarantee Record</h2>
+                </div>
+                <div class="slds-modal__content slds-p-around--medium">
+                    <center><p>
+                        Are you sure you want to delete the selected record(s).
+                        </p>
+                    </center>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                    <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete</lightning:button>                    
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>        
+    </aura:if>
+    
+</aura:component>

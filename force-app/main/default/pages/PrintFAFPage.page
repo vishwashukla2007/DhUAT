@@ -1,0 +1,97 @@
+<apex:page standardController="Central_Hub__c" lightningStylesheets="true" extensions="PrintFAFController">
+
+    <apex:form id="thefrm" >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+                            &nbsp;
+                        </div>
+                        <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                            <div style="display: inline-block; padding: 2px; background-color: #fff; width: 125px;">
+                                <img src="/img/loading.gif" style="float: left; margin: 8px;" />
+                                <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                            </div>
+                        </div>
+                </apex:facet> 
+            </apex:actionStatus>
+    <apex:pageBlock id="thepgblk" >
+    <apex:pageMessages id="showmsg"></apex:pageMessages>
+    
+       <apex:pageBlockSection id="thepgsect" Title="Select FAF Components to be printed:" columns="9"  collapsible="false" showHeader="true"/>
+        <!--
+           <apex:inputfield value="{!Central_Hub__c.FAF_Print_Instructions__c}" id="FAF_Print_Instructions"/>
+           <apex:inputfield value="{!Central_Hub__c.FAF_Print_Links__c}" id="FAF_Print_Links"/>
+           <apex:inputfield value="{!Central_Hub__c.FAF_Print_Client_Info__c}" id="FAF_Print_Client_Info"/>
+           <apex:inputfield value="{!Central_Hub__c.FAF_Print_Platform_Specifics__c}" id="FAF_Print_Platform_Specifics"/>
+           <apex:inputfield value="{!Central_Hub__c.FAF_Print_Legal__c}" id="FAF_Print_Legal"/>
+            <apex:inputfield value="{!Central_Hub__c.FAF_Print_Network_Ops__c}" id="FAF_Print_Network_Ops"/>
+            <apex:outputfield value="{!Central_Hub__c.FAF_Print_Mail_Ops__c}" id="FAF_Print_Mail_Ops"/>
+            <apex:inputfield value="{!Central_Hub__c.FAF_Print_Specialty_Ops__c}" id="FAF_Print_Specialty_Ops"/>
+            <apex:inputfield value="{!Central_Hub__c.FAF_Print_Billing_Ops__c}" id="FAF_Print_Billing_Ops"/>
+             <apex:outputfield value="{!Central_Hub__c.FAF_Print_Rebate_Ops__c}" id="FAF_Print_Rebate_Ops"/>
+           <apex:outputfield value="{!Central_Hub__c.FAF_Print_Clinical_Ops__c}" id="FAF_Print_Clinical_Ops"/>
+           <apex:outputfield value="{!Central_Hub__c.FAF_Print_Guarantee_Info__c}" id="FAF_Print_Guarantee_Info"/>
+           <apex:inputField value="{!Central_Hub__c.Print_Template__c}" />
+        -->
+               <table width="100%" cellspacing="0" title ="Print">
+                    <tr width="100%" >
+                        <td width="16%">
+                            <apex:inputCheckbox label="FAF Instructions" value="{!FAFInstructions}" disabled="false" rendered="{!fafiBool}" />FAF Instructions
+                        </td>                                           
+                        
+                        <td width="16%">
+                            <apex:inputCheckbox label="Billing Operations" value="{!BillingOperations}" disabled="false" rendered="{!billBool}"  /> Billing Operations
+                        </td>  
+                        
+                        <td width="16%">
+                            <apex:inputCheckbox label="Client Information" value="{!ClientInformation}" disabled="false" rendered="{!clientBool}" />Client Information
+                        </td>
+                        
+                        <td width="16%">
+                              <apex:inputCheckbox label="Legal Information" value="{!LegalInformation}" disabled="false" rendered="{!legalInfoBool}" />Legal Information 
+                        </td>
+                        
+                        <td width="16%">
+                             <apex:inputCheckbox label="Network Operations" value="{!NetworkOperations}" disabled="false" rendered="{!networkBool}" />Network Operations 
+                        </td>
+                        <td width="16%">
+                             <apex:inputCheckbox label="Mail Operations" value="{!MailOperations}" disabled="false" rendered="{!mailBool}" />Mail Operations
+                        </td>
+                    </tr>
+                    <tr width="100%">
+                        <td width="16%">
+                              <apex:inputCheckbox label="FAF Links" value="{!FAFLinks}" disabled="false" rendered="{!faflinkBool}" />FAF Links 
+                        </td>                   
+                        <td width="16%">
+                             <apex:inputCheckbox label="Specialty Operations" value="{!SpecialtyOperations}" disabled="false" rendered="{!specBool}" />Specialty Operations
+                        </td>                       
+                        <td width="16%">
+                            <apex:inputCheckbox label="Rebate Operations" value="{!RebateOperations}" disabled="false" rendered="{!rebatBool}" /> Rebate Operations
+                        </td>
+                         <td width="16%">
+                             <apex:inputCheckbox label="Clinical Operations" value="{!ClinicalOperations}" disabled="false" rendered="{!cilnicalBool}"  />Clinical Operations 
+                        </td>
+                        <td width="16%">
+                            <apex:inputCheckbox label="Guarantee Information" value="{!GuaranteeInformation}" disabled="false" rendered="{!guarBool}" />Guarantee Information
+                        </td>                        
+                        <td width="16%">
+                            <apex:inputCheckbox title="" label="" value="{!PlatformSpecifics}" disabled="false" rendered="{!plaformBool}" />Platform Specifics
+                        </td>
+                    </tr>
+                </table>
+            <br/>
+           <apex:outputText value="Note: Due to high volume of records, please print Platform Specifics via the Platform Specifics Print in Client Information." rendered="{!PSThresholdBool}" style="color:red"/>
+           <br/> 
+            <br/>
+          <br/>                              
+
+       <center>
+       <apex:commandButton value="Submit"  action="{!PrintFAF}"  disabled="{!disableBool}" reRender="thepgblk" status="status"/>
+       <apex:commandButton value="Cancel" action="{!Cancel}"/>
+       </center>
+       
+    </apex:pageBlock>
+     
+    </apex:form>
+ 
+</apex:page>

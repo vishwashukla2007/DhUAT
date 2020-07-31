@@ -1,0 +1,111 @@
+<apex:page standardController="Fee_Service_Template__c" extensions="FeeServiceTemplateController" lightningStylesheets="true">
+    
+    <apex:form >
+        
+        <div class="slds-size_2-of-6">
+            <apex:messages />
+            <apex:pageBlock title="Fee Service Template" >
+                <apex:pageBlockButtons location="both"> 
+                    <apex:commandButton value="Save" action="{!saveFeeServiceTemplate}"  />
+                    <apex:commandButton value="Cancel" action="{!Cancel}"/>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection title="Information" columns="2" >
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="tmType" value="Template Type"/>
+                        <apex:inputField style="margin-top:3px;" id="tmType" value="{!fst.Template_Type__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="act" value="Active"/>
+                        <apex:inputField style="margin-top:3px;" id="act" value="{!fst.Active__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="effDate" value="Effective Date"/>
+                        <apex:inputField style="margin-top:3px;" id="effDate" value="{!fst.Effective_date__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="expDate" value="Expiration Date"/>
+                        <apex:inputField style="margin-top:3px;" id="expDate" value="{!fst.Expiration_Date__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="ite" value="Item"/>
+                        <apex:inputField style="margin-top:3px;" id="ite" value="{!fst.Item__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="iteSec" value="Item Section"/>
+                        <apex:inputField style="margin-top:3px;" id="iteSec" value="{!fst.Item_Section__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="CatSec" value="Category"/>
+                        <apex:inputField style="margin-top:3px;" id="CatSec" value="{!fst.Section_Limited__c}"/>
+                    </apex:pageBlockSectionItem>                   
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="amo" value="Amount"/>
+                        <apex:inputField style="margin-top:3px;" id="amo" value="{!fst.Amount__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="maxAmo" value="Max Amount"/>
+                        <apex:inputField style="margin-top:3px;" id="maxAmo" value="{!fst.Max_Amount__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        
+                        <apex:outputLabel for="bas" value="Basis"/>
+                        <apex:inputField style="margin-top:3px;" id="bas" value="{!fst.Basis2__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="fafComp" value="FAF Component"/>
+                        <apex:inputField style="margin-top:3px;" id="fafComp" value="{!fst.FAF_Component__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="elePro" value="Election Protected"/>
+                        <apex:inputField style="margin-top:3px;" id="elePro" value="{!fst.Election_Protected__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="itemDesc" value="Item Description"/>
+                        <apex:inputField style="margin-top:3px;" id="itemDesc" value="{!fst.Item_Description2__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="fafCompType" value="FAF Component Type"/>
+                        <apex:inputField style="margin-top:3px;" id="fafCompType" value="{!fst.FAF_Component_Type__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="autoLog" value="Automation Logic"/>
+                        <apex:inputField style="margin-top:3px;" id="autoLog" value="{!fst.Automation_Logic__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="seq" value="Sequence"/>
+                        <apex:inputField style="margin-top:3px;" id="seq" value="{!fst.Sequence__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="marSeg" value="Market Segment"/>
+                        <apex:inputField style="margin-top:3px;" id="marSeg" value="{!fst.Market_Segment__c}"/>
+                    </apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+                        <apex:outputLabel for="auxchk" value="Auxiliary checkbox"/>
+                        <apex:inputField style="margin-top:3px;" id="auxchk" value="{!fst.Auxiliary_checkbox__c}"/>
+                    </apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+                        <apex:outputLabel for="auxtxt" value="Auxiliary Text"/>
+                        <apex:inputField style="margin-top:3px;" id="auxtxt" value="{!fst.Auxiliary_Text__c}"/>
+                    </apex:pageBlockSectionItem>
+<apex:pageBlockSectionItem >
+                        <apex:outputLabel for="txtonly" value="Text Only"/>
+                        <apex:inputField style="margin-top:3px;" id="txtonly" value="{!fst.Print_Static__c}"/>
+                    </apex:pageBlockSectionItem>
+                                        
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="addSer" value="Additional Service"/>
+                        <apex:inputField style="margin-top:3px;" id="addSer" value="{!fst.Additional_Service__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="corSer" value="Core Service"/>
+                        <apex:inputField style="margin-top:3px;" id="corSer" value="{!fst.Core_Service__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="subSec" value="Sub Section"/>
+                        <apex:inputField style="margin-top:3px;" id="subSec" value="{!fst.Sub_Section__c}"/>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </div>
+    </apex:form>
+</apex:page>

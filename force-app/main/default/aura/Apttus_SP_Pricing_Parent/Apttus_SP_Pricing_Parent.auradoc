@@ -1,0 +1,6 @@
+<aura:documentation>
+	<aura:description>Documentation</aura:description>
+	<aura:example name="SpecialtyPricingExpandedView" ref="SpecialtyPricing" label="SpecialtyPricing">
+		Specialty pricing Expanded View
+	</aura:example>
+</aura:documentation>

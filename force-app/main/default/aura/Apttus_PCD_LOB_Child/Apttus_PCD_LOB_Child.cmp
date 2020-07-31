@@ -1,0 +1,185 @@
+<aura:component controller="PCD_GridObjectdata" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"  >
+<aura:attribute name="selected" type="Integer"/> 
+<aura:attribute name="doccount" type="Integer"/> 
+<aura:attribute name="DisplaySpinner" type="Boolean"  default="false"/> 
+<aura:attribute name="isDeleteAlertOpen" type="Boolean" default="false"/> 
+<aura:attribute name="isDelete" type="Boolean" default="false"/> 
+<aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}"/>
+<aura:attribute name="fafid" type="String" />  
+<aura:attribute name="alertmsg" type="String" />  
+<aura:attribute name="item" type="Apttus__AgreementLineItem__c" />
+<aura:attribute name="url" type="String"/>
+<aura:attribute name="docversion" type="Apttus__DocumentVersionDetail__c" />
+<aura:attribute name="wordcount" type="Integer"/> 
+<aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+<aura:handler event="c:Apttus_Grid_Close_New_Event" action="{!c.highlightlob}"/>
+<aura:registerEvent name="lobEvent" type="c:Apttus_Grid_Close_New_Event"/>
+<aura:registerEvent name="refreshCmp" type="c:Apttus_PCD_Refresh_Component_Event"/>
+<div>
+<div aura:id="outerborders" tabindex="-1" onclick="{!c.giveFocus}"  onblur="{!c.giveBlur}" class="hidden"> 
+  <lightning:card aura:id = "card" variant="base" class="innercontainer slds-card_boundary" >
+            <lightning:layout >        
+             <aura:if isTrue="{!v.isDeleteAlertOpen}">
+                    <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" >
+                            <div class="slds-modal__header">
+                                <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                                    X
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="header99" class="slds-text-heading--medium"><b>Alert Message</b></h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around--medium">
+                            <div class="modalwidth">
+                            <div class="modalmargin">   
+                                <p>
+                                    <lightning:formattedText  value="{!v.alertmsg}" />
+                                </p> 
+                            </div>  </div>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <lightning:button class="slds-button slds-button--brand" onclick="{!c.closeDeleteAlert}">OK</lightning:button>                    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-backdrop slds-backdrop--open"></div>        
+               </aura:if>
+            </lightning:layout>
+            <lightning:layout>
+            <aura:if isTrue="{!v.DisplaySpinner}">
+  			<lightning:spinner variant="brand" alternativeText="Saving" size="medium" class="slds-spinner_container"/>
+            <div class="slds-backdrop_open"></div>
+	        </aura:if>   
+            </lightning:layout>
+            <lightning:layout>
+            <div class="slds-p-left_small"></div>
+            <lightning:layoutitem class="fontsize" size="10">
+            <b class="card-detail-value">LOB: {!v.item.LOB_Detail__c}</b>  
+            </lightning:layoutitem>
+            <aura:if  isTrue="{!(v.alertmsg != null)}">
+            <lightning:layoutitem class="position" >    
+            <lightning:icon iconName="utility:warning" size="x-small" variant="warning" alternativeText="Warning!"/>
+            <lightning:button variant="base" class="marginleft fontcolor" label=" View Alert" title="View Alert" onclick="{! c.handleAlert}"/>
+            </lightning:layoutitem>
+            </aura:if>
+            </lightning:layout>
+            <!-- Message for BAFO version change -->
+      
+      		<aura:if isTrue="{!(v.item.BAFO_Change__c == true)}">
+               <aura:if isTrue="{!(v.item.Active__c == true)}">
+              <lightning:card class="messagebox">
+                <lightning:layout>
+                <div class="slds-p-left_small"></div>
+                <lightning:layoutitem class="" > 
+                <lightning:icon iconName="utility:alert" size="small" variant="alert"  alternativeText="Alert!"/>
+                 </lightning:layoutitem>
+                <div class="slds-p-left_small"></div>
+                <lightning:layoutitem class="" size="10"> 
+                <lightning:formattedtext  class="fontblack" value= "{!v.item.Task_SubType__c}" />
+                <lightning:formattedtext  class="fontblack" value= " data is available for this Pricing Document." />
+                </lightning:layoutitem>
+                <lightning:layoutitem class="" size="1">
+                <lightning:button  class="button" label="Update" title="Update" onclick="{!c.handleLOBPricing}"/>
+                </lightning:layoutitem>
+                </lightning:layout>
+               </lightning:card>
+                </aura:if>
+             </aura:if> 
+      
+      		<aura:if isTrue="{!(v.item.BAFO_Change__c == true)}">
+               <aura:if isTrue="{!(v.item.Active__c == false)}">
+              <lightning:card class="inactivemessagebox">
+                <lightning:layout>
+                <div class="slds-p-left_small"></div>
+                <lightning:layoutitem class="" > 
+                <lightning:icon iconName="utility:error" size="small" variant="alert"  alternativeText="Error!"/>
+                 </lightning:layoutitem>
+                <div class="slds-p-left_small"></div>
+                <lightning:layoutitem class="" size="10"> 
+                <lightning:formattedtext  class="fontblack" value= "This LOB is no longer available as part of " />
+                <lightning:formattedtext  class="fontblack" value= "{!v.item.Task_SubType__c}" />
+                <lightning:formattedtext  class="fontblack" value= "." />
+                </lightning:layoutitem>
+                </lightning:layout>
+               </lightning:card>
+                </aura:if>
+             </aura:if> 
+      
+      
+            <aura:if  isTrue="{!(v.item.BAFO_Change__c == false)}">
+            <div class="slds-p-top_medium"></div>
+            <lightning:layout>
+            <div class="slds-p-left_large"></div>
+            <lightning:layoutitem class="linkfontsize" size="2">    
+            <lightning:icon iconName="utility:edit" size="x-small" alternativeText="Edit!" />
+            <lightning:button variant="base" class="marginleft fontcolor" label="Edit LOB Pricing" title="Edit LOB Pricing" onclick="{!c.handleLOBPricing }"/>
+            </lightning:layoutitem>
+            <div class="slds-p-left_large"></div>
+
+            <lightning:layoutitem class="linkfontsize" size="2">  
+            <div class="slds-p-top_x-small"></div>
+            <lightning:icon iconName="utility:preview" size="x-small" alternativeText="View or Edit Caveats!" />
+            <aura:if  isTrue="{!(v.wordcount > 0)}">
+            <lightning:navigation aura:id="fileopen"/><a class="marginleft url fontcolor" href="{!v.url}">View or Edit Caveats</a>
+            <!-- <lightning:button variant="base" class="marginleft" label="View or Edit Caveats" title="View or Edit Caveats" onclick="{! c.handleCaveats}"/> -->
+            <aura:set attribute="else">
+             <lightning:formattedtext  class="marginleft greyfont" value="View or Edit Caveats"/>
+            </aura:set>
+            </aura:if>
+            
+            </lightning:layoutitem>
+                
+            <div class="slds-p-left_large"></div>
+            <lightning:layoutitem class="linkfontsize" size="2">    
+            <lightning:icon iconName="utility:page" size="x-small" alternativeText="Generate Document!" />
+            <lightning:button variant="base" class="marginleft fontcolor" label="Save as DOCX or PDF" title="Save as DOCX or PDF" onclick="{! c.handleGenerate}"/>
+            </lightning:layoutitem>
+            </lightning:layout>
+            
+            </aura:if>
+            <lightning:layout>
+            <div class="slds-p-left_large"></div>
+            <lightning:layoutitem class="viewdoc" size="6"> 
+            <div class="slds-p-top_medium"></div>
+            <div class="slds-p-top_medium"></div>
+              <b class="card-detail-value">Most Recent Word and PDF Documents</b>
+            </lightning:layoutitem>
+                
+             <lightning:layoutitem class="viewdoc">  
+            <div class="slds-p-top_medium"></div>
+            <div class="slds-p-top_medium"></div>
+            <p class="card-detail-value"><b>FAF - </b>     {!v.item.FAF_Name__c}</p>
+            </lightning:layoutitem>   
+            <div class="slds-p-left_xx-small"></div>
+            <aura:if isTrue = "{!(v.item.Component_Error__c != null)}">
+            <lightning:layoutitem class="viewdoc">   
+            <div class="slds-p-top_medium"></div>
+            <div class="slds-p-top_small"></div>
+            <lightning:helptext iconVariant="error" content="{!v.item.Component_Error__c}"/>
+            </lightning:layoutitem>  
+            </aura:if>
+            </lightning:layout>
+      
+            <lightning:layout>
+            <div class="slds-p-left_large"></div>
+            <lightning:layoutitem class="doc" size="5">   
+                  <c:Apttus_PCD_Document item="{!v.item}"/>
+            </lightning:layoutitem>
+                   
+                <div class="slds-border_left borderheight"/>
+                <div class="slds-p-left_large"></div>
+                <div class="slds-p-left_large"></div>
+                <div class="slds-p-left_large"></div>
+                <div class="slds-p-left_medium"></div>
+                
+            <lightning:layoutitem class="viewdoc" size="6">   
+                <div class="slds-p-top_small"></div>
+                <p class="card-detail-value">Market Segment: {!v.item.Market_Segment__c}</p>
+                <p class="card-detail-value">Client Subtype: {!v.item.Client_Sub_Type__c}</p>
+                <lightning:navigation aura:id="fafopen"/><a class="url fontcolor" href="{!'https://'+ v.vfHost + '/lightning/r/Central_Hub__c/' + v.item.PCD_FAF__c +'/view'}">View FAF</a>
+            </lightning:layoutitem>   
+            </lightning:layout>
+  </lightning:card>
+</div> 
+</div>
+</aura:component>

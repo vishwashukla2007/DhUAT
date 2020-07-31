@@ -1,0 +1,72 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+<aura:attribute name="year" type="String"/>
+<aura:attribute name="lob" type="String"/>
+<aura:attribute name="Id" type="String"/>
+<aura:attribute name="selectedcount" type="Double"/>
+<aura:attribute name="savelist" type="List"/>
+<aura:attribute name="savelistdefault" type="List"/>
+<aura:attribute name="checked" type="Boolean"/>
+<aura:attribute name="checked1" type="Boolean"/>
+<aura:attribute name="basis" type="String"/>
+<aura:attribute name="plandesign" type="String"/>
+<aura:attribute name="gstp" type="String"/>
+<aura:attribute name="nonspecialty" type="String"/>
+<aura:attribute name="specialty" type="String"/>
+<aura:attribute name="modnonspecialty" type="String"/>
+<aura:attribute name="modspecialty" type="String"/>
+<aura:handler event="c:Apttus_Grid_Add_Additional_Rebate_Event" action="{!c.handleEvent}"/>
+<aura:registerEvent name="appEventR" type="c:Apttus_Grid_Add_MLOB_Rebate_Event"/>
+<aura:registerEvent name="appEventN" type="c:Apttus_Grid_Add_MLOB_Notify_Event"/>
+<aura:registerEvent name="appEventC" type="c:Apttus_Grid_Add_MLOB_Count_Event"/>
+<aura:handler event="c:Apttus_Grid_Add_MLOB_Rebate_Event" action="{!c.handleRebateEvent}"/>
+  <tr aura:id="tablerow">
+           <td>
+              <div>
+                <div class="slds-p-top_x-small"></div>
+               <lightning:input aura:id="checkbox" class="checkbox" disabled="true" type="checkbox" checked="{!v.checked1}" name="checkbox" label="" onchange="{!c.updatecheckbox}" />
+              </div>    
+            </td>
+           <td>
+              <div>
+                <div class="slds-p-top_x-small"></div>
+                <lightning:formattedText value="{!v.year}" />
+              </div>    
+            </td>
+            <td>
+              <div>
+                <div class="slds-p-top_x-small"></div>
+                <lightning:formattedText value="{!v.lob}" />
+              </div>    
+            </td>
+            <td>
+              <div>
+                <div class="slds-p-top_x-small"></div>
+                <lightning:formattedText value="{!v.basis}" />
+              </div>    
+           </td>
+            <td>
+              <div>
+                <div class="slds-p-top_x-small"></div>
+                <lightning:formattedText value="{!v.plandesign}" />
+              </div>    
+           </td>
+            <td>
+              <div>
+                <div class="slds-p-top_x-small"></div>
+                <lightning:formattedText value="{!v.gstp}" />
+              </div>    
+           </td>
+           <td>
+              <div>
+                <div class="slds-p-top_x-small"></div>
+                <lightning:formattedText value="{!v.nonspecialty}" />
+              </div>    
+           </td>
+           <td>
+              <div>
+                <div class="slds-p-top_x-small"></div>
+                <lightning:formattedText value="{!v.specialty}" />
+              </div>    
+           </td>
+    </tr>
+</aura:component>

@@ -1,0 +1,233 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"  access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+      <aura:attribute name="isAccess" type="boolean"/>
+    <aura:attribute name="specialtyguarantee" type="Specialty_Guarantee__c[]" />
+     <aura:attribute name="dependentFieldMap" type="map" description="store controller(key)--> dependent(values) picklist value as a map." />
+    <aura:attribute name="type" type="String[]"/>
+    <aura:attribute name="rate" type="String"/>
+    <aura:attribute name="zbd" type="String[]" />
+    <aura:attribute name="ssg" type="String[]" />
+    <aura:attribute name="otc" type="String[]" />
+    <aura:attribute name="nmb" type="String[]" />
+    <aura:attribute name="nmg" type="String[]" />
+    <aura:attribute name="vacc" type="String[]" />
+    <aura:attribute name="paper" type="String[]" />
+    <aura:attribute name="cob" type="String[]" />
+    <aura:attribute name="LDD" type="String[]" />
+    <aura:attribute name="XB" type="String[]" />
+    <aura:attribute name="clickEdit" type="Boolean" default="true" />
+    <aura:attribute name="clickNew" type="Boolean" default="true" />
+    <aura:attribute name="XBE" type="String[]" />
+    <aura:attribute name="LDDE" type="String[]" />
+    <aura:attribute name="Bio" type="String[]" />
+    <aura:attribute name="Com" type="String[]" />
+    <aura:attribute name="subtype" type="String[]" />
+    <aura:attribute name="params" type="String" />
+    <aura:attribute name="readonly" type="Boolean" default="true" />
+    <aura:attribute name="clickEditModal" type="Boolean" default="false" />
+    <aura:attribute name="isDependentTypeDisable" type="Boolean" default="false"  access="global"/>
+    <aura:attribute name="pricingid" type="String[]" />
+    <aura:if isTrue="{!v.clickEditModal}">
+         <c:Apttus_NewEditSGuarantee_VF aura:id="EditGuarantees" params="{!v.params}"/>  
+    </aura:if>
+
+    <div class="slds-grid">     
+       <div class="slds-col">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control" style="font-size: medium; padding-top : 25px;">
+                    <a onclick="{!c.handleClick}">{!v.specialtyguarantee.Name}</a>
+                </div>
+            </div>
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-small-size--1-of-12 " style="width: 100px;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <lightning:select class ="Padding" disabled= "{!v.readonly}"  name="type" label="Type" required="false" value="{!v.specialtyguarantee.Type__c}">
+                	<option value="{!v.specialtyguarantee.Type__c}" text="{!v.specialtyguarantee.Type__c}"></option>
+    				</lightning:select> 
+                </div>
+            </div>
+        </div>
+		<div class="slds-col--padded  slds-small-size--1-of-8 " style="width: 150px;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <lightning:select class ="Padding" disabled= "{!v.readonly}"  name="subtype" label="Subtype" required="false" value="{!v.specialtyguarantee.Subtype__c}">
+                	<option value="{!v.specialtyguarantee.Subtype__c}" text="{!v.specialtyguarantee.Subtype__c}"></option>
+    				</lightning:select> 
+                </div>
+            </div>
+        </div>		
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12" style="width: 110px;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <lightning:input class ="Padding" disabled="{!v.readonly}" type="number" label="Rate"  name="rate" required="false" formatter="percent-fixed"  step="0.001" value="{!v.specialtyguarantee.Rate__c}"/>
+                </div>
+            </div>
+        </div>
+		<div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12" style="width: 80px;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                   <lightning:select class ="Padding" disabled="{!v.readonly}" label="Brand"  name="nmb"  required="false">
+                     <aura:if isTrue= "{!or(v.specialtyguarantee.New_to_Market_Brands__c == 'Yes', v.specialtyguarantee.New_to_Market_Brands__c == 'No')}">
+                   		 <option value="{!v.specialtyguarantee.New_to_Market_Brands__c}" text="{!v.specialtyguarantee.New_to_Market_Brands__c == 'Yes' ? 'Y' : 'N'}"></option>
+                     </aura:if>
+                    </lightning:select>
+                </div>
+            </div>
+        </div>
+		<div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12" style="width: 80px;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                   <lightning:select class ="Padding" disabled="{!v.readonly}" label="Generic"  name="nmg" required="false">
+                    <aura:if isTrue= "{!or(v.specialtyguarantee.New_to_Market_Generics__c == 'Yes', v.specialtyguarantee.New_to_Market_Generics__c == 'No')}">
+                   		 <option value="{!v.specialtyguarantee.New_to_Market_Generics__c}" text="{!v.specialtyguarantee.New_to_Market_Generics__c == 'Yes' ? 'Y' : 'N'}"></option>
+                     </aura:if>
+                    </lightning:select>
+                </div>
+            </div>
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12" style="width: 80px;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <lightning:select class ="Padding" disabled="{!v.readonly}" name="zbd" label="ZBD" required="false">
+                     <aura:if isTrue= "{!or(v.specialtyguarantee.ZBD__c == 'Yes', v.specialtyguarantee.ZBD__c == 'No')}">
+                   		 <option value="{!v.specialtyguarantee.ZBD__c}" text="{!v.specialtyguarantee.ZBD__c == 'Yes' ? 'Y' : 'N'}"></option>
+                     </aura:if>
+                    </lightning:select>
+                </div>
+            </div>
+        </div>
+          <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12" style="width: 80px;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <lightning:select class ="Padding" disabled="{!v.readonly}" name="Bio" label="Biosimilar" required="false" >
+        				<aura:if isTrue= "{!or(v.specialtyguarantee.Biosimilars__c == 'Yes', v.specialtyguarantee.Biosimilars__c == 'No')}">
+                        <option value="{!v.specialtyguarantee.Biosimilars__c}" text="{!v.specialtyguarantee.Biosimilars__c == 'Yes' ? 'Y' : 'N'}"></option>
+                        </aura:if>
+                   </lightning:select>
+                </div>
+            </div>
+        </div>
+            <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12" style="width: 80px;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                    <lightning:select class ="Padding" disabled="{!v.readonly}" name="ssg" label="SSG" required="false" >
+        				<aura:if isTrue= "{!or(v.specialtyguarantee.SSG__c == 'Yes', v.specialtyguarantee.SSG__c == 'No')}">
+                        <option value="{!v.specialtyguarantee.SSG__c}" text="{!v.specialtyguarantee.SSG__c == 'Yes' ? 'Y' : 'N'}"></option>
+                        </aura:if>
+                    </lightning:select>
+                </div>
+            </div>
+        </div>
+            <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12" style="width: 80px;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+              		 <lightning:select class ="Padding" disabled="{!v.readonly}" name="otc" label="OTC" required="false" >
+        			 	<aura:if isTrue= "{!or(v.specialtyguarantee.OTC__c == 'Yes', v.specialtyguarantee.OTC__c == 'No')}">
+                        <option value="{!v.specialtyguarantee.OTC__c}" text="{!v.specialtyguarantee.OTC__c == 'Yes' ? 'Y' : 'N'}"></option>
+                         </aura:if>
+    		          </lightning:select>
+                </div>
+            </div>
+        </div>
+		    
+    	<div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12" style="width: 80px;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+    			 <lightning:select class ="Padding" disabled="{!v.readonly}" name="comp" label="Compound" required="false" >
+        		 <aura:if isTrue= "{!or(v.specialtyguarantee.Compound__c == 'Yes', v.specialtyguarantee.Compound__c == 'No')}">
+                     <option value="{!v.specialtyguarantee.Compound__c}" text="{!v.specialtyguarantee.Compound__c == 'Yes' ? 'Y' : 'N'}"></option>
+                 </aura:if>
+                 </lightning:select>
+                </div>
+            </div>
+        </div>
+		
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12" style="width: 80px;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+    			<lightning:select class ="Padding" disabled="{!v.readonly}" name="vacc" label="Vaccine" required="false" >
+        		 <aura:if isTrue= "{!or(v.specialtyguarantee.Vaccine__c== 'Yes', v.specialtyguarantee.Vaccine__c == 'No')}">
+                    <option value="{!v.specialtyguarantee.Vaccine__c}" text="{!v.specialtyguarantee.Vaccine__c== 'Yes' ? 'Y' : 'N'}"></option>
+                 </aura:if>
+                 </lightning:select>
+                </div>
+            </div>
+        </div>
+        	<div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12" style="width: 80px;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+    			 <lightning:select class ="Padding" disabled="{!v.readonly}" name="cob" label="COB" required="false" >
+        		   <aura:if isTrue= "{!or(v.specialtyguarantee.COB__c== 'Yes', v.specialtyguarantee.COB__c == 'No')}">
+                   <option value="{!v.specialtyguarantee.COB__c}" text="{!v.specialtyguarantee.COB__c== 'Yes' ? 'Y' : 'N'}"></option>
+                   </aura:if>
+                  </lightning:select>
+                </div>
+            </div>
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12" style="width: 80px;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+    			<lightning:select class ="Padding" disabled="{!v.readonly}" name="XB" label="340B" required="false" >
+        		 <aura:if isTrue= "{!or(v.specialtyguarantee.X340B__c== 'Yes', v.specialtyguarantee.X340B__c == 'No')}">
+                  <option value="{!v.specialtyguarantee.X340B__c}" text="{!v.specialtyguarantee.X340B__c== 'Yes' ? 'Y' : 'N'}"></option>
+                 </aura:if>
+                </lightning:select>
+                </div>
+            </div>
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-8" style="width: 200px;">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+    			<lightning:select class ="Padding" disabled="{!v.readonly}" name="XBE" label="340B Option" required="false" >
+                    <option value="{!v.specialtyguarantee.X340B_Exclusion_Option__c}" text="{!v.specialtyguarantee.X340B_Exclusion_Option__c}"></option>
+                </lightning:select>
+                </div>
+            </div>
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12" style="width: 80px">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+    			<lightning:select class ="Padding" disabled="{!v.readonly}" name="LDD" label="LDD" required="false" >
+        		 <aura:if isTrue= "{!or(v.specialtyguarantee.LDD__c== 'Yes', v.specialtyguarantee.LDD__c == 'No')}">
+                  <option value="{!v.specialtyguarantee.LDD__c}" text="{!v.specialtyguarantee.LDD__c== 'Yes' ? 'Y' : 'N'}"></option>
+                 </aura:if>
+                </lightning:select>
+                </div>
+            </div>
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--2-of-12" style="width: 420px">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+    			<lightning:select class ="Padding" disabled="{!v.readonly}" name="LDDE" label="LDD Option" required="false" >
+                    <option value="{!v.specialtyguarantee.LDD_Exclusion_Option__c}" text="{!v.specialtyguarantee.LDD_Exclusion_Option__c}"></option>
+                </lightning:select>
+                </div>
+            </div>
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12" style="width: 80px">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+    			<lightning:select class ="Padding" disabled="{!v.readonly}" name="paper" label="Paper" required="false" >
+        		 <aura:if isTrue= "{!or(v.specialtyguarantee.Paper__c== 'Yes', v.specialtyguarantee.Paper__c == 'No')}">
+                  <option value="{!v.specialtyguarantee.Paper__c}" text="{!v.specialtyguarantee.Paper__c== 'Yes' ? 'Y' : 'N'}"></option>
+                 </aura:if>
+                </lightning:select>
+                </div>
+            </div>
+        </div>
+            <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+            <div class="slds-form-element">
+                <div class="slds-form-element__control">
+                  <div class="Paddings">
+                        <aura:if isTrue="{!v.isAccess}">
+    			 <lightning:button aura:id="clickEdit" value="clickEdit" label="Edit" 
+                          variant="brand"
+                          onclick="{!c.clickEdit}"/> 
+                      </aura:if>
+                   </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,12 @@
+<apex:page standardController="Central_Hub__c" showHeader="false">
+<c:CustomLookupScriptVC objectName="LOB_Descriptor_support__c" />
+<apex:sectionHeader title="Demo"  subtitle="Custom Lookup" />
+
+  <apex:form id="myForm">  
+    <apex:PageBlock id="PageBlock">     
+      <apex:pageBlockSection columns="1" title="Custom Lookup">
+        <apex:inputField id="look" value="{!Central_Hub__c.LOB_Descriptor__c}"  />
+      </apex:pageBlockSection>
+    </apex:PageBlock>
+</apex:form>
+</apex:page>

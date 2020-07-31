@@ -1,0 +1,28 @@
+.THIS {
+  background-color: white;
+  
+   zoom: 80%;
+}
+.THIS .right-align {
+    text-align: right;
+}
+ .THIS .text-label--large {
+    font-size: 1.4rem;
+    line-height: 2;
+    font-weight: 900;
+    text-align: center;
+}
+ .THIS .text-label--small {
+    font-size: 0.65rem;
+    line-height: 0.90;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+ .THIS .text-label--small {
+    font-size: 0.62rem;
+    line-height: 0.90;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}

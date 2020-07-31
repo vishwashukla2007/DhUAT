@@ -1,0 +1,127 @@
+<aura:component implements="lightning:availableForFlowScreens" controller="pbmQuestionParentController">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="defineType" type="String" default="Standard with Exclusion"/>
+    <aura:attribute name="customDef" type="String"/>
+    <aura:attribute name="remNotDays" type="Integer" default="60"/>
+    <aura:attribute name="memNotifDays" type="Integer" default="30"/>
+    <aura:attribute name="incNotif" type="String" default="Yes"/>
+    
+    <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size_4-of-12">
+            <div class="slds-float_right">
+                Formulary definition type
+            </div>
+        </div>     
+        <div class="slds-col slds-size_6-of-12">
+            <div class="slds-p-around_x-small">
+                <lightning:select  onchange="{!c.handleChange}">
+                    <option value="Standard with Exclusion">Standard with Exclusion</option>
+                    <option value="Standard without exclusion">Standard without exclusion</option>
+                    <option value="Custom">Custom</option>
+                </lightning:select>
+            </div>
+        </div>
+    </div>
+    <aura:if isTrue="{!v.defineType == 'Custom'}">
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_4-of-12">
+                <div class="slds-float_right">
+                </div>
+            </div>     
+            <div class="slds-col slds-size_6-of-12">
+                <div class="slds-p-around_x-small">
+                    <lightning:textarea name="custDef" required="true" value="{!v.customDef}" placeholder="compose your custom definition" label="Required custom definition with a maximum length of 2000 characters" maxlength="2000" messageWhenTooLong="A maximum of 2000 characters are allowes" messageWhenValueMissing="Custom definition cannot be blank" />
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    
+    
+    <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size_4-of-12">
+            <div class="slds-float_right">
+                Formulary removal notification days
+            </div>
+        </div>     
+        <div class="slds-col slds-size_6-of-12">
+            <div class="slds-p-around_x-small">
+                <lightning:input type="number" name="formRemNotDays" label="" value="{!v.remNotDays}"/>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size_4-of-12">
+            <div class="slds-float_right">
+                Include client member notification? 
+            </div>
+        </div>     
+        <div class="slds-col slds-size_6-of-12">
+            <div class="slds-p-around_x-small">
+                <lightning:select  onchange="{!c.handleChangeIncNotif}">
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </lightning:select>
+            </div>
+        </div>
+    </div>
+    
+    <aura:if isTrue="{!v.incNotif == 'Yes'}">
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-size_4-of-12">
+                <div class="slds-float_right">
+                    Formulary client member notification days
+                </div>
+            </div>     
+            <div class="slds-col slds-size_6-of-12">
+                <div class="slds-p-around_x-small">
+                    <lightning:input type="number" name="memNotifDays" label="" value="{!v.memNotifDays}"/>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    
+    
+    <br/>
+    <div>
+        <strong>Result: </strong> {! v.defineType }
+        <br/>
+        <aura:if isTrue="{!v.defineType == 'Standard with Exclusion'}">
+            <p>
+                <strong>“Formulary”</strong> means CVS Caremark’s formulary, adopted by Client pursuant to Section 2.6 of this Agreement, 
+                as created, maintained and amended by CVS Caremark from time to time.  
+                The Formulary consists of (a) a ranking of Covered Products into preferred and non-preferred tiers, 
+                (b) a listing of Non-Covered Products, and (c) associated utilization review programs pursuant to 
+                CVS Caremark’s standard clinical criteria, which may include, but not limited to, 
+                prior authorizations, step therapy and/or quantity limits for one or more Covered Products.  
+                These programs may be conducted prospectively or retrospectively.  
+                The Formulary has been approved by CVS Caremark’s P&amp;T Committee.  
+                The pricing set forth in Exhibit A to this Agreement is conditioned upon Client adoption of the 
+                Formulary identified in Exhibit A as its Plan formulary.  
+            </p>
+        </aura:if>
+        <aura:if isTrue="{!v.defineType == 'Standard without exclusion'}">
+            <p>
+                <strong>“Formulary”</strong> means CVS Caremark’s formulary, adopted by Client pursuant to Section 2.6 of 
+                this Agreement, as created, maintained and amended by CVS Caremark from time to time.  
+                The Formulary consists of (a) a ranking of Covered Products into preferred and non-preferred tiers, 
+                and (b) associated utilization review programs pursuant to CVS Caremark’s standard clinical criteria, 
+                which may include, but not limited to, prior authorizations, step therapy and/or quantity limits for one 
+                or more Covered Products.  These programs may be conducted prospectively or retrospectively.  
+                The Formulary has been approved by CVS Caremark’s P&amp;T Committee.  The pricing set forth in Exhibit A to 
+                this Agreement is conditioned upon Client adoption of the Formulary identified in Exhibit A as its Plan 
+                formulary.
+            </p>
+        </aura:if>
+        <aura:if isTrue="{!v.defineType == 'Custom'}">
+            {!v.customDef}
+        </aura:if>
+    </div>
+    
+    
+    <br/> 
+    <div style="float: right;">
+        <lightning:button variant="brand" label="Next" title="" onclick="{! c.handleSave }" />
+    </div>
+          
+</aura:component>

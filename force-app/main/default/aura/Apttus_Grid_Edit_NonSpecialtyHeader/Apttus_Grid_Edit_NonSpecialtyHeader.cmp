@@ -1,0 +1,37 @@
+<aura:component controller="Apttus_GridObjectdata" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    
+    <aura:attribute name="percentageCheck" type="Boolean" default="false" />
+    
+    
+    <aura:if isTrue="{!v.percentageCheck}">
+        <tr class="slds-text-heading_label slds-line-height_reset">
+            <th scope="col"><div class="font" title="Retail"></div></th>
+            <th scope="col"><div class="yr font" title="YEAR">YEAR</div></th>
+            <th scope="col"><div class="planyr font" title="PLAN YEAR">PLAN YEAR</div></th>
+            <th scope="col"><div class="planyr font" title="BASIS">BASIS</div></th>
+            <th scope="col"><div class="font" title="Retail 30(%)">Retail 30(%)</div></th>
+            <th scope="col"><div class="font" title="Retail 90(%)">Retail 90(%)</div></th>
+            <th scope="col"><div class="font" title="Mail(%)">Mail(%)</div></th>
+            <th scope="col"><div class="font" title="Mchoice(%)">Mchoice(%)</div></th>
+            <th scope="col"><div class="font" title="Specialty Retail(%)">Specialty Retail(%)</div></th>
+            <th scope="col"><div class="font" title="Client Owned (30)(%)">Client Owned (30)(%)</div></th>
+            <th scope="col"><div class="font" title="Client Owned (90)(%)">Client Owned (90)(%)</div></th>
+        </tr>
+    </aura:if>
+    <aura:if isTrue="{!v.percentageCheck==false}">
+        <tr class="slds-text-heading_label slds-line-height_reset">
+            <th scope="col"><div class="font" title=""></div></th>
+            <th scope="col"><div class="yr font" title="YEAR">YEAR</div></th>
+            <th scope="col"><div class="planyr font" title="PLAN YEAR">PLAN YEAR</div></th>
+            <th scope="col"><div class="planyr font" title="BASIS">BASIS</div></th>
+            <th scope="col"><div class="font" title="Retail 30($)">Retail 30($)</div></th>
+            <th scope="col"><div class="font" title="Retail 90($)">Retail 90($)</div></th>
+            <th scope="col"><div class="font" title="Mail($)">Mail($)</div></th>
+            <th scope="col"><div class="font" title="Mchoice($)">Mchoice($)</div></th>
+            <th scope="col"><div class="font" title="Specialty Retail($)">Specialty Retail($)</div></th> 
+            <th scope="col"><div class="font" title="Client Owned (30)($)">Client Owned (30)($)</div></th>
+            <th scope="col"><div class="font" title="Client Owned (90)($)">Client Owned (90)($)</div></th>
+        </tr>
+    </aura:if>
+    
+</aura:component>

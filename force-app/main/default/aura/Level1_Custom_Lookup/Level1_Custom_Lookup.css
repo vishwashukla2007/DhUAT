@@ -1,0 +1,37 @@
+.THIS {
+  width: 50%;
+  height: 10%;
+  padding-right: 0rem;
+  padding-left:  0rem;
+  margin-right: 0rem;
+  margin-left:  0rem;
+}
+
+.THIS .leftPaddingClass {
+    padding-right: 0rem;
+}
+ 
+.THIS .pillSize{
+ width:80%;
+  padding-right: .50rem;
+  padding-left: .50rem;
+}
+
+.THIS .ulk_windowopen{
+  padding-right: 0rem;
+  padding-left:  0rem;
+  margin-right: 0rem;
+  margin-left:  0rem;
+}
+.THIS .error{
+    color:red;
+    padding-right: 0rem;
+    padding-left:  0rem;
+    margin-right: 0rem;
+    margin-left:  0rem;
+}
+
+.THIS .lookup_padding{
+    padding-right: 0rem;
+    padding-left: 0rem;
+}

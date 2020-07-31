@@ -1,0 +1,7 @@
+<design:component>
+	<design:attribute name="defineType" label="Formulary definition type"/>
+    <design:attribute name="customDef" label="Custom Formulary definition"/>
+    <design:attribute name="remNotDays" label="Formulary removal notification days"/>
+    <design:attribute name="memNotifDays" label="Formulary client member notification days"/>
+    <design:attribute name="incNotif" label="Include client member notification?"/>
+</design:component>

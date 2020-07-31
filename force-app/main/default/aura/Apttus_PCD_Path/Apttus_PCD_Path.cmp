@@ -1,0 +1,72 @@
+<aura:component controller="Apttus_GridObjectdata" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" >
+    <aura:attribute name="variant" type="String" default="non-linear"/>
+    <aura:attribute name="status" type="String"/>
+    <aura:attribute name="statusvalue" type="String"/>
+    <aura:attribute name="accountid" type="String"/>
+    <aura:attribute name="DisplayBack" type="Boolean" default="true"/>
+    <aura:attribute name="DisplayNext" type="Boolean" default="true"/>
+    <aura:attribute name="Refreshdone" type="Boolean" default="false"/>
+    <aura:attribute name="counter" type="Integer"/>
+    <aura:attribute name="hideUpdateButton" type="Boolean" default="true"/>
+    <aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="c:Apttus_PCD_Refresh_Component_Event" action="{!c.refreshView}"/>
+    <aura:registerEvent name="refreshCmp" type="c:Apttus_PCD_Refresh_Component_Event"/>
+    <aura:registerEvent name="recordId" type="c:Apttus_Grid_RecordId_Event"/>
+    <lightning:card class="width">
+    <lightning:layout class="width">
+    <lightning:layoutitem class="widthpath">
+    <lightning:path aura:id="path" recordId="{!v.recordId}"
+                    variant="{!v.variant}"
+                    hideUpdateButton="{!v.hideUpdateButton}"
+                    onselect="{!c.handleSelect}"
+                    />
+    </lightning:layoutitem>
+    <div class="slds-p-left_medium"></div>
+    <div class="slds-p-left_medium"></div>
+    <lightning:layoutitem>
+          <div class="slds-p-top_x-small"></div>
+          <button type="button" Disabled ="{!v.DisplayBack}" class="slds-button slds-button_neutral" onclick="{!c.back}">Previous</button>
+    </lightning:layoutitem>
+ 
+    <div class="slds-p-left_x-small"></div>
+    <lightning:layoutitem>
+           <div class="slds-p-top_x-small"></div>
+          <button type="button"  Disabled ="{!v.DisplayNext}" class="slds-button slds-button_brand" onclick="{!c.next}">Next</button>
+    </lightning:layoutitem>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_large"></div>
+    <div class="slds-p-left_small"></div>
+    <div class="slds-p-left_small"></div>
+    <div class="slds-p-left_small"></div>
+    <div class="slds-p-left_small"></div>
+    <lightning:layoutitem class="right-align">
+         <div class="slds-p-top_x-small"></div>
+         <button type="button" class="slds-button button" onclick="{!c.cancel}"><b>View Client HUB</b></button>
+    </lightning:layoutitem>
+    </lightning:layout>
+    </lightning:card>
+</aura:component>

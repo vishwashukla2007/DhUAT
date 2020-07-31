@@ -1,0 +1,740 @@
+<template>
+    <lightning-card variant="narrow" icon-name="standard:contract">
+        <h1 slot="title">{cardTitle} <a href="javascript:void(0);" onclick={navigateToViewFAF}>{FAFName}</a> </h1>
+        <lightning-messages></lightning-messages>
+
+        <div class="spinner">
+            <template if:true={isLoading}>
+                 <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+                 </lightning-spinner>
+            </template>
+        </div>
+
+        <!--- ADD MODE-->
+        <template if:true={addMode}>
+            <lightning-record-edit-form object-api-name="PBMRequest__c" onsuccess={handleSuccess} onsubmit={handleSubmit} onload={handleOnLoadAdd} onerror={handleError}>
+                <lightning-tabset variant="scoped" active-tab-value ="">
+                    <lightning-tab label="Contract Information" value="Contract Information" >
+                        <lightning-accordion allow-multiple-sections-open onsectiontoggle={handleSectionToggle} active-section-name={activeSectionsT1}>
+                            <lightning-accordion-section name="T1A" label="Contract Type">
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_4-of-12" >                                        
+                                        <p>Status: <span style="color:red;">Draft</span></p>                                                                            
+                                    </div>                                    
+                                    <div class="slds-col slds-size_8-of-12" >                                       
+                                    </div>                                    
+                                </div>
+                                <br/>
+                                <lightning-radio-group variant="label-hidden"  name="cTyperadioButtonGroup" onchange={handleChangeCType} options={cTypeOptions} value={cTypeselectedValue} type="radio"></lightning-radio-group>
+                                </br>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_2-of-3">
+                                        <div class="slds-grid slds-gutters slds-var-m-left_small">
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <lightning-input disabled={isDisabledeCtype} type="checkbox" label="Renewal" name="Renewal" onchange={handleChangeEachECType} checked={pvRenewal} ></lightning-input>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <lightning-input disabled={isDisabledeCtype} type="checkbox" label="Market Check" name="Market Check" onchange={handleChangeEachECType} checked={pvMarketCheck}></lightning-input>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <div class="slds-clearfix">
+                                                    <div class="slds-float_right">
+                                                        <lightning-input disabled={isDisabledeCtype} type="checkbox" label="Other Amendment" name="Other Amendment" onchange={handleChangeEachECType} checked={pvOtherAmendment}></lightning-input>                                       
+                                                    </div>
+                                                </div>            
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <lightning-textarea disabled={isDisabledOtherAmendment} class="OtherAmendmentDescription" name="OtherAmendmentDescription" variant="label-hidden" onchange={handleOtherAmendmentDesc} value={otherAmendmentDesc}></lightning-textarea>                                                                                
+                                            </div>                                      
+                                        </div>
+                                        <div class="slds-grid slds-gutters slds-var-m-left_small">
+                                            <div class="slds-col slds-size_1-of-5" >                                                
+                                                <lightning-input disabled={isDisabledeCtype} type="checkbox" label="Other Legal Document" name="Other Legal Document" onchange={handleChangeEachECType} checked={pvOtherLegalDocument}></lightning-input>                                    
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <lightning-textarea disabled={isDisabledOtherLegalDoc} class="OtherLegalDocDesc" name="OtherLegalDocDesc" variant="label-hidden" onchange={handleOtherLegalDocDesc} value={otherLegalDocDesc}></lightning-textarea>                                                                                
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >                                                            
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >                                                
+                                            </div>                                            
+                                            <div class="slds-col slds-size_1-of-5">                                                 
+                                            </div>
+                                        </div>                                         
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <span></span>
+                                    </div>                                    
+                                </div>
+                            </lightning-accordion-section>
+
+                            <lightning-accordion-section name="T1B" label="If Contract is Required for RFP (Request For Proposal)">
+                                <div class="slds-grid slds-gutters slds-var-m-left_small">
+                                    <div class="slds-col slds-size_1-of-5" >                                                
+                                        <p>RFP Stage when Executable Contract is due</p>                                    
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >
+                                        <p>Executable Contract Due Date</p>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >                                                            
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >                                                
+                                    </div>                                            
+                                    <div class="slds-col slds-size_1-of-5">                                                 
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-gutters slds-var-m-left_small">
+                                    <div class="slds-col slds-size_1-of-5" >                                                
+                                        <lightning-input-field field-name="RFP_Stage_when_Executable_Contract_due__c" variant="label-hidden" ></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >
+                                        <lightning-input-field field-name="Executable_Contract_Due_Date__c" variant="label-hidden" ></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >                                                            
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >                                                
+                                    </div>                                            
+                                    <div class="slds-col slds-size_1-of-5">                                                 
+                                    </div>
+                                </div>   
+                                
+                            </lightning-accordion-section>
+                        </lightning-accordion>
+                    </lightning-tab>
+                    <lightning-tab label="Optional Service / Programs" value="Optional Service / Programs">                        
+                        <lightning-accordion allow-multiple-sections-open onsectiontoggle={handleSectionToggle} active-section-name={activeSectionsT2}>
+                            <lightning-accordion-section name="T2A" label="Optional Service / Programs">
+                                <lightning-input type="checkbox" label="Vaccine Services" name="vaccineService" onchange={handleChangeVacServ} checked={vaccineService}></lightning-input>
+                                </br>
+                                <lightning-input type="checkbox" label="Appeals" name="appeals" onchange={handleChangeAppeals} checked={appeals}></lightning-input>
+                                </br>
+                                <div class="slds-grid slds-gutters slds-var-m-left_large">
+                                    <div class="slds-col" >                                
+                                        <lightning-input disabled={isDisableAppealsType} type="checkbox" label="Non-Clinical Appeals" name="Non-Clinical Appeals" onchange={handleChangeAppealsType} checked={pvNonClinicalAppeals} ></lightning-input>                                                                
+                                        <br/>
+                                        <div class="slds-var-m-left_x-large">
+                                            <template for:each={nonClinicalTypeOptions} for:item="item">
+                                                <fieldset key={item.value} style="display: block; float: left;">
+                                                    <div class="slds-form-element__control ">
+                                                        <span class="slds-radio">
+                                                            <input disabled={isDisablednonClinicalType} name="radiogroup" id={item.value} type="radio" value={item.value} onchange={handleChangeNonClinicalAppeal}/>
+                                                            <label class="slds-radio__label" for={item.value}>
+                                                                <span class="slds-radio_faux"></span>
+                                                                <span class="slds-form-element__label">{item.label}</span>
+                                                            </label>
+                                                        </span>
+                                                    </div>
+                                                </fieldset>
+                                            </template>  
+                                        </div>                                                                     
+                                    </div>                                                        
+                                </div>
+                                <br/>
+                                <div class="slds-grid slds-gutters slds-var-m-left_large">
+                                    <div class="slds-col" >                                                                                                
+                                        <lightning-input disabled={isDisableAppealsType} type="checkbox" label="Clinical Appeals" name="Clinical Appeals" onchange={handleChangeAppealsType} checked={pvClinicalAppeals}></lightning-input>                                                                                                                                                                                      
+                                        <br/>
+                                        <div class="slds-var-m-left_x-large">
+                                            <template for:each={clinicalTypeOptions} for:item="item2">
+                                                <fieldset key={item2.value} style="display: block; float: left;">
+                                                    <div class="slds-form-element__control">
+                                                        <span class="slds-radio">
+                                                            <input disabled={isDisableclinicalType} name="radiogroup2" id={item2.value} type="radio" value={item2.value} onchange={handleChangeClinicalAppeal}/>                                                
+                                                            <label class="slds-radio__label" for={item2.value}>
+                                                                <span class="slds-radio_faux"></span>
+                                                                <span class="slds-form-element__label">{item2.label}</span>
+                                                            </label>                                               
+                                                        </span>
+                                                    </div>
+                                                </fieldset>
+                                            </template>
+                                        </div>                                        
+                                    </div>                                                        
+                                </div>
+                                <br/>
+                                <lightning-input type="checkbox" label="Preventive Care Drug Program" name="preCareDrug" onchange={handleChangePrevCareDrug} checked={prevCareDrug}></lightning-input>
+                                <!-- Preventive care drug type -->
+                                <br/>
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_1-of-2" >
+                                        <div class="slds-grid slds-gutters slds-var-m-left_medium">
+                                            <div class="slds-col" >
+                                                <lightning-input disabled={isDisablePrevCareDrugType} type="checkbox" label="Generic" name="Generic" onchange={handleChangePrevCareDrugType} checked={pvgeneric}></lightning-input>
+                                            </div>
+                                            <div class="slds-col" >
+                                                <lightning-input disabled={isDisablePrevCareDrugType} type="checkbox" label="Brand" name="Brand" onchange={handleChangePrevCareDrugType} checked={pvbrand} ></lightning-input>
+                                            </div>
+                                            <div class="slds-col" >
+                                                <lightning-input disabled={isDisablePrevCareDrugType} type="checkbox" label="Custom" name="Custom" onchange={handleChangePrevCareDrugType} checked={pvcustom}></lightning-input>
+                                            </div>                                    
+                                        </div>                                                            
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2" >                                                            
+                                    </div>
+                                </div>                                
+                                <br/>
+                                
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_1-of-2" >
+                                        <lightning-textarea class="Others_Text__c" name="Others_Text__c" label="Other (Any Client specific items that need to be included in the contract or any notes. For example: Client owned pharmacies or specific provisions agreed to in the RFP that need to be included in the contract)" onchange={handleOtherText} value={otherText}></lightning-textarea>                                                             
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2" >                                                            
+                                    </div>
+                                </div>                                                                
+                            </lightning-accordion-section>                            
+                        </lightning-accordion>
+                    </lightning-tab>
+                    <lightning-tab label="Contact Information" value="Contact Information">                     
+                        <lightning-accordion allow-multiple-sections-open onsectiontoggle={handleSectionToggle} active-section-name={activeSectionsT3}>
+                            <lightning-accordion-section name="T3A" label="Legal Team Contact Information">                                
+                                
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_1-of-2" >
+                                        <lightning-input name="enter-search" label="Paralegal" type="search" onchange={handleOnSearchChangeParalegal} placeholder="Search Paralegal (Min. 2 Char)"></lightning-input>                                                                
+                                        <div class="slds-scrollable" style="height:130px; overflow-y:hidden; margin-bottom:0px;">
+                                            <lightning-datatable 
+                                                data={paralegalData} columns={userColumns} 
+                                                key-field="Id"
+                                                max-row-selection=1
+                                                onrowselection={getSelectedParalegal}
+                                                selected-rows={paralegalpreSelectedRows}
+                                                sorted-by={paralegalsortBy}
+                                                sorted-direction={paralegalsortDirection}
+                                                onsort={handleSortdataParalegal}>
+                                            </lightning-datatable>
+                                        </div>                                                            
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2" > 
+                                        <lightning-input name="enter-search" label="Attorney" type="search" onchange={handleOnSearchChangeAttorney} placeholder="Search Attorney (Min. 2 Char)"> </lightning-input>                                
+                                        <div class="slds-scrollable" style="height:130px; overflow-y:hidden; margin-bottom:5px;">
+                                            <lightning-datatable 
+                                                data={attorneyData} columns={userColumns} 
+                                                key-field="Id"
+                                                max-row-selection=1
+                                                onrowselection={getSelectedAttorney}
+                                                selected-rows={attorneypreSelectedRows}
+                                                sorted-by={attorneysortBy}
+                                                sorted-direction={attorneysortDirection}
+                                                onsort={handleSortdataAttorney}>
+                                            </lightning-datatable>
+                                        </div>                                                           
+                                    </div>
+                                </div>                                
+                                <br/>                                
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_1-of-2" >
+                                        <lightning-textarea class="Performance_Guarantee_Team_Contact__c" name="Performance_Guarantee_Team_Contact__c" label="Performance Guarantee Team Contact (Optional):" onchange={handlePerfGuarTeamCont} value={PerfGuarTeamCont}></lightning-textarea>                                                                                                     
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2" >                                       
+                                    </div>
+                                </div>                                
+                                <br/>
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_1-of-2" >
+                                        <lightning-textarea class="Additional_email_addresses__c" name="Additional_email_addresses__c" label="Additional email addresses (Optional):" onchange={handleAdditionalEmail} value={additionalEmail}></lightning-textarea>                                                             
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2" >                                       
+                                    </div>
+                                </div>                                                            
+                                
+                            </lightning-accordion-section>                            
+                        </lightning-accordion>
+                    </lightning-tab>
+                </lightning-tabset>
+
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_2-of-3">
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <div class="slds-clearfix">
+                            <div class="slds-float_right">
+                                <div class="slds-var-m-top_small slds-var-m-bottom_medium slds-var-m-right_medium">
+                                    <lightning-button label="Cancel" title="Cancel" onclick={cancelBack} class="slds-var-m-left_x-small"></lightning-button>
+                                    <lightning-button variant="brand" label="Save" title="Save" type="submit" data-name="submit" class="slds-var-m-left_x-small" onclick={storeButtonName} disabled={isButtonDisabled}></lightning-button>
+                                    <lightning-button variant="brand" label="Submit Request" title="Submit Request" type="submit" data-name="submitReq"  class="slds-var-m-left_x-small" onclick={storeButtonName} disabled={isButtonDisabled}></lightning-button>                                                                        
+                                </div>
+                            </div>
+                        </div>
+                    </div>            
+                </div>                
+            </lightning-record-edit-form>
+        </template>
+
+
+        <!--- EDIT MODE-->
+        <template if:true={editMode}>
+            <lightning-record-edit-form record-id={recordId} object-api-name="PBMRequest__c" onload={handleOnLoadEditView} onsuccess={handleSuccess} onsubmit={handleSubmit} onerror={handleError}>
+                <lightning-tabset variant="scoped" active-tab-value ="">
+                    <lightning-tab label="Contract Information" value="Contract Information" >
+                        <lightning-accordion allow-multiple-sections-open onsectiontoggle={handleSectionToggle} active-section-name={activeSectionsT1}>
+                            <lightning-accordion-section name="T1A" label="Contract Type">
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_4-of-12" >
+                                        <template if:true={requestSubmitted}>
+                                            <p>Status: <span style="color:green;">Submitted</span></p>
+                                        </template>
+                                        <template if:false={requestSubmitted}>
+                                            <p>Status: <span style="color:red;">Draft</span></p>
+                                        </template>                                      
+                                    </div>                                    
+                                    <div class="slds-col slds-size_8-of-12" >                                       
+                                    </div>                                    
+                                </div>
+                                <br/>
+                                <lightning-radio-group variant="label-hidden"  name="cTyperadioButtonGroup" onchange={handleChangeCType} options={cTypeOptions} value={cTypeselectedValue} type="radio"></lightning-radio-group>        
+                                </br>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_2-of-3">
+                                        <div class="slds-grid slds-gutters slds-var-m-left_small">
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <lightning-input disabled={isDisabledeCtype} type="checkbox" label="Renewal" name="Renewal" onchange={handleChangeEachECType} checked={pvRenewal} ></lightning-input>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <lightning-input disabled={isDisabledeCtype} type="checkbox" label="Market Check" name="Market Check" onchange={handleChangeEachECType} checked={pvMarketCheck}></lightning-input>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <div class="slds-clearfix">
+                                                    <div class="slds-float_right">
+                                                        <lightning-input disabled={isDisabledeCtype} type="checkbox" label="Other Amendment" name="Other Amendment" onchange={handleChangeEachECType} checked={pvOtherAmendment}></lightning-input>                                       
+                                                    </div>
+                                                </div>            
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <lightning-textarea disabled={isDisabledOtherAmendment} class="OtherAmendmentDescription" name="OtherAmendmentDescription" variant="label-hidden" onchange={handleOtherAmendmentDesc} value={otherAmendmentDesc}></lightning-textarea>                                                                                
+                                            </div>                                      
+                                        </div>
+                                        <div class="slds-grid slds-gutters slds-var-m-left_small">
+                                            <div class="slds-col slds-size_1-of-5" >                                                
+                                                <lightning-input disabled={isDisabledeCtype} type="checkbox" label="Other Legal Document" name="Other Legal Document" onchange={handleChangeEachECType} checked={pvOtherLegalDocument}></lightning-input>                                    
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <lightning-textarea disabled={isDisabledOtherLegalDoc} class="OtherLegalDocDesc" name="OtherLegalDocDesc" variant="label-hidden" onchange={handleOtherLegalDocDesc} value={otherLegalDocDesc}></lightning-textarea>                                                                                
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >                                                            
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >                                                
+                                            </div>                                            
+                                            <div class="slds-col slds-size_1-of-5">                                                 
+                                            </div>
+                                        </div>                                         
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <span></span>
+                                    </div>                                    
+                                </div>                                                                                                                  
+                            </lightning-accordion-section>
+      
+                            <lightning-accordion-section name="T1B" label="If Contract is Required for RFP (Request For Proposal)">
+                                <div class="slds-grid slds-gutters slds-var-m-left_small">
+                                    <div class="slds-col slds-size_1-of-5" >                                                
+                                        <p>RFP Stage when Executable Contract is due</p>                                    
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >
+                                        <p>Executable Contract Due Date</p>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >                                                            
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >                                                
+                                    </div>                                            
+                                    <div class="slds-col slds-size_1-of-5">                                                 
+                                    </div>
+                                </div>
+                                <div class="slds-grid slds-gutters slds-var-m-left_small">
+                                    <div class="slds-col slds-size_1-of-5" >                                                
+                                        <lightning-input-field field-name="RFP_Stage_when_Executable_Contract_due__c" variant="label-hidden" ></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >
+                                        <lightning-input-field field-name="Executable_Contract_Due_Date__c" variant="label-hidden" ></lightning-input-field>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >                                                            
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >                                                
+                                    </div>                                            
+                                    <div class="slds-col slds-size_1-of-5">                                                 
+                                    </div>
+                                </div> 
+                            </lightning-accordion-section>                            
+                        </lightning-accordion>
+                    </lightning-tab>
+                    <lightning-tab label="Optional Service / Programs" value="Optional Service / Programs" >                                                
+                        <lightning-accordion allow-multiple-sections-open onsectiontoggle={handleSectionToggle} active-section-name={activeSectionsT2}>
+                            <lightning-accordion-section name="T2A" label="Optional Service / Programs">
+                                                                
+                                <lightning-input type="checkbox" label="Vaccine Services" name="vaccineService" onchange={handleChangeVacServ} checked={vaccineService}></lightning-input>
+                                </br>
+                                <lightning-input type="checkbox" label="Appeals" name="appeals" onchange={handleChangeAppeals} checked={appeals}></lightning-input>
+                                </br>
+                                <div class="slds-grid slds-gutters slds-var-m-left_large">
+                                    <div class="slds-col" >                                
+                                        <lightning-input disabled={isDisableAppealsType} type="checkbox" label="Non-Clinical Appeals" name="Non-Clinical Appeals" onchange={handleChangeAppealsType} checked={pvNonClinicalAppeals} ></lightning-input>                                                                
+                                        <br/>
+                                        <div class="slds-var-m-left_x-large">
+                                            <template for:each={nonClinicalTypeOptions} for:item="item">
+                                                <fieldset key={item.value} style="display: block; float: left;">
+                                                    <div class="slds-form-element__control ">
+                                                        <span class="slds-radio">
+                                                            <input disabled={isDisablednonClinicalType} name="radiogroup" id={item.value} type="radio" value={item.value} checked={item.checked} onchange={handleChangeNonClinicalAppeal}/>
+                                                            <label class="slds-radio__label" for={item.value}>
+                                                                <span class="slds-radio_faux"></span>
+                                                                <span class="slds-form-element__label">{item.label}</span>
+                                                            </label>
+                                                        </span>
+                                                    </div>
+                                                </fieldset>
+                                            </template>  
+                                        </div>                                                                     
+                                    </div>                                                        
+                                </div>
+                                <br/>
+                                <div class="slds-grid slds-gutters slds-var-m-left_large">
+                                    <div class="slds-col" >                                                                                                
+                                        <lightning-input disabled={isDisableAppealsType} type="checkbox" label="Clinical Appeals" name="Clinical Appeals" onchange={handleChangeAppealsType} checked={pvClinicalAppeals}></lightning-input>                                                                                                                                                                                      
+                                        <br/>
+                                        <div class="slds-var-m-left_x-large">
+                                            <template for:each={clinicalTypeOptions} for:item="item2">
+                                                <fieldset key={item2.value} style="display: block; float: left;">
+                                                    <div class="slds-form-element__control">
+                                                        <span class="slds-radio">
+                                                            <input disabled={isDisableclinicalType} name="radiogroup2" id={item2.value} type="radio" value={item2.value} checked={item2.checked} onchange={handleChangeClinicalAppeal}/>                                                
+                                                            <label class="slds-radio__label" for={item2.value}>
+                                                                <span class="slds-radio_faux"></span>
+                                                                <span class="slds-form-element__label">{item2.label}</span>
+                                                            </label>                                               
+                                                        </span>
+                                                    </div>
+                                                </fieldset>
+                                            </template>
+                                        </div>                                        
+                                    </div>                                                        
+                                </div>
+                                <br/>
+                                <lightning-input type="checkbox" label="Preventive Care Drug Program" name="preCareDrug" onchange={handleChangePrevCareDrug} checked={prevCareDrug}></lightning-input>
+                                <!-- Preventive care drug type -->
+                                <br/>
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_1-of-2" >
+                                        <div class="slds-grid slds-gutters slds-var-m-left_medium">                                
+                                            <div class="slds-col" >
+                                                <lightning-input disabled={isDisablePrevCareDrugType} type="checkbox" label="Generic" name="Generic" onchange={handleChangePrevCareDrugType} checked={pvgeneric}></lightning-input>
+                                            </div>
+                                            <div class="slds-col" >
+                                                <lightning-input disabled={isDisablePrevCareDrugType} type="checkbox" label="Brand" name="Brand" onchange={handleChangePrevCareDrugType} checked={pvbrand} ></lightning-input>
+                                            </div>
+                                            <div class="slds-col" >
+                                                <lightning-input disabled={isDisablePrevCareDrugType} type="checkbox" label="Custom" name="Custom" onchange={handleChangePrevCareDrugType} checked={pvcustom}></lightning-input>
+                                            </div>                                    
+                                        </div>                                                            
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2" >                                                            
+                                    </div>
+                                </div>                                
+                                <br/>                                
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_1-of-2" >
+                                        <lightning-textarea class="Others_Text__c" name="Others_Text__c" label="Other (Any Client specific items that need to be included in the contract or any notes. For example: Client owned pharmacies or specific provisions agreed to in the RFP that need to be included in the contract)" onchange={handleOtherText} value={otherText}></lightning-textarea>                                                             
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2" >                                                            
+                                    </div>
+                                </div>
+                            </lightning-accordion-section>                                                              
+                        </lightning-accordion>                        
+                    </lightning-tab>
+                    <lightning-tab label="Contact Information" value="Contact Information" >
+                        <lightning-accordion allow-multiple-sections-open onsectiontoggle={handleSectionToggle} active-section-name={activeSectionsT3}>
+                            <lightning-accordion-section name="T3A" label="Legal Team Contact Information">
+                                
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_1-of-2" >
+                                        <lightning-input name="enter-search" label="Paralegal" type="search" onchange={handleOnSearchChangeParalegal} placeholder="Search Paralegal (Min. 2 Char)"></lightning-input>                                                                
+                                        <div class="slds-scrollable" style="height:130px; overflow-y:hidden; margin-bottom:0px;">
+                                            <lightning-datatable 
+                                                data={paralegalData} columns={userColumns} 
+                                                key-field="Id"
+                                                max-row-selection=1
+                                                onrowselection={getSelectedParalegal}
+                                                selected-rows={paralegalpreSelectedRows}
+                                                sorted-by={paralegalsortBy}
+                                                sorted-direction={paralegalsortDirection}
+                                                onsort={handleSortdataParalegal}>
+                                            </lightning-datatable>
+                                        </div>                                                            
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2" > 
+                                        <lightning-input name="enter-search" label="Attorney" type="search" onchange={handleOnSearchChangeAttorney} placeholder="Search Attorney (Min. 2 Char)"> </lightning-input>                                
+                                        <div class="slds-scrollable" style="height:130px; overflow-y:hidden; margin-bottom:5px;">
+                                            <lightning-datatable 
+                                                data={attorneyData} columns={userColumns} 
+                                                key-field="Id"
+                                                max-row-selection=1
+                                                onrowselection={getSelectedAttorney}
+                                                selected-rows={attorneypreSelectedRows}
+                                                sorted-by={attorneysortBy}
+                                                sorted-direction={attorneysortDirection}
+                                                onsort={handleSortdataAttorney}>
+                                            </lightning-datatable>
+                                        </div>                                                           
+                                    </div>
+                                </div>                                
+                                <br/>                                
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_1-of-2" >
+                                        <lightning-textarea class="Performance_Guarantee_Team_Contact__c" name="Performance_Guarantee_Team_Contact__c" label="Performance Guarantee Team Contact (Optional):" onchange={handlePerfGuarTeamCont} value={PerfGuarTeamCont}></lightning-textarea>                                                                                                     
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2" >                                       
+                                    </div>
+                                </div>                                
+                                <br/>
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_1-of-2" >
+                                        <lightning-textarea class="Additional_email_addresses__c" name="Additional_email_addresses__c" label="Additional email addresses (Optional):" onchange={handleAdditionalEmail} value={additionalEmail}></lightning-textarea>                                                             
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2" >                                       
+                                    </div>
+                                </div>                            
+                            </lightning-accordion-section>                            
+                        </lightning-accordion>
+                    </lightning-tab>
+                </lightning-tabset>
+                
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_2-of-3">
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <div class="slds-clearfix">
+                            <div class="slds-float_right">
+                                <div class="slds-var-m-top_small slds-var-m-bottom_medium slds-var-m-right_medium">
+                                    <lightning-button label="Cancel" title="Cancel" name="Cancel" onclick={cancelBack} class="slds-var-m-left_x-small"></lightning-button>
+                                    <lightning-button variant="brand" label="Save" title="Save" type="submit" data-name="submit" class="slds-var-m-left_x-small" onclick={storeButtonName} disabled={isButtonDisabled}></lightning-button>
+                                    <template if:false={requestSubmitted}>                                       
+                                        <lightning-button variant="brand" label="Submit Request" title="Submit Request" type="submit" data-name="submitReq"  class="slds-var-m-left_x-small" onclick={storeButtonName} disabled={isButtonDisabled}></lightning-button>                                    
+                                    </template>                                     
+                                </div>
+                            </div>
+                        </div>
+                    </div>            
+                </div>
+                
+            </lightning-record-edit-form>
+        </template>
+
+
+        <!--- VIEW MODE-->
+        <template if:true={viewMode}>
+            <lightning-record-view-form record-id={recordId} object-api-name="PBMRequest__c" onload={handleOnLoadEditView}>
+                <lightning-tabset variant="scoped" active-tab-value ="">
+                    <lightning-tab label="Contract Information" value="Contract Information" >
+                        <lightning-accordion allow-multiple-sections-open onsectiontoggle={handleSectionToggle} active-section-name={activeSectionsT1}>
+                            <lightning-accordion-section name="T1A" label="Contract Type">
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_4-of-12" >
+                                        <template if:true={requestSubmitted}>
+                                            <p>Status: <span style="color:green;">Submitted</span></p>
+                                        </template>
+                                        <template if:false={requestSubmitted}>
+                                            <p>Status: <span style="color:red;">Draft</span></p>
+                                        </template>                                      
+                                    </div>                                    
+                                    <div class="slds-col slds-size_8-of-12" >                                       
+                                    </div>                                    
+                                </div>
+                                </br> 
+                                <lightning-radio-group disabled variant="label-hidden" name="cTyperadioButtonGroup" onchange={handleChangeCType} options={cTypeOptions} value={cTypeselectedValue} type="radio" ></lightning-radio-group>        
+                                </br>
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_2-of-3">
+                                        <div class="slds-grid slds-gutters slds-var-m-left_small">
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <lightning-input disabled type="checkbox" label="Renewal" name="Renewal" checked={pvRenewal}></lightning-input>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <lightning-input disabled type="checkbox" label="Market Check" name="Market Check" checked={pvMarketCheck}></lightning-input>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <div class="slds-clearfix">
+                                                    <div class="slds-float_right">
+                                                        <lightning-input disabled type="checkbox" label="Other Amendment" name="Other Amendment" onchange={handleChangeEachECType} checked={pvOtherAmendment}></lightning-input>                                       
+                                                    </div>
+                                                </div>            
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <lightning-textarea disabled name="other-amendment-desc" value={otherAmendmentDesc} variant="label-hidden"></lightning-textarea>
+                                            </div>                                            
+                                        </div>
+                                        <div class="slds-grid slds-gutters slds-var-m-left_small">
+                                            <div class="slds-col slds-size_1-of-5" >                                                
+                                                <lightning-input disabled type="checkbox" label="Other Legal Document" name="Other Legal Document" onchange={handleChangeEachECType} checked={pvOtherLegalDocument}></lightning-input>                                                                                                                                 
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >
+                                                <lightning-textarea disabled name="other-legaldoc-desc" label="" value={otherLegalDocDesc} variant="label-hidden"></lightning-textarea>                                                
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >                                                            
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-5" >                                                
+                                            </div>                                            
+                                            <div class="slds-col slds-size_1-of-5">                                                 
+                                            </div>
+                                        </div>                                         
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <span></span>
+                                    </div>                                    
+                                </div>                                
+                            </lightning-accordion-section>
+
+                            <lightning-accordion-section name="T1B" label="If Contract is Required for RFP (Request For Proposal)">                                
+                                <div class="slds-grid slds-gutters slds-var-m-left_small">
+                                    <div class="slds-col slds-size_1-of-5" >                                                                                        
+                                        <lightning-input disabled type="text" label="RFP Stage when Executable Contract is due" name="RFPStage" value={RFPStage}></lightning-input>                                                       
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >
+                                        <lightning-input disabled type="date" label="Executable Contract Due Date" name="ExecContDueDate" value={ExecContDueDate}></lightning-input> 
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >                                                            
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5" >                                                
+                                    </div>                                            
+                                    <div class="slds-col slds-size_1-of-5">                                                 
+                                    </div>
+                                </div>  
+                            </lightning-accordion-section>                           
+                        </lightning-accordion>
+                    </lightning-tab>
+                    <lightning-tab label="Optional Service / Programs" value="Optional Service / Programs">
+                        <lightning-accordion allow-multiple-sections-open onsectiontoggle={handleSectionToggle} active-section-name={activeSectionsT2}>
+                            <lightning-accordion-section name="T2A" label="Optional Service / Programs">                                
+                                                                
+                                <lightning-input disabled type="checkbox" label="Vaccine Services" name="vaccineService" onchange={handleChangeVacServ} checked={vaccineService}></lightning-input>
+                                </br>
+                                <lightning-input disabled type="checkbox" label="Appeals" name="appeals" onchange={handleChangeAppeals} checked={appeals}></lightning-input>                                        
+                                </br>
+                                <div class="slds-grid slds-gutters slds-var-m-left_large">
+                                    <div class="slds-col" >                                
+                                        <lightning-input disabled type="checkbox" label="Non-Clinical Appeals" name="Non-Clinical Appeals" onchange={handleChangeAppealsType} checked={pvNonClinicalAppeals} ></lightning-input>                                                              
+                                        <br/>
+                                        <div class="slds-var-m-left_x-large">
+                                            <template for:each={nonClinicalTypeOptions} for:item="item">
+                                                <fieldset key={item.value} style="display: block; float: left;">
+                                                    <div class="slds-form-element__control ">
+                                                        <span class="slds-radio">
+                                                            <input disabled name="radiogroup" data-id={item.value} class={item.value} id={item.value} type="radio" value={item.value} checked={item.checked}  onchange={handleChangeNonClinicalAppeal}/>
+                                                            <label class="slds-radio__label" for={item.value}>
+                                                                <span class="slds-radio_faux"></span>
+                                                                <span class="slds-form-element__label">{item.label}</span>
+                                                            </label>
+                                                        </span>
+                                                    </div>
+                                                </fieldset>
+                                            </template>  
+                                        </div>                                                                     
+                                    </div>                                                        
+                                </div>
+                                <br/>
+                                <div class="slds-grid slds-gutters slds-var-m-left_large">
+                                    <div class="slds-col" >                                                                                                
+                                        <lightning-input disabled type="checkbox" label="Clinical Appeals" name="Clinical Appeals" onchange={handleChangeAppealsType} checked={pvClinicalAppeals}></lightning-input>                                                                                                                                                                                      
+                                        <br/>
+                                        <div class="slds-var-m-left_x-large">
+                                            <template for:each={clinicalTypeOptions} for:item="item2">
+                                                <fieldset key={item2.value} style="display: block; float: left;">
+                                                    <div class="slds-form-element__control">
+                                                        <span class="slds-radio">
+                                                            <input disabled name="radiogroup2" data-id={item2.value} class={item2.value} id={item2.value} type="radio" value={item2.value} checked={item2.checked} onchange={handleChangeClinicalAppeal} />                                                                                                
+                                                            <label class="slds-radio__label" for={item2.value}>
+                                                                <span class="slds-radio_faux"></span>
+                                                                <span class="slds-form-element__label">{item2.label}</span>
+                                                            </label>                                               
+                                                        </span>
+                                                    </div>
+                                                </fieldset>
+                                            </template>
+                                        </div>                                        
+                                    </div>                                                        
+                                </div>
+                                <br/>
+                                <lightning-input disabled type="checkbox" label="Preventive Care Drug Program" name="preCareDrug" onchange={handleChangePrevCareDrug} checked={prevCareDrug}></lightning-input>
+                                <!-- Preventive care drug type -->
+                                <br/>
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_1-of-2" >
+                                        <div class="slds-grid slds-gutters slds-var-m-left_medium">                                
+                                            <div class="slds-col" >
+                                                <lightning-input disabled type="checkbox" label="Generic" name="Generic" checked={pvgeneric}></lightning-input>
+                                            </div>
+                                            <div class="slds-col" >
+                                                <lightning-input disabled type="checkbox" label="Brand" name="Brand" checked={pvbrand} ></lightning-input>
+                                            </div>
+                                            <div class="slds-col" >
+                                                <lightning-input disabled type="checkbox" label="Custom" name="Custom" checked={pvcustom}></lightning-input>
+                                            </div>                                    
+                                        </div>                                                            
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2" >                                                            
+                                    </div>
+                                </div>                                
+                                <br/>
+                                
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_1-of-2" >
+                                        <lightning-textarea disabled class="Others_Text__c" name="Others_Text__c" label="Other (Any Client specific items that need to be included in the contract or any notes. For example: Client owned pharmacies or specific provisions agreed to in the RFP that need to be included in the contract)" value={otherText}></lightning-textarea>                                                                                                     
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2" >                                                            
+                                    </div>
+                                </div>
+                            </lightning-accordion-section>                            
+                        </lightning-accordion>                        
+                    </lightning-tab> 
+                    <lightning-tab label="Contact Information" value="Contact Information">
+                        <lightning-accordion allow-multiple-sections-open active-section-name={activeSectionsT3}>                             
+                            <lightning-accordion-section name="T3A" label="Legal Team Contact Information">
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_3-of-12" >
+                                        <lightning-output-field field-name="Paralegal__c"> </lightning-output-field> 
+                                        <lightning-output-field field-name="Attorney__c"> </lightning-output-field>
+                                    </div>
+                                    <div class="slds-col slds-size_9-of-12" >                                       
+                                    </div>                                    
+                                </div>    
+                                <br/>
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_1-of-2" >
+                                        <lightning-textarea disabled class="Performance_Guarantee_Team_Contact__c" name="Performance_Guarantee_Team_Contact__c" label="Performance Guarantee Team Contact (Optional):" value={PerfGuarTeamCont}></lightning-textarea>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2" >                                       
+                                    </div>
+                                </div>                                                               
+                                <br/>
+                                <br/>
+                                <br/> 
+                                <div class="slds-grid slds-gutters ">
+                                    <div class="slds-col slds-size_1-of-2" >
+                                        <lightning-textarea disabled class="Additional_email_addresses__c" name="Additional_email_addresses__c" label="Additional email addresses (Optional):"  value={additionalEmail}></lightning-textarea>                                                             
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-2" >                                       
+                                    </div>
+                                </div>                                                           
+                                
+                            </lightning-accordion-section>                            
+                        </lightning-accordion> 
+                    </lightning-tab> 
+                </lightning-tabset>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_2-of-3">
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <div class="slds-clearfix">
+                            <div class="slds-float_right">
+                                <div class="slds-var-m-top_small slds-var-m-bottom_medium slds-var-m-right_medium">
+                                    <lightning-button label="Back" title="Back" name="Back" onclick={cancelBack} class="slds-var-m-left_x-small"></lightning-button>                                    
+                                    <lightning-button variant="brand" label="Edit" name="Edit" title="Edit" class="slds-var-m-left_x-small" onclick={handleEdit} disabled={isButtonDisabled} ></lightning-button>
+                                    <template if:false={requestSubmitted}>                                       
+                                        <lightning-button variant="brand" label="Submit Request" title="Submit Request" data-name="submitReq"  class="slds-var-m-left_x-small" onclick={handleSubmitReq} disabled={isButtonDisabled}></lightning-button> 
+                                    </template>                                                                                                           
+                                </div>
+                            </div>
+                        </div>
+                    </div>            
+                </div>
+            </lightning-record-view-form>
+        </template>        
+    </lightning-card>
+</template>

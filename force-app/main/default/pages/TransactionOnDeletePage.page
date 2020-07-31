@@ -1,0 +1,14 @@
+<apex:page standardController="Transaction_Fee_Sharing_Tier__c" extensions="TransactionFeeSharingHandler"  lightningStylesheets="true" action="{!deleteRecord}" >
+     <apex:form >
+   
+  
+   <apex:pageBlock title="Transaction Fee Sharing Tier Detail">
+       <apex:pageMessages />
+        <apex:pageMessage summary="You may delete the Transaction Fee Sharing Tier records one by one only, starting with the highest existing Transaction Fee Sharing Tier record." 
+    severity="FATAL" strength="3" rendered="{!showErrorMessage}"/>
+        <apex:pageBlockButtons >
+        <apex:commandButton immediate="true" action="{!Cancel}"  value="Cancel"/>
+        </apex:pageBlockButtons>
+ </apex:pageBlock>
+      </apex:form>  
+</apex:page>

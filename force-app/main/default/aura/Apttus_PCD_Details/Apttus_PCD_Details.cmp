@@ -1,0 +1,19 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,lightning:isUrlAddressable"  >
+<aura:attribute name="DisplayQs" type="Boolean" default="true"/>
+<aura:attribute name="DisplayGrid" type="Boolean"/>
+<aura:attribute name="DisplayGenDoc" type="Boolean"/>
+<aura:attribute name="record" type="String" />
+<aura:attribute name="LineitemID" type="String" />
+<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+<aura:handler event="c:Apttus_PCD_Refresh_Component_Event" action="{!c.refreshView}"/>
+<aura:handler event="c:Apttus_Grid_RecordId_Event" action="{!c.recordidupd}"/>
+<aura:if isTrue="{!v.DisplayQs}">
+<!-- <c:Aura_PCD_Questionair_Page record="{!v.recordId}" LineItemrecord="{!v.LineitemID}"/>  --> 
+</aura:if>
+<aura:if isTrue="{!v.DisplayGrid}">
+<c:Apttus_Grid_Parent record="{!v.record}"/> 
+</aura:if>
+<aura:if isTrue="{!v.DisplayGenDoc}">
+<c:Apttus_PCD_Generate_Document record="{!v.record}"/> 
+</aura:if>
+</aura:component>

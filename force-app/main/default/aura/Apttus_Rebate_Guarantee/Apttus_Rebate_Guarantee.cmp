@@ -1,0 +1,630 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"  access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+       <aura:attribute name="isAccess" type="boolean"/>
+    <aura:attribute name="Rebateops" type="Rebate_Operations__c[]" /> 
+    <aura:attribute name="RGuarantee" type="Rebate_Guarantees__c[]" /> 
+    <aura:attribute name="picklistFields" type="Map" default="{}" />
+    <aura:attribute name="clickEdit" type="Boolean" default="true" />
+    <aura:attribute name="clickSave" type="Boolean" default="true" />
+    <aura:attribute name="visible" type="Boolean" default="false" />
+    <aura:attribute name="editvisible" type="Boolean" default="true" />
+    <aura:attribute name="readonly" type="Boolean" default="true" />
+    <aura:attribute name="readonlynetchoice" type="Boolean" default="true" />
+    <aura:attribute name="RGEdit" type="Boolean" default="false" />
+    <aura:attribute name="RGParams" type="String" default="" />
+    <aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}" />
+    <aura:attribute name="Expanded" type="Boolean" default="true" />
+<!-- <lightning:card title=""  class="text-heading-small" > -->
+  <aura:if isTrue="{!v.RGEdit}">
+     <div class="demo-only" style="height: 100%;width:100%;"> 
+       <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+         <div class="slds-modal__container" style="height: 100%;width:100%;max-width: 100%;">
+           <header class="slds-modal__header">
+             <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+               <span class="slds-assistive-text">Close</span>
+             </button>
+           </header>
+          <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+           <iframe aura:id="vfFrame" src="{! 'https://' +v.vfHost + '/apex/RebateguaranteeNewEditPage?' +v.RGParams}" height="100%" width="100%"/>
+          </div>
+          <footer class="slds-modal__footer"> </footer>
+          </div>
+         </section>
+           <div class="slds-backdrop slds-backdrop_open"></div>
+      </div>
+    </aura:if>    
+   
+     <div class="text-label--verysmall"> 
+    <div class="slds-m-top_medium" ></div>    
+       <lightning:layoutItem padding="horizontal-small" flexibility="grow" class="" size="1">
+                    <div class="size" style="padding-top: 15px;font-size: medium; width: max-content;" >
+                        <aura:unescapedHtml value="{!v.RGuarantee.Link__c}"/>
+                        </div>
+       </lightning:layoutItem>
+        
+       <lightning:layout class="text-label--verysmall" verticalAlign="end" multipleRows="true">
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+          <div class="slds-form-element">
+           <div class="slds-form-element__control">
+            <lightning:select disabled="{!v.readonly}" name="year" label="Year" required="false" >
+        		<option value="{!v.RGuarantee.Year__c}" text="{!v.RGuarantee.Year__c}"></option>
+    		</lightning:select>
+           </div>
+          </div>
+        </div> 
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+          <div class="slds-form-element">
+            <div class="slds-form-element__control">
+             <lightning:select disabled="{!v.readonly}" name="lob" label="LOB" required="false" >
+				<option value="{!v.RGuarantee.LOB2__c}" text="{!v.RGuarantee.LOB2__c}"></option>
+    		 </lightning:select>
+            </div>
+          </div>
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--2-of-12">
+         <div class="slds-form-element">
+           <div class="slds-form-element__control">
+            <lightning:select disabled="{!v.readonly}" name="Basis" label="Basis" required="false" >
+				<option value="{!v.RGuarantee.Basis__c}" text="{!v.RGuarantee.Basis__c}"></option>
+    		</lightning:select>
+           </div>
+         </div>
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--2-of-12">
+          <div class="slds-form-element">
+            <div class="slds-form-element__control">
+              <lightning:select disabled="{!v.readonly}" name="PlanDesign" label="Plan Design" required="false" >
+				<option value="{!v.RGuarantee.Plan_Design__c}" text="{!v.RGuarantee.Plan_Design__c}"></option>
+    		  </lightning:select>
+            </div>
+          </div>
+        </div>
+       <aura:if isTrue= "{!v.RGuarantee.RebateExpandedView__c == 'F'}">
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+         		<div class="slds-form-element">
+           <div class="slds-form-element__control">
+               
+                <aura:if isTrue="{!!v.readonly}">
+                    
+                 <lightning:select disabled="{!v.readonly}" name="Retail30" label="Retail 30" required="false" >
+					<option value="{!v.RGuarantee.Retail_30__c}" text="{!'$'+v.RGuarantee.Retail_30__c}"></option>
+				 </lightning:select>
+						
+                    <aura:set attribute="else">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-no-flex" >Retail 30</label>
+                           
+                            <div class="slds-form-element__control slds-grow" >
+                                <div class="slds-select_container" >
+                                    <select class="slds-select" disabled="true">
+                                        <option >
+										<aura:if isTrue="{!v.RGuarantee.Retail_30__c>=0}">$</aura:if>
+										<ui:outputNumber  value="{!v.RGuarantee.Retail_30__c}"   format="0.00" /> 
+                                    </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+             
+            </div>
+          </div>
+
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+          		<div class="slds-form-element">
+           <div class="slds-form-element__control">
+               
+                <aura:if isTrue="{!!v.readonly}">
+                    
+                 <lightning:select disabled="{!v.readonly}" name="Retail90" label="Retail 90" required="false" >
+					<option type="number" formatter="currency"  step="0.01"  value="{!v.RGuarantee.Retail_90__c}" text="{!v.RGuarantee.Retail_90__c}"  ></option>
+				 </lightning:select>
+						
+                    <aura:set attribute="else">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-no-flex" >Retail 90</label>
+                           
+                            <div class="slds-form-element__control slds-grow" >
+                                <div class="slds-select_container" >
+                                    <select class="slds-select" disabled="true">
+                                        <option >
+										<aura:if isTrue="{!v.RGuarantee.Retail_90__c>=0}">$</aura:if>
+										<ui:outputNumber  value="{!v.RGuarantee.Retail_90__c}"   format="0.00" /> 
+                                    </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </div>
+          </div>
+
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+          		<div class="slds-form-element">
+           <div class="slds-form-element__control">
+               
+                <aura:if isTrue="{!!v.readonly}">
+                    
+                  <lightning:select disabled="{!v.readonly}" name="Mchoice" label="Mchoice" required="false" >
+					<option value="{!v.RGuarantee.Mchoice__c}" text="{!'$'+v.RGuarantee.Mchoice__c}"></option>
+				 </lightning:select>
+						
+                    <aura:set attribute="else">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-no-flex" >Mchoice</label>
+                           
+                            <div class="slds-form-element__control slds-grow" >
+                                <div class="slds-select_container" >
+                                    <select class="slds-select" disabled="true">
+                                        <option >
+										<aura:if isTrue="{!v.RGuarantee.Mchoice__c>=0}">$</aura:if>
+										<ui:outputNumber  value="{!v.RGuarantee.Mchoice__c}"   format="0.00" /> 
+                                    </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+             
+            </div>
+          </div>
+
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+          		<div class="slds-form-element">
+           <div class="slds-form-element__control">
+               
+                <aura:if isTrue="{!!v.readonly}">
+                    
+                  <lightning:select disabled="{!v.readonly}" name="Mail" label="Mail" required="false" >
+		 		<option value="{!v.RGuarantee.Mail__c}" text="{!'$'+v.RGuarantee.Mail__c}"></option>
+    	     </lightning:select>
+						
+                    <aura:set attribute="else">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-no-flex" >Mail</label>
+                           
+                            <div class="slds-form-element__control slds-grow" >
+                                <div class="slds-select_container" >
+                                    <select class="slds-select" disabled="true">
+                                        <option >
+										<aura:if isTrue="{!v.RGuarantee.Mail__c>=0}">$</aura:if>
+										<ui:outputNumber  value="{!v.RGuarantee.Mail__c}"   format="0.00" /> 
+                                    </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+             
+            </div>
+          </div>
+
+        </div>
+         <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+        		<div class="slds-form-element">
+           <div class="slds-form-element__control">
+               
+                <aura:if isTrue="{!!v.readonly}">
+                    
+                   <lightning:select disabled="{!v.readonly}" name="Specialty" label="Specialty" required="false" >
+					<option value="{!v.RGuarantee.Specialty__c}" text="{!'$'+v.RGuarantee.Specialty__c}"></option>
+				 </lightning:select>
+						
+                    <aura:set attribute="else">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-no-flex" >Specialty</label>
+                           
+                            <div class="slds-form-element__control slds-grow" >
+                                <div class="slds-select_container" >
+                                    <select class="slds-select" disabled="true">
+                                        <option >
+										<aura:if isTrue="{!v.RGuarantee.Specialty__c>=0}">$</aura:if>
+										<ui:outputNumber  value="{!v.RGuarantee.Specialty__c}"   format="0.00" /> 
+                                    </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+             
+            </div>
+          </div>
+
+        </div>  
+           <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+               <div class="slds-form-element">
+                   <div class="slds-form-element__control">
+                       
+                       <aura:if isTrue="{!!v.readonly}">
+                           
+                           <lightning:select disabled="{!v.readonly}" name="SpecialtyRetail" label="Specialty Retail" required="false" >
+                               <option value="{!v.RGuarantee.Specialty_Retail__c}" text="{!v.RGuarantee.Specialty_Retail__c}"></option>
+                           </lightning:select>
+                           
+                           <aura:set attribute="else">
+                               <div class="slds-form-element">
+                                   <label class="slds-form-element__label slds-no-flex" >Specialty Retail</label>
+                                   
+                                   <div class="slds-form-element__control slds-grow" >
+                                       <div class="slds-select_container" >
+                                           <select class="slds-select" disabled="true">
+                                               <option >
+                                                   <aura:if isTrue="{!v.RGuarantee.Specialty_Retail__c>=0}">$</aura:if>
+                                                   <ui:outputNumber  value="{!v.RGuarantee.Specialty_Retail__c}"   format="0.00" /> 
+                                               </option>
+                                           </select>
+                                       </div>
+                                   </div>
+                               </div>
+                           </aura:set>
+                       </aura:if>
+                       
+                   </div>
+               </div>
+               
+           </div>
+        </aura:if>
+        <aura:if isTrue= "{!v.RGuarantee.RebateExpandedView__c == 'T'}">
+         <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+             <div class="slds-form-element">
+                 <div class="slds-form-element__control">
+                     
+                     <aura:if isTrue="{!!v.readonly}">
+                         
+                         <lightning:select disabled="{!v.readonly}" name="Retail30per" label="Retail 30(%)" required="false" >
+                             <option value="{!v.RGuarantee.Retail_30_1__c}" text="{!v.RGuarantee.Retail_30_1__c+'%'}" formatter="percent-fixed" step="0.01"></option>
+                         </lightning:select>
+                         
+                         <aura:set attribute="else">
+                             <div class="slds-form-element" data-aura-rendered-by="257:405;a">
+                                 <label class="slds-form-element__label slds-no-flex" >Retail 30(%)</label>
+                                 
+                                 <div class="slds-form-element__control slds-grow" >
+                                     <div class="slds-select_container" >
+                                         <select class="slds-select" disabled="true">
+                                             <option ><ui:outputNumber  value="{!v.RGuarantee.Retail_30_1__c}"   format="0.00" />
+                                                  <aura:if isTrue="{!v.RGuarantee.Retail_30_1__c>=0}">%</aura:if>
+                                                 </option>
+                                         </select>
+                                     </div>
+                                 </div>
+                             </div>
+                         </aura:set>
+                     </aura:if>
+                     
+                 </div>
+             </div>
+             
+            </div>
+          
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+          <div class="slds-form-element">
+           <div class="slds-form-element__control">
+               
+                <aura:if isTrue="{!!v.readonly}">
+                    
+                    <lightning:select disabled="{!v.readonly}" name="Retail90per" label="Retail 90(%)" required="false">
+					   <option value="{!v.RGuarantee.Retail_90_1__c}" text="{!v.RGuarantee.Retail_90_1__c+'%'}"></option>   
+					 </lightning:select>
+                    
+                    <aura:set attribute="else">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-no-flex" >Retail 90(%)</label>
+                           
+                            <div class="slds-form-element__control slds-grow" >
+                                <div class="slds-select_container" >
+                                    <select class="slds-select" disabled="true">
+                                        <option ><ui:outputNumber  value="{!v.RGuarantee.Retail_90_1__c}"   format="0.00" /> 
+                                            <aura:if isTrue="{!v.RGuarantee.Retail_90_1__c>=0}">%</aura:if>
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+             
+            </div>
+          </div>
+
+        </div>
+          
+         <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+          <div class="slds-form-element">
+           <div class="slds-form-element__control">
+               
+                <aura:if isTrue="{!!v.readonly}">
+                    
+                    <lightning:select disabled="{!v.readonly}" name="Mchoiceper" label="Mchoice(%)" required="false" >
+					 <option value="{!v.RGuarantee.Mchoice_1__c}" text="{!v.RGuarantee.Mchoice_1__c+'%'}"></option>
+					 </lightning:select>
+                    
+                    <aura:set attribute="else">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-no-flex" >Mchoice(%)</label>
+                           
+                            <div class="slds-form-element__control slds-grow" >
+                                <div class="slds-select_container" >
+                                    <select class="slds-select" disabled="true">
+                                        <option ><ui:outputNumber  value="{!v.RGuarantee.Mchoice_1__c}"   format="0.00" /> 
+                                            <aura:if isTrue="{!v.RGuarantee.Mchoice_1__c>=0}">%</aura:if>
+                                    </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+             
+            </div>
+          </div>
+
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+        <div class="slds-form-element">
+           <div class="slds-form-element__control">
+               
+                <aura:if isTrue="{!!v.readonly}">
+                    
+                   <lightning:select disabled="{!v.readonly}" name="Mail" label="Mail(%)" required="false" >
+					<option value="{!v.RGuarantee.Mail_1__c}" text="{!v.RGuarantee.Mail_1__c+'%'}"></option>
+				 </lightning:select>
+                    
+                    <aura:set attribute="else">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-no-flex" >Mail(%)</label>
+                           
+                            <div class="slds-form-element__control slds-grow" >
+                                <div class="slds-select_container" >
+                                    <select class="slds-select" disabled="true">
+                                        <option ><ui:outputNumber  value="{!v.RGuarantee.Mail_1__c}"   format="0.00" /> 
+                                           <aura:if isTrue="{!v.RGuarantee.Mail_1__c>=0}">%</aura:if>
+                                    </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+             
+            </div>
+          </div>
+
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+         <div class="slds-form-element">
+           <div class="slds-form-element__control">
+               
+                <aura:if isTrue="{!!v.readonly}">
+                    
+                  <lightning:select disabled="{!v.readonly}" name="Specialty" label="Specialty(%)" required="false" >
+					<option value="{!v.RGuarantee.Specialty_1__c}" text="{!v.RGuarantee.Specialty_1__c+'%'}"></option>
+				 </lightning:select>
+                    
+                    <aura:set attribute="else">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-no-flex" >Specialty(%)</label>
+                           
+                            <div class="slds-form-element__control slds-grow" >
+                                <div class="slds-select_container" >
+                                    <select class="slds-select" disabled="true">
+                                        <option > <ui:outputNumber  value="{!v.RGuarantee.Specialty_1__c}"   format="0.00" /> 
+                                            <aura:if isTrue="{!v.RGuarantee.Specialty_1__c>=0}">%</aura:if>
+                                    </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+             
+            </div>
+          </div>
+
+        </div>   
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+          <div class="slds-form-element">
+           <div class="slds-form-element__control">
+               
+                <aura:if isTrue="{!!v.readonly}">
+                    
+                  <lightning:select class="text-label--verysmall" disabled="{!v.readonly}" name="SpecialtyRetail" label="Specialty Retail(%)" required="false" >
+					<option value="{!v.RGuarantee.Specialty_Retail_1__c}" text="{!v.RGuarantee.Specialty_Retail_1__c}"></option>
+				</lightning:select>
+						
+                    <aura:set attribute="else">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-no-flex" >Specialty Retail(%)</label>
+                           
+                            <div class="slds-form-element__control slds-grow" >
+                                <div class="slds-select_container" >
+                                    <select class="slds-select" disabled="true">
+                                        <option ><ui:outputNumber  value="{!v.RGuarantee.Specialty_Retail_1__c}"   format="0.00" /> 
+                                           <aura:if isTrue="{!v.RGuarantee.Specialty_Retail_1__c>=0}">%</aura:if> 
+                                    </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+             
+            </div>
+          </div>
+
+        </div>
+        </aura:if>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--2-of-12">
+          <div class="slds-form-element">
+           <div class="slds-form-element__control">
+            <lightning:select disabled="{!v.readonly}" name="GSTP" label="GSTP" required="false" >
+				<option value="{!v.RGuarantee.GSTP__c}" text="{!v.RGuarantee.GSTP__c}"></option>
+    		</lightning:select>
+           </div>
+          </div>
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--3-of-12">
+          <div class="slds-form-element">
+            <div class="slds-form-element__control">
+              <lightning:select disabled="{!v.readonly}" name="NonSpecialtyFormulary" label="Non-Specialty Formulary" required="false" >
+				<option value="{!v.RGuarantee.Non_Specialty_Formulary_2__c}" text="{!v.RGuarantee.Non_Specialty_Formulary_2__c}"></option>
+    		  </lightning:select>
+            </div>
+          </div>
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--3-of-12">
+          <div class="slds-form-element">
+            <div class="slds-form-element__control">
+             <lightning:select disabled="{!v.readonly}" name="SpecialtyFormulary" label="Specialty Formulary" required="false" >
+				<option value="{!v.RGuarantee.Specialty_Formulary__c}" text="{!v.RGuarantee.Specialty_Formulary__c}"></option>
+    	     </lightning:select>
+            </div>
+          </div>
+        </div>
+        <aura:if isTrue= "{!v.RGuarantee.RebateExpandedView__c == 'F'}">
+         		<div class="slds-form-element">
+           <div class="slds-form-element__control">
+               
+                <aura:if isTrue="{!!v.readonly}">
+                    
+				<lightning:select disabled="{!v.readonly}" name="ClientOwned30" label="Client Owned(30)" required="false" >
+				<option value="{!v.RGuarantee.Client_Owned_30__c}" text="{!'$ '+v.RGuarantee.Client_Owned_30__c}"></option>
+    		 </lightning:select>
+						
+                    <aura:set attribute="else">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-no-flex" >Client Owned(30)</label>
+                           
+                            <div class="slds-form-element__control slds-grow" >
+                                <div class="slds-select_container" >
+                                    <select class="slds-select" disabled="true">
+                                        <option >
+										<aura:if isTrue="{!v.RGuarantee.Client_Owned_30__c>=0}">$</aura:if>
+										<ui:outputNumber  value="{!v.RGuarantee.Client_Owned_30__c}"   format="0.00" /> 
+                                    </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+             
+            </div>
+          </div>
+
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+          		<div class="slds-form-element">
+           <div class="slds-form-element__control">
+               
+                <aura:if isTrue="{!!v.readonly}">
+                    
+				 <lightning:select disabled="{!v.readonly}" name="ClientOwned90" label="Client Owned(90)" required="false" >
+					<option value="{!v.RGuarantee.Client_Owned_90__c}" text="{!'$ '+v.RGuarantee.Client_Owned_90__c}"></option>
+				 </lightning:select>
+						
+                    <aura:set attribute="else">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label slds-no-flex" >Client Owned(90)</label>
+                           
+                            <div class="slds-form-element__control slds-grow" >
+                                <div class="slds-select_container" >
+                                    <select class="slds-select" disabled="true">
+                                        <option >
+										<aura:if isTrue="{!v.RGuarantee.Client_Owned_90__c>=0}">$</aura:if>
+										<ui:outputNumber  value="{!v.RGuarantee.Client_Owned_90__c}"   format="0.00" /> 
+                                    </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+             
+            </div>
+          </div>
+
+        </div>
+        </aura:if>
+          <aura:if isTrue= "{!v.RGuarantee.RebateExpandedView__c == 'T'}">
+          <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+          <div class="slds-form-element">
+            <div class="slds-form-element__control" style="width: 140px;">
+                <aura:if isTrue="{!!v.readonly}">
+                    
+                    <lightning:select  name="ClientOwned30" label="Client Owned (30)(%)" required="false" >
+                        <option value="{!v.RGuarantee.Client_Owned_30_1__c}" text="{!v.RGuarantee.Client_Owned_30_1__c}"></option>
+                    </lightning:select>
+                    
+                    <aura:set attribute="else">
+                        <div class="slds-form-element" data-aura-rendered-by="257:405;a">
+                            <label class="slds-form-element__label slds-no-flex" >Client Owned (30)(%)</label>
+                           
+                            <div class="slds-form-element__control slds-grow" >
+                                <div class="slds-select_container" >
+                                    <select class="slds-select" disabled="true">
+                                        <option ><ui:outputNumber  value="{!v.RGuarantee.Client_Owned_30_1__c}"   format="0.00" /> 
+                                           <aura:if isTrue="{!v.RGuarantee.Client_Owned_30_1__c>=0}">%</aura:if> 
+                                    </option>
+                                    </select>
+                                </div>
+                            </div>
+                         
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </div>
+          </div>
+        </div>
+        <div class="slds-col--padded slds-size--1-of-1 slds-medium-size--1-of-12">
+          <div class="slds-form-element">
+           <div class="slds-form-element__control" style="width: 140px;">
+               
+                <aura:if isTrue="{!!v.readonly}">
+                    
+                    <lightning:select  name="ClientOwned30" label="Client Owned (90)(%)" required="false" >
+                        <option value="{!v.RGuarantee.Client_Owned_90_1__c}" text="{!v.RGuarantee.Client_Owned_90_1__c}"></option>
+                    </lightning:select>
+                    
+                    <aura:set attribute="else">
+                        <div class="slds-form-element" data-aura-rendered-by="257:405;a">
+                            <label class="slds-form-element__label slds-no-flex" >Client Owned (90)(%)</label>
+                           
+                            <div class="slds-form-element__control slds-grow" >
+                                <div class="slds-select_container" >
+                                    <select class="slds-select" disabled="true">
+                                        <option ><ui:outputNumber  value="{!v.RGuarantee.Client_Owned_90_1__c}"   format="0.00" /> 
+                                           <aura:if isTrue="{!v.RGuarantee.Client_Owned_90_1__c>=0}">%</aura:if> 
+                                    </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+             
+            </div>
+          </div>
+        </div>
+        </aura:if>
+        <div class="slds-form-element">
+         <div class="slds-form-element__control">
+              <aura:if isTrue="{!v.isAccess}">
+           <lightning:button aura:id="clickEdit" value="clickEdit" label="Edit" 
+                          variant="brand"
+                          class="slds-button"
+                          onclick="{!c.clickEdit}"/> 
+             </aura:if>
+            </div>
+          </div>
+         </lightning:layout>
+        </div> 
+   <!-- </lightning:card> -->
+ </aura:component>

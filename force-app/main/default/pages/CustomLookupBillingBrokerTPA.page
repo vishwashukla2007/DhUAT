@@ -1,0 +1,12 @@
+<apex:page standardController="Billing_Broker_TPA_Payments__c" showHeader="false">
+<c:CustomLookupScriptVC objectName="Broker_TPA_Name_Support__c" />
+<apex:sectionHeader title="Demo"  subtitle="Custom Lookup" />
+
+  <apex:form id="myForm">  
+    <apex:PageBlock id="PageBlock">     
+      <apex:pageBlockSection columns="1" title="Custom Lookup">
+        <apex:inputField id="look" value="{!Billing_Broker_TPA_Payments__c.BrokerTPA_Name__c}"  />
+      </apex:pageBlockSection>
+    </apex:PageBlock>
+</apex:form>
+</apex:page>

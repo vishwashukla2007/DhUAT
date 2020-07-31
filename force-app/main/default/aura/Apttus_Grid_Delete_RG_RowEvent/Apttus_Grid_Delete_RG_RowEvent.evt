@@ -1,0 +1,6 @@
+<aura:event type="APPLICATION" description="Event template" >
+    <aura:attribute name="isDeleteSuccess" type="Boolean"/>
+    <aura:attribute name="section" type="String"/>
+    <aura:attribute name="delIndex" type="Integer" default="0"/>
+    <aura:attribute name="delObjId" type="String"/>
+</aura:event>

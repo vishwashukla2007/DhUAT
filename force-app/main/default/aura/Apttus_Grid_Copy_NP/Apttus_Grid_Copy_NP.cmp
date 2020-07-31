@@ -1,0 +1,123 @@
+<aura:component controller="Apttus_GridObjectdata" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <aura:attribute name="objects" type="Network_Pricing__c"/>
+    <aura:attribute name="newobject" type="Network_Pricing__c" default="{'Network_Name__c':'Dummy'}"/>
+    <aura:attribute name="nnameoptions" type="Object"/>
+    <aura:attribute name="ntypeoptions" type="Object"/>
+    <aura:attribute name="netobjects" type="Network_Pricing__c"/>
+    <aura:attribute name="fafid" type="String" default="" />
+    <aura:attribute name="networkname" type="String" default="" />
+    <aura:attribute name="networktype" type="String" default="" />
+    <aura:attribute name="loboptions" type="String" default="" />
+    <aura:attribute name="lob" type="String" default="" />
+    <aura:attribute name="desc" type="String" default="" />
+    <aura:attribute name="readonly" type="Boolean" default="false" />
+    <aura:attribute name="descrequired" type="Boolean" default="false" />
+    <aura:attribute name="descreadonly" type="Boolean" default="false" /> 
+    <aura:attribute name="typereadonly" type="Boolean" default="false" /> 
+    <aura:attribute name="disablebtn" type="Boolean" default="false" /> 
+    <aura:attribute name="DisplaySpinner" type="Boolean" default="false" />
+    <aura:attribute name="pricingcount" type="Integer" default="" />
+    <aura:attribute name="yearcount" type="Integer" default="" />
+    <aura:attribute name="recordcount" type="Integer" default="" />
+    <aura:attribute name="activerownum" type="Integer"/>
+    <aura:attribute name="deletedcount" type="Integer"/>
+    <aura:attribute name="addedcount" type="Integer"/>
+     <aura:attribute name="custdesc" type="String" default="" />
+    <ltng:require scripts="{!$Resource.JqueryMin}" afterScriptsLoaded="{!c.setScriptLoaded}" />
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Notify_Save_Event" action="{!c.handleSaveVerify}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Notify_Error_Event" action="{!c.handleError}"/>
+    <aura:registerEvent name="savecomplete" type="c:Apttus_Grid_NT_Close_Event"/>
+    <aura:registerEvent name="copystart" type="c:Apttus_Grid_Copy_Start_Event"/>
+    <aura:handler event="c:Apttus_Grid_NT_Save_Event" action="{!c.handleSave}"/>
+    <aura:handler event="c:Apttus_Grid_Refresh_Parent_Event" action="{!c.doInit}"/>
+    <aura:handler event="c:Apttus_Grid_Inactive_Parent_Event" action="{!c.displayspinner}"/>
+    <aura:handler event="c:Apttus_Delete_Verify_Event" action="{!c.deletecount}"/>
+    <aura:handler event="c:Apttus_Grid_Copy_Complete_Event" action="{!c.copycomplete}"/>
+  
+    <lightning:card  class="container">
+    <lightning:layout>
+        <aura:if isTrue="{!v.DisplaySpinner}">
+  			<lightning:spinner variant="brand" alternativeText="Saving" size="medium" class="slds-spinner_container"/>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+	</aura:if>   
+    </lightning:layout>
+    <lightning:layout class="text-label--large" horizontalAlign="left" multipleRows="true">
+        <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="font" size="">
+             <lightning:input type="text"  required="true" aura:id="custDesc" name="Network Display Name" value="{!v.custdesc}" label="Network Display Name"  onchange="{!c.updateCustomdesc}" >
+    		</lightning:input>
+        </lightning:layoutItem>
+        <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="">
+             <lightning:select disabled="{!v.readonly}" aura:id="Network" name="Network" label="Network" required="true" onchange="{!c.update}">
+                <aura:iteration items="{!v.nnameoptions}" var="opt">
+  				<option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    			</aura:iteration>
+        		<option value="{!v.objects.Network_Name__c}" text="{!v.objects.Network_Name__c}"></option>
+    		</lightning:select>
+        </lightning:layoutItem>
+        <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="">
+             <lightning:select  aura:id="Type" name="Type" label="Type" disabled="{!v.typereadonly}" required="true" onchange="{!c.updatetype}">
+                <aura:iteration items="{!v.ntypeoptions}" var="opt">
+  				<option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    			</aura:iteration>
+        		<option value="{!v.objects.Network_Type__c}" text="{!v.objects.Network_Type__c}"></option>
+    		</lightning:select>
+         </lightning:layoutItem>
+        <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="">
+             <lightning:input type="text" disabled="{!v.descreadonly}" required="{!v.descrequired}" aura:id="Desc" name="Custom Network Description" value="{!v.desc}" label="Custom Network Description"  onchange="{!c.updatedesc}" >
+    		</lightning:input>
+        </lightning:layoutItem>
+         <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="">
+             <lightning:select disabled="{!v.readonly}" aura:id="LOB" name="LOB" label="LOB" required="true" onchange="{!c.updatelob}">
+                <aura:iteration items="{!v.loboptions}" var="opt">
+  				<option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    			</aura:iteration>
+        		<option value="{!v.lob}" text="{!v.lob}"></option>
+    		</lightning:select>
+        </lightning:layoutItem>
+    </lightning:layout >
+        <div class="slds-p-bottom_x-large"></div>
+        <div class="slds-p-bottom_x-large"></div>
+        <lightning:layout  class="width">
+        <div class="slds-scrollable">
+        <table style="table-layout: unset !important;" class="slds-table slds-table_bordered inner">
+            <thead>
+                <tr class="slds-text-heading_label slds-line-height_reset">
+                    <th scope="col"><div class="" title=""></div></th>
+                    <th scope="col"><div class="yr" title="Year">Year</div></th>
+                    <th scope="col"><div class="planyr"  title="Plan Year">Plan Year</div></th>
+                    <th class="slds-is-resizable" scope="col"><div class="brbasis" title="Brand Basis">Brand Basis</div></th>
+                    <th scope="col"><div class="" title="Brand Rate">Brand Rate %</div></th>
+                    <th class="slds-is-resizable"  scope="col"><div class="gbasis"  title="Generic Basis">Generic Basis</div></th>
+                    <th scope="col"><div class="" title="Non-MAC Generic Rate">Non-MAC Generic Rate %</div></th>
+                    <th scope="col"><div class="" title="GER Guarantee">GER Guarantee %</div></th>
+                    <th scope="col"><div class="" title="Brand Disp. Fee">Brand Disp. Fee $</div></th> 
+                    <th scope="col"><div class="" title="Generic Disp. Fee">Generic Disp. Fee $</div></th> 
+                    <th scope="col"><div class="" title="SSG Guarantee">SSG Guarantee %</div></th>
+                    <th scope="col"><div class="" title="Flat Generic Rate">Flat Generic Rate %</div></th>
+                    <th scope="col"><div class="" title="BER Guarantee">BER Guarantee %</div></th>
+		            <th scope="col"><div class="" title="MER Guarantee">MER Guarantee %</div></th>
+                    <th scope="col"><div class="" title="Preferred Brand Rate">Preferred Brand Rate %</div></th>
+                    <th scope="col"><div class="" title="Non-Preferred Brand Rate">Non-Preferred Brand Rate %</div></th>
+                    <th scope="col"><div class="" title="NED Guarantee">NED Guarantee %</div></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Use the Apex model and controller to fetch server side data -->
+                <aura:iteration items="{!v.netobjects}" var="p" indexVar="index">
+                        <c:Apttus_Grid_Copy_NP_Child aura:id="compB" activerownum ="{!v.activerownum}"  yearcount="{!v.yearcount}" networkname="{!v.networkname}" networktype="{!v.networktype}" desc="{!v.desc}" lob="{!v.lob}" objects="{!p}" custdesc="{!v.custdesc}"/>
+                </aura:iteration> 
+                
+            </tbody>
+        </table>   
+        </div>
+       </lightning:layout>
+       <lightning:layout>
+        <lightning:layoutitem>
+        <div class="slds-p-top_x-large"></div>
+        <lightning:button label="Add Year" disabled="{!v.disablebtn}" iconName="utility:add" iconPosition="left" class="slds-button" onclick="{!c.create}"/>
+        </lightning:layoutitem>
+       </lightning:layout>
+    </lightning:card>
+     
+</aura:component>

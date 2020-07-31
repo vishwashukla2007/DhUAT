@@ -1,0 +1,19 @@
+.THIS .Black{
+    color: black;
+    background-color: red;
+}
+.THIS .highlight{
+    color: red;
+}
+
+.THIS .slds-spinner_container  {
+    background-color: white;
+    height:30%;
+    width:35%;
+    top:30%;
+    left:40%;
+}
+
+.THIS .slds-backdrop_open {
+    /*opacity: 0.0 !important;*/
+}

@@ -1,0 +1,41 @@
+<apex:page standardController="TPA_Form__c" extensions="TPANIFFORMcontroller" lightningStylesheets="true"  title=" TPA NIF Form" id="pg">
+  
+    <script>
+   //Workaround to work HelpText in Lightning Component    
+   function workaround() { 
+       if ((window.sfdcPage) && (sfdcPage.executeOnloadQueue)) { 
+       sfdcPage.executeOnloadQueue(); 
+                 } 
+                 } 
+    window.addEventListener('load', workaround);    
+      
+  </script>
+  <apex:form id="theform">
+       <apex:pageBlock id="pb" mode="Edit" title="TPA NIF Request Form">
+           
+           <apex:pageBlockButtons >
+               <apex:commandButton value="Save" action="{!save}" />
+               <apex:commandButton value="Cancel" action="{!Cancel}"  />
+           </apex:pageBlockButtons>
+           <apex:pageBlockSection columns="2">
+               <apex:outputField value="{!TPA_Form__c.Client_Info_ID__c}" label="Client Information" />
+               <apex:inputField value="{!TPA_Form__c.CLIENT_NAME__c}"  label="Client Name"  required="true"/>
+               <apex:inputField value="{!TPA_Form__c.EFFECTIVE_DATE__c}" label="Effective Date" required="true"/>
+               <apex:inputField value="{!TPA_Form__c.Client_Code__c}"  label="Client Code" required="true"/>
+               <apex:inputField value="{!TPA_Form__c.C_A_G__c}"  label="C/A/G"  required="true"/>
+               <apex:inputField value="{!TPA_Form__c.PLAN_ID__c}"   />
+               <apex:inputField value="{!TPA_Form__c.Maintenance_Choice_Network1__c}"  label="Maintenance Choice Network"  required="true" html-disabled="true"/>
+               <apex:inputField value="{!TPA_Form__c.X90_Day_Network__c}"  label="90 Day Network" html-disabled="true"/>
+               <apex:inputField value="{!TPA_Form__c.MDCAID_Network_Government_Paper_Claims__c}"  label="MDCAID Network (Government Paper Claims)"  required="true"/>
+               <apex:inputField value="{!TPA_Form__c.Network_Name__c}"  label="Network Name"  required="true"/>
+               <apex:inputField value="{!TPA_Form__c.GOVCLP_Network_VA_Claims_1_90_day_supp__c}"  label="GOVCLP Network (VA Claims 1-90 day supply)"  required="true"/>
+               <apex:inputField value="{!TPA_Form__c.Pricing_Tiers__c}"  label="Pricing Tiers" />
+               <apex:inputField value="{!TPA_Form__c.If_CVSHealth_will_not_process_government__c}"  label="If CVSHealth will not process government claims, you MUST provide the payer's name and address"  />
+               <apex:inputField value="{!TPA_Form__c.if_yes_provide_tier_information_for_Mai__c}"  />
+               <apex:inputField value="{!TPA_Form__c.If_client_has_a_custom_network_please_li__c}"  label="If Client has a custom network please list network ID" /><br/>
+               <apex:inputField value="{!TPA_Form__c.Additional_Notes__c}"  />             
+               
+           </apex:pageBlockSection>
+       </apex:pageBlock>
+  </apex:form>
+</apex:page>

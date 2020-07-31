@@ -1,0 +1,22 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <!--<aura:handler name="render" value="{!this}" action="{!c.onRender}"/>-->
+    <aura:attribute name="message" type="String" default="ApttusLEX"/>
+    <aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="display" type="Boolean" Default="true"/>
+    <aura:attribute name="params" type="String" />
+    <aura:attribute name="lightning" type="Boolean" default="true" />
+    <aura:registerEvent name="appEvent" type="c:Apttus_NT_Grid_Modal_Close_Event"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Open_Event" action="{!c.display}" />
+    <aura:if isTrue="{!v.display}">
+	<div class="slds-modal--large" >
+ 		 <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+   		 <div class="slds-modal__container">  	    
+            <!-- The Visualforce page to send data to -->
+			 <iframe aura:id="vfFrame" width="100%" height="100%" style="border: 1px solid"  src="{!'https://'+v.vfHost + v.params }"/>          
+    </div>
+  </section>
+  </div>   
+  </aura:if>
+ </aura:component>

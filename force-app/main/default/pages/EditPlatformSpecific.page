@@ -1,0 +1,1004 @@
+<apex:page standardController="Platform_Specifics__c" extensions="EditPlatFormSpecificController" id="pageId" lightningStylesheets="TRUE" sidebar="false">
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" />
+    
+    <style type="text/css">
+        .dateFormat{
+           visibility:hidden;
+        }
+         .message ul,.messageText{
+           
+            font-weight: bold;
+        }
+        </style>
+    
+     <script>
+     try{
+     
+        window.onload=function(){
+        
+            var nsfSectionRequired = '{!nsfSectionRequired}';
+            var sfSectionRequired = '{!sfSectionRequired}';
+            var gstpSectionRequired = '{!gstpSectionRequired}';            
+            var dGSTPFormularyRequired = '{!dGSTPFormularyRequired}';
+            var showTermflag = '{!showTermflag}';
+            
+            var level1ID = document.getElementById('{!$Component.frm.PB.PBS2.level1Id}');
+            var level2ID = document.getElementById('{!$Component.frm.PB.PBS2.level2Id}');
+            var level3ID = document.getElementById('{!$Component.frm.PB.PBS2.level3Id}');
+            var effectiveDateID = document.getElementById('{!$Component.frm.PB.PBS3.effectiveDateID}');
+            if(showTermflag == 'true'){
+            var terminatedID = document.getElementById('{!$Component.frm.PB.PBS3.terminatedID}');
+            var terminatedDateID = document.getElementById('{!$Component.frm.PB.PBS3.terminatedDateID}');
+            }
+            
+            if(gstpSectionRequired == 'true'){
+            var GSTPEffectiveDateID = document.getElementById('{!$Component.frm.PB.PBS4.GSTPEffectiveDateID}');
+            var GSTPEndDateId = document.getElementById('{!$Component.frm.PB.PBS4.GSTPEndDateId}');
+            var GSTPChoiceID = document.getElementById('{!$Component.frm.PB.PBS4.GSTPChoiceID}');
+            }
+            
+            if(sfSectionRequired == 'true'){
+            var sfEffectiveDateId = document.getElementById('{!$Component.frm.PB.PBS5.sfEffectiveDateId}');
+            var sfEndDateId = document.getElementById('{!$Component.frm.PB.PBS5.sfEndDateId}');
+           // var benefitChoiceID = document.getElementById('{!$Component.frm.PB.PBS3.benefitChioceID}');
+            var sfChoiceId = document.getElementById('{!$Component.frm.PB.PBS5.sfChoiceId}');
+            }
+            
+            if(nsfSectionRequired == 'true'){
+            var nsfEffectiveDateId = document.getElementById('{!$Component.frm.PB.PBS6.nsfEffectiveDateId}');
+            var nsfRebateEndDateId = document.getElementById('{!$Component.frm.PB.PBS6.nsfRebateEndDateId}');
+            var nsfChoiceId = document.getElementById('{!$Component.frm.PB.PBS6.nsfChoiceId}');
+            }
+            
+            
+            
+            //var GSTPFormularyID = document.getElementById('{!$Component.frm.PB.PBS3.GSTPFormularyID}');
+                                    
+            var clientSubType = '{!clientSubType}';
+            var termFlag = '{!platformSpecific.Termed__c}'; 
+            var diffGSTPFlag = '{!platformSpecific.DifferentGSTPFormularyEffectiveDates__c}';
+            
+            if(diffGSTPFlag == 'false'){
+               if(gstpSectionRequired == 'true'){
+                   GSTPEffectiveDateID.disabled = true;
+                   GSTPEndDateId.disabled = true;
+               }    
+               if(sfSectionRequired == 'true'){
+                   sfEffectiveDateId.disabled = true;
+                   sfEndDateId.disabled = true;
+               }
+               if(nsfSectionRequired == 'true'){
+                   nsfEffectiveDateId.disabled = true;
+                   nsfRebateEndDateId.disabled = true;
+               }
+            }
+            
+            
+            /* Commented to populate GSTP and effective dates PT US 157 by Srini Bathini
+              if(nsfSectionRequired == 'false'){
+                  if(gstpSectionRequired == 'true'){
+                   GSTPEffectiveDateID.disabled = true;
+                    GSTPChoiceID.disabled = true;
+               }  
+               if(sfSectionRequired == 'true'){
+                   sfEffectiveDateId.disabled = true;
+                    sfChoiceId.disabled = true;
+               }
+                 if(nsfSectionRequired == 'true'){
+                   nsfEffectiveDateId.disabled = true;
+                  //  nsfChoiceId.disabled = true;
+               }                        
+             }*/
+            
+            var clientChoice = '{!clientChoice}';
+            
+            if(clientChoice == 'false'){
+               if(sfSectionRequired == 'true'){
+                //  benefitChoiceID.disabled = true;
+               }
+            }
+            
+            var rClientChoice = '{!rClientChoice}';
+            
+            /* Commented to populate GSTP and effective dates PT US 157 by Srini Bathini
+            if(rClientChoice == 'false'){
+               if(gstpSectionRequired == 'true'){
+                   GSTPChoiceID.disabled = true;
+               }
+               if(sfSectionRequired == 'true'){
+                   sfChoiceId.disabled = true;
+               }
+               
+               if(nsfSectionRequired == 'true'){
+                   var nsfCoiceId = document.getElementById('{!$Component.frm.PB.PBS6.nsfCoiceId}');
+                   nsfCoiceId.disabled = true;
+               }
+            } */
+            
+            if(clientSubType == 'Health Plan Master' || clientSubType == 'Coalition Master' || clientSubType == 'TPA Master'){
+                effectiveDateID.disabled = false;
+                if(showTermflag == 'true'){
+                    terminatedID.disabled = false;
+                    terminatedDateID.disabled = false;
+                }
+                }
+            if(termFlag == 'false'){
+                if(showTermflag == 'true'){
+                    terminatedDateID.disabled = true;
+                    terminatedDateID.value = '';
+                }
+                }    
+            if(clientSubType != 'Health Plan Master' && clientSubType != 'Coalition Master' && clientSubType != 'TPA Master'){
+                 effectiveDateID.disabled = true;  
+                //benefitChoiceID.disabled = true;  
+               // GSTPFormularyID.disabled = true; 
+               if(showTermflag == 'true'){
+                   terminatedID.disabled = true;  
+                 }        
+                }    
+                     
+           
+        }
+          
+       
+        
+        function level1Check(level1Id){
+             
+            var level1Value = document.getElementById(level1Id).value;
+            var level1ID = document.getElementById('{!$Component.frm.PB.PBS2.level1Id}');
+            
+            var level2ID = document.getElementById('{!$Component.frm.PB.PBS2.level2Id}');
+            var level3ID = document.getElementById('{!$Component.frm.PB.PBS2.level3Id}');
+            
+            if(level1Value!= null && level1Value!= ''){
+            
+               var theAccountId = document.getElementById('{!$Component.frm.PB.PBS2.level1Id}_lkid').value;
+              
+               var platformValue = document.getElementById('{!$Component.frm.PB.PBS2.platform}');
+               level2ID.disabled= false;
+               if(level2ID.value){
+                   level3ID.disabled= false; 
+                  }else{                             
+                            level3ID.disabled= true;                            
+                         } 
+               if(platformValue.value == 'RxCLAIM'){
+                   checkLevel1(level1Value);     
+                 }
+              }else{
+                      level2ID.disabled= true; 
+                      level3ID.disabled= true;
+                      checkLevel1(level1Value);
+                   }            
+        };
+        
+        function level2Check(level2Id){
+             
+            var level2Value = document.getElementById(level2Id).value;
+            var level1ID = document.getElementById('{!$Component.frm.PB.PBS2.level1Id}');
+            var level2ID = document.getElementById('{!$Component.frm.PB.PBS2.level2Id}');
+            var level3ID = document.getElementById('{!$Component.frm.PB.PBS2.level3Id}');
+            
+            if(level2Value!= null && level2Value!= ''){
+               var platformValue = document.getElementById('{!$Component.frm.PB.PBS2.platform}');
+               level3ID.disabled= false;
+               if(platformValue.value == 'RxCLAIM'){
+                   checkLevel2(level2Value);     
+                 }
+              }else{
+                      level3ID.disabled= true; 
+                      checkLevel2(level2Value);
+                   }            
+        };
+        
+        function level3Check(level3Id){
+             
+            var level3Value = document.getElementById(level3Id).value;
+            if(level3Value!= null && level3Value!= ''){
+               var platformValue = document.getElementById('{!$Component.frm.PB.PBS2.platform}');
+               if(platformValue.value == 'RxCLAIM'){
+                   checkLevel3(level3Value);     
+                 }
+              }else{
+                      checkLevel3(level3Value);
+                   }            
+        };
+        
+        function effectiveDateCheck(effectiveDateID){
+             
+            var effectiveDate = document.getElementById(effectiveDateID).value;
+            
+             if(effectiveDate){
+               checkEffectiveDate(effectiveDate); 
+            }else{
+                    checkEffectiveDate(effectiveDate); 
+                 }             
+        };
+        
+        function termFlagCheck(checkbox){  
+                    
+            terminatedDateCheck(checkbox.checked);
+        };
+        
+        function terminateDateCheck(terminateDateID){  
+                    
+            var terminateDate= document.getElementById(terminateDateID).value;
+            if(terminateDate){
+               checkTerminateDate(terminateDate); 
+            }else{
+                    checkTerminateDate(terminateDate); 
+                 }
+        };
+        
+        function terminateDateCheck(terminateDateID){  
+                    
+            var terminateDate= document.getElementById(terminateDateID).value;
+            if(terminateDate){
+               checkTerminateDate(terminateDate); 
+            }else{
+                    checkTerminateDate(terminateDate); 
+                 }
+        };
+        
+        function GSTPFormularyDatesCheck(checkbox){  
+           
+            gstpFormularyDatesCheck(checkbox.checked);
+            
+                
+        };
+        
+        function sfEndDateCheck(sfEndDateId){  
+          
+           var sfEndDate = document.getElementById(sfEndDateId).value;
+            
+            var sfEffectiveDate = document.getElementById('{!$Component.frm.PB.PBS5.sfEffectiveDateId}').value;
+            
+            if(sfEndDate){
+               sfEndDateCheckaction(sfEffectiveDate,sfEndDate); 
+            }else{
+                    sfEndDateCheckaction(sfEffectiveDate,sfEndDate); 
+                 }
+           
+        };
+        
+        function nsfEndDateCheck(nsfRebateEndDateId){  
+          
+           var nsfEndDate = document.getElementById(nsfRebateEndDateId).value;
+          
+            var nsfEffectiveDate = document.getElementById('{!$Component.frm.PB.PBS6.nsfEffectiveDateId}').value;
+          
+            if(nsfEndDate){
+               nsfEndDateCheckaction(nsfEffectiveDate,nsfEndDate); 
+            }else{
+                    nsfEndDateCheckaction(nsfEffectiveDate,nsfEndDate); 
+                 }
+           
+        };
+        
+        function gstpEndDateCheck(GSTPEndDateId){  
+         
+           var gstpEndDate = document.getElementById(GSTPEndDateId).value;
+          
+            var gstpEffectiveDate = document.getElementById('{!$Component.frm.PB.PBS4.GSTPEffectiveDateID}').value;
+         
+            if(gstpEndDate){
+               gstpEndDateCheckaction(gstpEffectiveDate,gstpEndDate); 
+            }else{
+                    gstpEndDateCheckaction(gstpEffectiveDate,gstpEndDate); 
+                 }
+           
+        };
+        
+        function sfEffectiveDateCheck(sfEffectiveDateId){  
+        
+           var sfEffectiveDate = document.getElementById(sfEffectiveDateId).value;
+         
+            var effectiveDate = document.getElementById('{!$Component.frm.PB.PBS3.effectiveDateID}').value;
+           
+            if(sfEffectiveDate){
+               sfEffectiveDateCheckAction(sfEffectiveDate,effectiveDate); 
+            }else{
+                    sfEffectiveDateCheckAction(sfEffectiveDate,effectiveDate); 
+                 }
+           
+        };
+        
+        function nsfEffectiveDateCheck(nsfEffectiveDateId){  
+         
+           var nsfEffectiveDate = document.getElementById(nsfEffectiveDateId).value;
+        
+            var effectiveDate = document.getElementById('{!$Component.frm.PB.PBS3.effectiveDateID}').value;
+          
+            if(nsfEffectiveDate){
+               nsfEffectiveDateCheckAction(nsfEffectiveDate,effectiveDate); 
+            }else{
+                    nsfEffectiveDateCheckAction(nsfEffectiveDate,effectiveDate); 
+                 }
+           
+        };
+        
+        function gstpEffectiveDateCheck(GSTPEffectiveDateID){  
+          
+           var gstpEffectiveDate = document.getElementById(GSTPEffectiveDateID).value;
+          
+            var effectiveDate = document.getElementById('{!$Component.frm.PB.PBS3.effectiveDateID}').value;
+          
+            if(gstpEffectiveDate){
+               gstpEffectiveDateCheckAction(gstpEffectiveDate,effectiveDate); 
+            }else{
+                    gstpEffectiveDateCheckAction(gstpEffectiveDate,effectiveDate); 
+                 }
+           
+        };
+        
+         function doCancelterminateDateCheck(){  
+          
+          if(showTermflag == 'true'){         
+           var terminatedDateID = document.getElementById('{!$Component.frm.PB.PBS3.terminatedDateID}');
+           var tDay = new Date();
+           var tMonth = tDay.getMonth()+1;
+            var tDate = tDay.getDate();
+            if ( tMonth < 10) tMonth = "0"+tMonth;
+            if ( tDate < 10) tDate = "0"+tDate;
+            terminatedDateID.value = tMonth+"/"+tDate+"/"+tDay.getFullYear();
+            terminatedDateID.disabled = true;
+            }
+            doCancel();
+           
+        };
+        
+        }catch(e){
+         
+     }
+     </script>
+      <apex:pagemessages id="pmsg" escape="false"></apex:pagemessages>
+  <!--   <apex:outputPanel id="pmsg">
+     <apex:pagemessages escape="false"></apex:pagemessages>
+       </apex:outputPanel>-->
+        <apex:outputPanel style="padding-left: 10px"/>
+      
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+        
+    <apex:form id="frm">
+    
+        <apex:pageBlock id="PB" title="Platform Specifics Edit">
+        
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!doSave}" onmouseover="saveMethodover()" onmouseout="saveMethodout()" rerender="pmsg" />
+                <apex:commandButton value="Cancel" onclick="doCancelterminateDateCheck()"/>
+            </apex:pageBlockButtons>
+            
+            <apex:pageBlockSection title="Platform Specifics Detail" collapsible="false" id="PBS1">
+                <apex:outputField value="{!platformSpecific.RecordTypeId}"/>
+                <apex:outputField value="{!platformSpecific.FAF_ID__c}"/>
+                 <apex:outputField value="{!platformSpecific.FAF_Client_Information__c}"/>
+            </apex:pageBlockSection>
+            
+             <apex:pageBlockSection title="Carrier, Account, Group Information (CAG)" collapsible="false" id="PBS2">
+                <apex:inputField value="{!platformSpecific.Platform__c}" required="true" id="platform" >
+                 <apex:actionSupport event="onchange" action="{!onchangePlatform}" rerender="frm" oncomplete="Level1Function()"/>
+                 </apex:inputField>
+                <apex:pageBlockSectionItem />
+                 <apex:inputField value="{!platformSpecific.LOB__c}" required="true" />
+                 <apex:pageBlockSectionItem />
+                  <apex:inputField value="{!platformSpecific.Instruction__c}" required="true"/>
+                 <apex:pageBlockSectionItem />
+                <!--<apex:inputField value="{!platformSpecific.Level_1_Record_ID__c}" id="level1Id" />-->
+               
+               <apex:outputPanel layout="inline">  
+                  <div class="requiredInput" id="lookupcontainer" style="text-align: right;margin-right: 60px;">  
+                        <label style="vertical-align: top;">Level 1 ID </label>
+                       <input style="vertical-align: top;" class="opp_{!platformSpecific.Id}" type="text" id="leveloneId" name="name" value="{!platformSpecific.Level_1_Record_ID__r.Carrier_ID__c}"  onchange="Level1Function()" />  
+                      <img src="{!$Resource.LookupIcon1}" Class="lookupIcon" style="cursor:pointer;width:21px;height:21px" 
+                           onclick="popupwindow('CAG__c', 600, 500,'C','A','{!platformSpecific.Platform__c}')"/> 
+                       <!--<a StyleClass="lookupIcon" style="cursor:pointer;" -->
+                       <!--         onclick="popupwindow('CAG__c', 600, 500,'C','Active','{!platformSpecific.Platform__c}')" >New</a>  -->
+                  </div>  
+                  <apex:inputText style="display:none" styleClass="userId_{!platformSpecific.Id}" value="{!platformSpecific.Level_1_Record_ID__c}" />  
+                  <apex:inputText style="display:none" styleClass="owner_{!platformSpecific.Id}"  value="{!platformSpecific.Level_1_Record_ID__c}" />
+                 <!--    <apex:actionSupport event="onchange" action="{!onchangeLevel1}" rerender="frm" /> -->
+                </apex:outputPanel> 
+                <!---LookupEnd -->
+                
+               
+               <!-- <apex:outputField value="{!platformSpecific.Level1_Name__c}" id="level1Name"/>-->
+               
+                <apex:inputText styleClass="Lev_{!platformSpecific.Id}" value="{!platformSpecific.Level1_Name__c}" id="level1Name"  style="background-color: rgb(236, 235, 234);" onmouseover="Hidelevel('pageId:frm:PB:PBS2:level1Name')" onmouseout="showlevel('pageId:frm:PB:PBS2:level1Name')"/>
+               
+                  <!--<apex:inputField value="{!platformSpecific.Level_2_record_ID__c}" id="level2Id" />-->
+                <apex:outputPanel layout="inline" >  
+                  <div class="requiredInput" id="lookupcontainer2" style="text-align: right;margin-right: 60px;">  
+                        <label style="vertical-align: top;"> Level 2 ID </label>
+                       <input style="vertical-align: top;" class="opp2_{!platformSpecific.Id}" type="text" id="LeveltwoId" name="name" value="{!platformSpecific.Level_2_Record_ID__r.Account_ID__c}" disabled="true" onchange="Level2Function()"/>  
+                      <img src="{!$Resource.LookupIcon1}" Class="lookupIcon" id="Lookupone" style="cursor:pointer;width:21px;height:21px" onmouseover ="hideimage()"
+                           onclick="popupwindow2('CAG__c', 600, 500,'A','A','{!platformSpecific.Platform__c}','{!platformSpecific.Level_1_Record_ID__r.Carrier_ID__c}','{!platformSpecific.Level_1_Record_ID__r.Carrier_Name__c}')"/>
+                       <img src="{!$Resource.LookupIcon1}" Class="lookupIcon" id="Lookuptwo" style="cursor:pointer;width:21px;height:21px;display:none" onmouseover ="showimage()"/>
+                                      </div>    
+                  <apex:inputText style="display:none" styleClass="userId2_{!platformSpecific.Id}" value="{!platformSpecific.Level_2_record_ID__c}" />  
+                  <apex:inputText style="display:none" styleClass="owner2_{!platformSpecific.Id}"  value="{!platformSpecific.Level_2_record_ID__c}" />  
+                  <!--<apex:actionSupport event="onchange" action="{!onchangeLevel2}" rerender="frm" />-->
+                </apex:outputPanel> 
+              
+              <!--<  <apex:outputField value="{!platformSpecific.Level2_Name__c}" id="level2Name"/>-->
+                <apex:inputText styleClass="Lev2_{!platformSpecific.Id}" value="{!platformSpecific.Level2_Name__c}" id="level2Name" style="background-color: rgb(236, 235, 234);" onmouseover="Hidelevel('pageId:frm:PB:PBS2:level2Name')" onmouseout="showlevel('pageId:frm:PB:PBS2:level2Name')" />
+                
+                <!--<apex:inputField value="{!platformSpecific.Level_3_record_ID__c}" id="level3Id" />-->
+                <apex:outputPanel layout="inline">  
+                  <div class="requiredInput" id="lookupcontainer"  style="text-align: right;margin-right: 60px;">  
+                        <label style="vertical-align: top;">Level 3 ID </label>
+                       <input style="vertical-align: top;" class="opp3_{!platformSpecific.Id}" type="text" name="name" id="levlthreeId" value="{!platformSpecific.Level_3_record_ID__r.Group_ID__c}" disabled="true" onchange="Level3Function()"/>  
+                      <img src="{!$Resource.LookupIcon1}" Class="lookupIcon" id="Level3Lookupone" style="cursor:pointer;width:21px;height:21px" onmouseover ="Levelhideimage()"
+                           onclick="popupwindow3('CAG__c', 600, 500,'G','A','{!platformSpecific.Platform__c}','{!platformSpecific.Level_1_Record_ID__r.Carrier_ID__c}','{!platformSpecific.Level_1_Record_ID__r.Carrier_Name__c}')"/>
+                         <img src="{!$Resource.LookupIcon1}" Class="lookupIcon" id="Level3Lookuptwo" style="cursor:pointer;width:21px;height:21px;display:none" onmouseover ="Levelshowimage()"/>
+                </div>  
+                  <apex:inputText style="display:none" styleClass="userId3_{!platformSpecific.Id}" value="{!platformSpecific.Level_3_record_ID__c}" />  
+                  <apex:inputText style="display:none" styleClass="owner3_{!platformSpecific.Id}" 
+                   value="{!platformSpecific.Level_3_record_ID__c}" />  
+                </apex:outputPanel> 
+             <!--   <apex:outputField value="{!platformSpecific.Level3_Name__c}" id="level3Name"/> -->
+                 <apex:inputText styleClass="Lev3_{!platformSpecific.Id}" value="{!platformSpecific.Level3_Name__c}" id="level3Name" style="background-color: rgb(236, 235, 234);" onmouseover="Hidelevel('pageId:frm:PB:PBS2:level3Name')" onmouseout="showlevel('pageId:frm:PB:PBS2:level3Name')"/>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Platform Specifics Information" collapsible="false" id="PBS3">
+                
+                <apex:inputField value="{!platformSpecific.EffectiveDate__c}" id="effectiveDateID" onchange="effectiveDateCheck('{!$Component.effectiveDateID}')"  style="border-color: {!IF(hightlightBlock==true,'red','None')}"/>
+               
+                <apex:inputField value="{!platformSpecific.DifferentGSTPFormularyEffectiveDates__c}" onchange="GSTPFormularyDatesCheck(this)" id="GSTPFormularyID" rendered="{!dGSTPFormularyRequired}"/>
+                <apex:outputText rendered="{!!dGSTPFormularyRequired}"></apex:outputText>
+                <apex:inputField value="{!platformSpecific.Termed__c}" id="terminatedID" onchange="termFlagCheck(this)" rendered="{!showTermed }"/>
+                <apex:pageBlockSectionItem id="sfPBenifitChoiceId" rendered="{!SpecialtyPharmacyBenefitPriceList}">
+                   <apex:outputLabel for="sfPnl" value="Specialty Pharmacy Benefit & Price List" />
+                   <apex:outputPanel id="sfPnl">
+                     <apex:selectList value="{!platformSpecific.Specialty_Pharmacy_Benefit_Price_List__c}" label="Specialty Pharmacy Benefit & Price List" id="SpecialityPharmacyChoice" size="1">
+                       <apex:selectOptions value="{!splFormalityChoicePLValues}" />
+                     </apex:selectList>                        
+                   </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:outputText rendered="{!!SpecialtyPharmacyBenefitPriceList}"></apex:outputText>            
+                <apex:inputField value="{!platformSpecific.Termed_Date__c}" id="terminatedDateID" required="{!termedDateRequired }" onchange="terminateDateCheck('{!$Component.terminatedDateID}')" rendered="{!showTermflag}" />
+                 
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="GSTP Information" collapsible="false" id="PBS4" rendered="{!gstpSectionRequired}">
+                <apex:pageBlockSectionItem id="GSTPChoiceID">
+                   <apex:outputLabel for="gstpPnl" value="GSTP Choice" />
+                   <apex:outputPanel id="gstpPnl">
+                     <apex:selectList value="{!platformSpecific.GSTP_Choice__c}" label="GSTP Choice" id="GSTPChoice" size="1">
+                       <apex:selectOptions value="{!gstpChoiceValues}" />
+                     </apex:selectList>                        
+                   </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                
+                <apex:inputField value="{!platformSpecific.GSTPEffectiveDate__c}" id="GSTPEffectiveDateID" onchange="gstpEffectiveDateCheck('{!$Component.GSTPEffectiveDateID}')" /><span/>
+                <apex:inputField value="{!platformSpecific.GSTPEndDate__c}" id="GSTPEndDateId" onchange="gstpEndDateCheck('{!$Component.GSTPEndDateId}')" />
+            </apex:pageBlockSection>
+           
+                 <apex:pageBlockSection title="Specialty Formulary Information" collapsible="false" id="PBS5" rendered="{!sfSectionRequired}">
+                
+              <!--  <apex:pageBlockSectionItem id="benefitChioceID" rendered="{!clientChoice}">
+                   <apex:outputLabel for="choicePanel" value="Speciality Pharmacy benifit Choice" />
+                   <apex:outputPanel id="yearPnl">
+                     <apex:selectList value="{!platformSpecific.Specialty_Pharmacy_Benefit_Choice__c}" label="Speciality Pharmacy benifit Choice" id="SpecialityPharmacybenifitChoice" size="1">
+                       <apex:selectOptions value="{!pharmacyBenefitChoiceValues}" />
+                     </apex:selectList>                        
+                   </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:outputText rendered="{!!clientChoice}"></apex:outputText> -->
+                
+                 <apex:pageBlockSectionItem id="sfChoiceId" rendered="{!sfSectionRequired}">
+                   <apex:outputLabel for="sfPnl" value="Speciality Formulary Choice" />
+                   <apex:outputPanel id="sfPnl">
+                     <apex:selectList value="{!platformSpecific.Specialty_Formulary_Choice__c}" label="Speciality Pharmacy Choice" id="SpecialityPharmacyChoice" size="1">
+                       <apex:selectOptions value="{!splFormalityChoiceValues}" />
+                     </apex:selectList>                        
+                   </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                  
+                <apex:inputField value="{!platformSpecific.SpecialtyFormularyEffectiveDate__c}" id="sfEffectiveDateId" onchange="sfEffectiveDateCheck('{!$Component.sfEffectiveDateId}')" rendered="{!sfSectionRequired}"/>
+                
+                 <span/>
+                
+                 <apex:inputField value="{!platformSpecific.SpecialtyFormularyEndDate__c}" id="sfEndDateId" onchange="sfEndDateCheck('{!$Component.sfEndDateId}')" rendered="{!sfSectionRequired}"/>
+               
+               <!-- <apex:outputText label="Specialty Price List">{!sPricing.Pharmacy_Benefit__c}</apex:outputText> -->
+               
+               
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Non-Specialty Formulary Information" collapsible="false" id="PBS6" rendered="{!nsfSectionRequired}">
+                <apex:pageBlockSectionItem id="nsfChoiceId">
+                   <apex:outputLabel for="NonSplPnl" value="Non-Specialty Formulary Choice" />
+                   <apex:outputPanel id="NonSplPnl">
+                     <apex:selectList value="{!platformSpecific.Non_Specialty_Formulary_Choice__c}" label="Non-Specialty Formulary Choice" id="NonSpecialtyFormularyChoice" size="1">
+                       <apex:selectOptions value="{!nonPharmacyBenefitChoiceValues}" />
+                     </apex:selectList>                        
+                   </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!platformSpecific.NonSpecialtyFormularyEffectiveDate__c}" id="nsfEffectiveDateId"  onchange="nsfEffectiveDateCheck('{!$Component.nsfEffectiveDateId}')"  /><span/>                
+                <apex:inputField value="{!platformSpecific.NonSpecialtyFormularyRebateEndDate__c}" id="nsfRebateEndDateId" onchange="nsfEndDateCheck('{!$Component.nsfRebateEndDateId}')"  />
+            </apex:pageBlockSection>
+            
+            
+            <apex:actionFunction name="checkLevel1" action="{!checkLevel1}" reRender="pmsg,PBS2" oncomplete="" immediate="true" status="status">                       
+                <apex:param name="level1ID" id="level1ID" value=""/>  
+            </apex:actionFunction> 
+            <apex:actionFunction name="checkLevel2" action="{!checkLevel2}" reRender="pmsg,PBS2" oncomplete="" immediate="true" status="status">                       
+                <apex:param name="level2ID" id="level2ID" value=""/>  
+            </apex:actionFunction> 
+            <apex:actionFunction name="checkLevel3" action="{!checkLevel3}" reRender="pmsg,PBS2" oncomplete="" immediate="true" status="status">                       
+                <apex:param name="level3ID" id="level3ID" value=""/>  
+            </apex:actionFunction>
+            <apex:actionFunction name="checkEffectiveDate" action="{!checkEffectiveDate}" reRender="pmsg,gstpFormularyFlagPanel" oncomplete="" immediate="true" status="status">                       
+                <apex:param name="effectiveDate" id="effectiveDate" value=""/>  
+            </apex:actionFunction> 
+            <apex:actionFunction name="terminatedDateCheck" action="{!terminatedDateCheck}" reRender="PBS3,termflagPanel" oncomplete="" immediate="true" status="status">                       
+                <apex:param name="termFlag" id="termFlag" value=""/>  
+            </apex:actionFunction> 
+            <apex:actionFunction name="checkTerminateDate" action="{!checkTerminateDate}" reRender="pmsg" oncomplete="" immediate="true" status="status">                       
+                <apex:param name="terminateDate" id="terminateDate" value=""/>  
+            </apex:actionFunction> 
+            <apex:actionFunction name="gstpFormularyDatesCheck" action="{!gstpFormularyDatesCheck}" reRender="PBS4,PBS5,PBS6,gstpFormularyFlagPanel" oncomplete="" immediate="true" status="status">                       
+                <apex:param name="gstpFormularyFlag" id="gstpFormularyFlag" value=""/>  
+            </apex:actionFunction> 
+            
+            <apex:actionFunction name="sfEndDateCheckaction" action="{!sfEndDateCheck}" reRender="pmsg" oncomplete="" immediate="true" status="status">                       
+                <apex:param name="sfEffectiveDate" id="sfEffectiveDate" value=""/>
+                <apex:param name="sfEndDate" id="sfEndDate" value=""/>  
+            </apex:actionFunction>
+            
+            <apex:actionFunction name="nsfEndDateCheckaction" action="{!nsfEndDateCheck}" reRender="pmsg" oncomplete="" immediate="true" status="status">                       
+                <apex:param name="nsfEffectiveDate" id="nsfEffectiveDate" value=""/>
+                <apex:param name="nsfEndDate" id="nsfEndDate" value=""/>  
+            </apex:actionFunction> 
+            
+            <apex:actionFunction name="gstpEndDateCheckaction" action="{!gstpEndDateCheck}" reRender="pmsg" oncomplete="" immediate="true" status="status">                       
+                <apex:param name="gstpEffectiveDate" id="gstpEffectiveDate" value=""/>
+                <apex:param name="gstpEndDate" id="gstpEndDate" value=""/>  
+            </apex:actionFunction> 
+            
+            <apex:actionFunction name="sfEffectiveDateCheckAction" action="{!sfEffectiveDateCheck}" reRender="pmsg" oncomplete="" immediate="true" status="status">                       
+                <apex:param name="sfEffectiveDate1" id="sfEffectiveDate1" value=""/>
+                <apex:param name="effetiveDate1" id="effetiveDate1" value=""/>  
+            </apex:actionFunction>
+            
+            <apex:actionFunction name="nsfEffectiveDateCheckAction" action="{!nsfEffectiveDateCheck}" reRender="pmsg" oncomplete="" immediate="true" status="status">                       
+                <apex:param name="nsfEffectiveDate2" id="nsfEffectiveDate2" value=""/>
+                <apex:param name="effetiveDate2" id="effetiveDate2" value=""/>  
+            </apex:actionFunction> 
+            
+            <apex:actionFunction name="gstpEffectiveDateCheckAction" action="{!gstpEffectiveDateCheck}" reRender="pmsg" oncomplete="" immediate="true" status="status">                       
+                <apex:param name="gstpEffectiveDate3" id="gstpEffectiveDate3" value=""/>
+                <apex:param name="effetiveDate3" id="effetiveDate3" value=""/>  
+            </apex:actionFunction> 
+            
+            <apex:actionFunction name="doCancel" action="{!doCancel}" reRender="pmsg" oncomplete="" immediate="true" status="status">                       
+                  
+            </apex:actionFunction> 
+           
+         <apex:outputPanel id="termflagPanel">
+            
+                <script>
+                   //Workaround to work HelpText in Lightning Component
+                      function workaround() { 
+                  if ((window.sfdcPage) && (sfdcPage.executeOnloadQueue)) { 
+                      sfdcPage.executeOnloadQueue();  
+                     } 
+             } 
+                      window.addEventListener('load', workaround); 
+
+                       var showTermflag = '{!showTermflag}';
+                       if(showTermflag == 'true'){
+                       var termFlag = document.getElementById('{!$Component.frm.PB.PBS3.terminatedID}').checked;
+                       var terminatedDateID = document.getElementById('{!$Component.frm.PB.PBS3.terminatedDateID}'); 
+                       }
+                       var effectiveDateID = document.getElementById('{!$Component.frm.PB.PBS3.effectiveDateID}');  
+                      
+                       var clientSubType = '{!clientSubType}';
+                       if(clientSubType != 'Health Plan Master' && clientSubType != 'Coalition Master' && clientSubType != 'TPA Master'){
+                            effectiveDateID.disabled = true;               
+                        }
+                       if(showTermflag == 'true'){
+                       if(termFlag == false){    
+                            terminatedDateID.disabled = true;
+                            terminatedDateID.value = '';
+                            } else{
+                                    terminatedDateID.disabled = false;
+                                  }  
+                       }                                                                    
+                </script>
+                
+            </apex:outputPanel>
+            
+            
+       <apex:outputPanel id="gstpFormularyFlagPanel">
+            
+                <script>
+                   
+                    try{
+                        var effectiveDateID = document.getElementById('{!$Component.frm.PB.PBS3.effectiveDateID}');
+                        
+                        var gstpSectionRequired = '{!gstpSectionRequired}';
+                        
+                        if(gstpSectionRequired == 'true'){
+                        var GSTPEffectiveDateID = document.getElementById('{!$Component.frm.PB.PBS4.GSTPEffectiveDateID}');
+                        var GSTPEndDateId = document.getElementById('{!$Component.frm.PB.PBS4.GSTPEndDateId}');
+                        var GSTPChoiceID = document.getElementById('{!$Component.frm.PB.PBS4.GSTPChoiceID}');
+                        var GSTPChoice = document.getElementById('{!$Component.frm.PB.PBS4.GSTPChoice}');
+                        }
+                        
+                        var sfSectionRequired = '{!sfSectionRequired}';
+                        
+                        
+                        if(sfSectionRequired == 'true'){
+                        var sfEffectiveDateId = document.getElementById('{!$Component.frm.PB.PBS5.sfEffectiveDateId}');
+                        var sfEndDateId = document.getElementById('{!$Component.frm.PB.PBS5.sfEndDateId}');
+                        var sfChoiceId = document.getElementById('{!$Component.frm.PB.PBS5.sfChoiceId}');
+                        }
+                        
+                        var nsfSectionRequired = '{!nsfSectionRequired}';
+                        if(nsfSectionRequired == 'true'){
+                            var nsfEffectiveDateId = document.getElementById('{!$Component.frm.PB.PBS6.nsfEffectiveDateId}');
+                            var nsfRebateEndDateId = document.getElementById('{!$Component.frm.PB.PBS6.nsfRebateEndDateId}'); 
+                            //var nsfChoiceId = document.getElementById('{!$Component.frm.PB.PBS6.nsfChoiceId}');
+                        }
+                       
+                        var diffGSTPFlag = '{!platformSpecific.DifferentGSTPFormularyEffectiveDates__c}';
+                        var clientChoice = '{!clientChoice}';
+            
+                        if(clientChoice == 'false'){
+                            if(sfSectionRequired == 'true'){
+                            }
+                        }
+                        
+                        if(diffGSTPFlag == 'true'){
+                           if(gstpSectionRequired == 'true'){ 
+                               GSTPEffectiveDateID.disabled = false;
+                               GSTPEndDateId.disabled = false;
+                           }
+                           if(sfSectionRequired == 'true'){
+                               sfEffectiveDateId.disabled = false;
+                               sfEndDateId.disabled = false;
+                           }
+                           if(nsfSectionRequired == 'true'){
+                               nsfEffectiveDateId.disabled = false;
+                               nsfRebateEndDateId.disabled = false;
+                           }
+                            
+                            }else{
+                                    if(gstpSectionRequired == 'true'){
+                                        GSTPEffectiveDateID.disabled = true;
+                                        GSTPEffectiveDateID.value = effectiveDateID.value;
+                                        GSTPEndDateId.disabled = true;
+                                        GSTPEndDateId.value = null;
+                                    }
+                                    if(sfSectionRequired == 'true'){
+                                        sfEffectiveDateId.disabled = true;
+                                        sfEffectiveDateId.value = effectiveDateID.value;
+                                        sfEndDateId.disabled = true;
+                                        sfEndDateId.value = null;
+                                      }  
+                                    if(nsfSectionRequired == 'true'){
+                                        nsfEffectiveDateId.disabled = true;
+                                        nsfEffectiveDateId.value = effectiveDateID.value;
+                                        nsfRebateEndDateId.disabled = true;
+                                        nsfRebateEndDateId.value = null;
+                                      }  
+                                 } 
+                                 
+                        /**Commented to populate GSTP and effective dates PT US 157 by Srini Bathini
+                                if(nsfSectionRequired == 'false'){
+                                if(gstpSectionRequired == 'true'){
+                                    GSTPEffectiveDateID.disabled = true;
+                                    GSTPChoiceID.disabled = true;
+                                  }    
+                               if(sfSectionRequired == 'true'){
+                                    sfEffectiveDateId.disabled = true;
+                                    sfChoiceId.disabled = true;
+                               }
+                               if(nsfSectionRequired == 'true'){
+                                   nsfEffectiveDateId.disabled = true;
+                                   // nsfChoiceId.disabled = true;
+                               }                         
+                             } **/     
+                                 
+                    }catch(e){
+                        
+                    }
+                                                                                           
+                </script> 
+               <!--Added by Sridevi 09.24.18 for Level 1 Lookup customization-->
+             <script>
+                     var popUpLookUp; 
+                      var Carriedname = '';
+                     var CarrierId = '';
+                     var level2name = '';
+                     var AccountId = ''
+                     var AccountName = '';
+                     level2name =  document.getElementById("leveloneId").value;
+                     var level3name =  document.getElementById("LeveltwoId").value;
+                    // alert(level3name);
+                     if(level2name != ''){
+                        document.getElementById("LeveltwoId").disabled = false;
+                     }
+                     else{
+                          $( 'input[class$="opp2_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="userId2_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="owner2_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="Lev2_{!platformSpecific.Id}"]' ).val('');
+                          document.getElementById("levlthreeId").disabled = true;
+                          level3name =  document.getElementById("LeveltwoId").value;
+                     }
+                     
+                     if(level3name != '' ){
+                         document.getElementById("levlthreeId").disabled = false;
+                     }
+                     else{
+                          document.getElementById("levlthreeId").disabled = true;
+                          $( 'input[class$="opp3_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="userId3_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="owner3_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="Lev3_{!platformSpecific.Id}"]' ).val('');
+                     }
+                     function popupwindow(title, w, h,Rec,Act,Plat) { 
+                         Plat = document.getElementById('pageId:frm:PB:PBS2:platform').value;
+                         var AccountLevel = '{!platformSpecific.FAF_ID__r.Account_Name__c}'; 
+                         var AccountId = '{!platformSpecific.Level_1_Record_ID__r.Carrier_ID__c}';
+                       //  alert(AccountLevel + ' Act ' + AccountId)
+                          var url = '/apex/CAGLookup_VF?Id={!platformSpecific.Id}&RecordType='+Rec+'&Active='+Act+'&Platform='+Plat+'&AccountLevel='+ AccountLevel+'&AccountId='+ AccountId;
+                          var left = (screen.width/2)-(w/2);  
+                          var top = (screen.height/2)-(h/2);  
+                          popUpLookUp = window.open(url, 'title', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);  
+                          return popUpLookUp;  
+                     }
+                     
+                     
+                     function lookUpSelectedUser(userId, name,Carrier){  
+                          popUpLookUp.close();  
+                          Carriedname = name;
+                          CarrierId = Carrier  ;
+                         // alert(CarrierId);
+                          $( 'input[class$="opp_{!platformSpecific.Id}"]' ).val(name);  
+                          $( 'input[class$="Lev_{!platformSpecific.Id}"]' ).val(Carrier);  
+                          $( 'input[class$="userId_{!platformSpecific.Id}"]' ).val(userId);  
+                          $( 'input[class$="owner_{!platformSpecific.Id}"]' ).val(userId);  
+                          
+                          level2name =  document.getElementById("leveloneId").value;
+                           //  alert(level2name);
+                            
+                                if(level2name != ''){
+                                    document.getElementById("LeveltwoId").disabled = false; 
+                                    document.getElementById("levlthreeId").disabled = true;
+                                }
+                                else{
+                                    document.getElementById("LeveltwoId").disabled = true; 
+                                    document.getElementById("levlthreeId").disabled = true;
+                                }
+                                
+                                $( 'input[class$="opp2_{!platformSpecific.Id}"]' ).val('');  
+                                  $( 'input[class$="userId2_{!platformSpecific.Id}"]' ).val('');  
+                                  $( 'input[class$="owner2_{!platformSpecific.Id}"]' ).val('');  
+                                  $( 'input[class$="Lev2_{!platformSpecific.Id}"]' ).val('');
+                                   
+                                  $( 'input[class$="opp3_{!platformSpecific.Id}"]' ).val('');  
+                                  $( 'input[class$="userId3_{!platformSpecific.Id}"]' ).val('');  
+                                  $( 'input[class$="owner3_{!platformSpecific.Id}"]' ).val('');  
+                                    $( 'input[class$="Lev3_{!platformSpecific.Id}"]' ).val('');
+                            
+                     } 
+                     
+                      var popUpLookUp2;  
+                     function popupwindow2(title, w, h,Rec2,Act2,Plat2,ID,Name) { 
+                        // alert('Hii');
+                         Plat = document.getElementById('pageId:frm:PB:PBS2:platform').value;
+                         var AccountLevel = '{!platformSpecific.FAF_ID__r.Account_Name__c}'; 
+                         var AccountId = '{!platformSpecific.Level_2_Record_ID__r.Account_ID__c}';
+                         var cagId = Carriedname;
+                         var CarrierIds = CarrierId;
+                        //  alert('Hii');
+                         if(Carriedname != ''){ 
+                         }
+                         else{
+                             cagId = ID;
+                         }
+                         if(CarrierId != ''){ 
+                         }
+                         else{
+                             CarrierIds = Name; 
+                         }
+                       //  alert(Rec2 +  Act2  + Plat2 + cagId + CarrierIds);
+                         
+                          var url = '/apex/CAGLookup2_VF2?Id={!platformSpecific.Id}&RecordType='+Rec2+'&Active='+Act2+'&Platform='+Plat2+'&AccountId='+AccountId+'&cagId='+cagId+'&CarrierName='+CarrierIds;
+                          var left = (screen.width/2)-(w/2);  
+                          var top = (screen.height/2)-(h/2);  
+                          popUpLookUp2 = window.open(url, 'title', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);  
+                          return popUpLookUp2;  
+                     }
+                  
+                      var TestAccountname = '';
+                     function lookUpSelectedUser2(userId2, name2, Account2name){  
+                          popUpLookUp2.close();  
+                          TestAccountname = Account2name ;
+                          AccountId = name2;
+                         // alert(TestAccountname);
+                          $( 'input[class$="opp2_{!platformSpecific.Id}"]' ).val(name2);  
+                          $( 'input[class$="userId2_{!platformSpecific.Id}"]' ).val(userId2);  
+                          $( 'input[class$="owner2_{!platformSpecific.Id}"]' ).val(userId2);  
+                          $( 'input[class$="Lev2_{!platformSpecific.Id}"]' ).val(Account2name);
+                          level3name =  document.getElementById("LeveltwoId").value;
+                         if(level3name != ''){
+                             document.getElementById("levlthreeId").disabled = false;
+                         }
+                         else{
+                            document.getElementById("levlthreeId").disabled = true; 
+                         }
+                          
+                          $( 'input[class$="opp3_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="userId3_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="owner3_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="Lev3_{!platformSpecific.Id}"]' ).val('');
+                     
+                     } 
+                     
+                       var popUpLookUp3;  
+                     function popupwindow3(title, w, h,Rec3,Act3,Plat3,ID,Name) { 
+                         Plat = document.getElementById('pageId:frm:PB:PBS2:platform').value;
+                         var parentAccId = '{!platformSpecific.FAF_ID__r.Account_Name__c}'; 
+                         var AccountLevel = '{!platformSpecific.Level_2_Record_ID__r.Account_Name__c}'; 
+                         var AccountIdval = '{!platformSpecific.Level_2_Record_ID__r.Account_ID__c}';
+                         //var cagId = Carriedname;
+                          var cagId = Carriedname;
+                         var CarrierIds = CarrierId;
+                         var AccountIds = AccountId;
+                         var AccountNames = TestAccountname;
+                         // alert('Hii'+ TestAccountname);
+                         if(Carriedname == ''){ 
+                         
+                             cagId = ID;
+                         }
+                         if(CarrierId == ''){ 
+                         
+                             CarrierIds = Name; 
+                         }
+                         if(AccountId == ''){           
+                                    AccountIds= AccountId;
+                         }
+                         if(TestAccountname == ''){
+                             AccountNames = AccountLevel;
+                         }
+                       //  alert(cagId + ' Act3 ' + AccountIds + '' + AccountNames + ''+ CarrierIds);
+                          var url = '/apex/CAGLookup3_VF3?Id={!platformSpecific.Id}&RecordType='+Rec3+'&Active='+Act3+'&Platform='+Plat3+'&AccountId='+ AccountIds+'&cagId='+cagId+'&CarrierName='+CarrierIds+'&AccountLevel='+AccountNames+'&parentAccId'+parentAccId;
+                          var left = (screen.width/2)-(w/2);  
+                          var top = (screen.height/2)-(h/2);  
+                          popUpLookUp3 = window.open(url, 'title', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);  
+                          return popUpLookUp3;  
+                     }
+                  
+                      var Groupname = '';
+                     function lookUpSelectedUser3(userId3, name3, Group3name){  
+                          popUpLookUp3.close();  
+                          Groupname = Group3name ;
+                        //  alert(Groupname);
+                          $( 'input[class$="opp3_{!platformSpecific.Id}"]' ).val(name3);  
+                          $( 'input[class$="userId3_{!platformSpecific.Id}"]' ).val(userId3);  
+                          $( 'input[class$="owner3_{!platformSpecific.Id}"]' ).val(userId3);  
+                          $( 'input[class$="Lev3_{!platformSpecific.Id}"]' ).val(Group3name);
+                     } 
+                     
+                     function Level2Function(){
+                         level3name =  document.getElementById("LeveltwoId").value;
+                        //   if(level3name != ''){
+                        //  document.getElementById("levlthreeId").disabled = false;
+                        //  }
+                        //  else{
+                           //   alert('Hii')
+                               // alert(TestAccountname);
+                          $( 'input[class$="opp2_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="userId2_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="owner2_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="Lev2_{!platformSpecific.Id}"]' ).val('');
+                             document.getElementById("pageId:frm:PB:PBS2:level2Name").value = ''; 
+                              document.getElementById("levlthreeId").disabled = true;
+                              $( 'input[class$="opp3_{!platformSpecific.Id}"]' ).val('');  
+                              $( 'input[class$="userId3_{!platformSpecific.Id}"]' ).val('');  
+                              $( 'input[class$="owner3_{!platformSpecific.Id}"]' ).val('');  
+                              $( 'input[class$="Lev3_{!platformSpecific.Id}"]' ).val('');
+                       //  }
+                     }
+                      function Level1Function(){
+                         level3name =  document.getElementById("LeveltwoId").value;
+                        //   if(level3name != ''){
+                        //  document.getElementById("levlthreeId").disabled = false;
+                        //  }
+                        //  else{
+                           //   alert('Hii')
+                               // alert(TestAccountname);
+                         $( 'input[class$="opp_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="userId_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="owner_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="Lev_{!platformSpecific.Id}"]' ).val('');   
+                            document.getElementById("LeveltwoId").disabled = true;
+                               
+                          $( 'input[class$="opp2_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="userId2_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="owner2_{!platformSpecific.Id}"]' ).val('');  
+                          $( 'input[class$="Lev2_{!platformSpecific.Id}"]' ).val('');
+                             document.getElementById("pageId:frm:PB:PBS2:level2Name").value = ''; 
+                              document.getElementById("levlthreeId").disabled = true;
+                              $( 'input[class$="opp3_{!platformSpecific.Id}"]' ).val('');  
+                              $( 'input[class$="userId3_{!platformSpecific.Id}"]' ).val('');  
+                              $( 'input[class$="owner3_{!platformSpecific.Id}"]' ).val('');  
+                              $( 'input[class$="Lev3_{!platformSpecific.Id}"]' ).val(''); 
+                       //  }
+                     }
+                     function Level3Function(){
+                        //  alert('hiii');
+                         
+                            $( 'input[class$="opp3_{!platformSpecific.Id}"]' ).val('');  
+                              $( 'input[class$="userId3_{!platformSpecific.Id}"]' ).val('');  
+                              $( 'input[class$="owner3_{!platformSpecific.Id}"]' ).val('');  
+                              $( 'input[class$="Lev3_{!platformSpecific.Id}"]' ).val('');
+                     }
+                     
+                     function saveMethodover(){
+                         $( 'input[class$="userId_{!platformSpecific.Id}"]' ).style.display="block";
+                         $( 'input[class$="userId2_{!platformSpecific.Id}"]' ).style.display="block";
+                         $( 'input[class$="userId3_{!platformSpecific.Id}"]' ).style.display="block";
+                     }
+                     
+                     function saveMethodout(){
+                         $( 'input[class$="userId_{!platformSpecific.Id}"]' ).style.display="none";
+                         $( 'input[class$="userId2_{!platformSpecific.Id}"]' ).style.display="none";
+                         $( 'input[class$="userId3_{!platformSpecific.Id}"]' ).style.display="none";
+                     }
+                    function Hidelevel(obj){
+                        
+                                    document.getElementById(obj).disabled = true;
+                    }
+                    function showlevel(obj){
+                        document.getElementById(obj).disabled = false;
+                    }
+                    function hideimage(){
+                        if(document.getElementById("LeveltwoId").disabled == true){
+                            document.getElementById("Lookupone").style.display = "none";
+                            document.getElementById("Lookuptwo").style.display = "inline-block";
+                        }
+                        else{
+                        
+                        }
+                    }
+
+                    function showimage(){
+                        document.getElementById("Lookuptwo").style.display = "none";
+                        document.getElementById("Lookupone").style.display = "inline-block" 
+                    }
+                    
+                    function Levelhideimage(){
+                        if(document.getElementById("levlthreeId").disabled == true){
+                            document.getElementById("Level3Lookupone").style.display = "none";
+                            document.getElementById("Level3Lookuptwo").style.display = "inline-block";
+                        }
+                    
+                    }
+
+                    function Levelshowimage(){
+                        document.getElementById("Level3Lookuptwo").style.display = "none";
+                        document.getElementById("Level3Lookupone").style.display = "inline-block"   
+                    }
+                </script>
+            </apex:outputPanel>
+       
+                
+         
+       </apex:pageBlock>
+    </apex:form>
+</apex:page>

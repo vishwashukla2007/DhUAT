@@ -1,0 +1,24 @@
+<apex:page standardController="Billing_Administrative_Fees__c" extensions="BillingAdminDeleteClass"  lightningStylesheets="true" action="{!checkRecord}">  
+    <apex:form >
+        <apex:pageBlock title="Billing Administrative Fees Detail Page" rendered="{!showErrorMessage}">
+            <apex:pageMessage summary="Deleting this Billing Administrative Fees record(s) will delete all the related Billing Ancillary Fees records. Click Continue to proceed." 
+             severity="FATAL" strength="3"/>
+            <apex:pageBlockButtons location="bottom">
+            <apex:commandButton immediate="true" action="{!Cancel}"  value="Cancel" />
+            <apex:commandButton action="{!deleteRecord}"  value="Continue" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+        <apex:pageBlock title="Billing Administrative Fees Detail Page" rendered="{! !showErrorMessage}">
+            <apex:pageMessage summary="SUCCESS Row has been deleted Successfully" 
+             severity="CONFIRM" strength="3"/>
+            <apex:pageBlockButtons location="bottom">
+            <apex:commandButton immediate="true" action="{!okMethod}"  value="OK" />
+            </apex:pageBlockButtons>
+            <script>
+                window.setTimeout("redirectpage();", 2000);
+            </script>
+            <apex:actionFunction name="redirectpage" action="{!okMethod}" reRender="" oncomplete="" immediate=""/>
+        </apex:pageBlock>
+        
+    </apex:form> 
+</apex:page>

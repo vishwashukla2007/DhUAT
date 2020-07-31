@@ -1,0 +1,96 @@
+<apex:page lightningStylesheets="true" controller="unLinkFAFVController" >
+    <script>
+    function selectAllUnticked() {
+        var checked = document.getElementById('massCheckbox').checked;
+        var chks = document.getElementsByClassName('selectHub');
+        var l = chks.length;
+        while (l--) {
+           chks[l].checked = checked;
+           console.log(chks[l].value);
+           chks[l].value = checked;
+           console.log(chks[l].value);
+        }
+    }
+    function uncheckMassCheckbox() {
+        var checked = false;
+        var chks = document.getElementsByClassName('selectHub');
+        var l = chks.length;
+        var checkCount=0;
+        var uncheckCount=0;
+        while (l--)
+           if(!chks[l].checked)
+               uncheckCount++;
+           else
+               checkCount++;
+        
+        if(chks.length == checkCount) 
+            checked=true;
+
+        document.getElementById('massCheckbox').checked = checked;
+    }
+    </script>
+    <style>
+    .First {
+     font-weight:bold;
+    }
+    .Last {
+     font-weight:bold;
+    }
+    .Next {
+     font-weight:bold;
+    }
+    .Previous {
+     font-weight:bold;
+    }
+    </style>
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockSection id="pgmsg">
+            <apex:pageMessages /> 
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="1" >
+                <apex:pageBlockSectionItem labelStyle="float:left;width: 5%;" dataStyle="float:left;width: 95%;" >                
+                    <apex:outputLabel value=" FAF ID" />
+                    <apex:outputPanel layout="block">
+                    <apex:inputtext label="FAF ID" value="{!searchstring}" /> 
+                    <apex:commandButton value="Search" action="{!searchHubList}" reRender="faf-table,pgmsg" /> 
+                    <apex:commandButton value="Clear" action="{!clear}" /> 
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>    
+        </apex:pageBlock>       
+    </apex:form>
+    <apex:form >
+        <apex:pageBlock id="faf-table">
+            <apex:pageBlockButtons location="bottom" rendered="{!hubList.size!=0}">
+                <apex:commandButton value="Unlink" action="{!save}" rerender="hub_table,pgmsg"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+            <apex:pageBlock >
+                <apex:outputText value="No records found" rendered="{!hubList.size==0}" />
+                <apex:pageBlockTable value="{!hubList}" var="h" rowClasses="odd,even" styleClass="tableClass" id="hub_table">
+                    <apex:column headervalue="" style="width:5px;" rendered="{!hubList.size!=0}">
+                        <apex:facet name="header">
+                             <input type="checkbox" id="massCheckbox" onclick="selectAllUnticked();"/>
+                        </apex:facet>
+                        <apex:inputCheckbox value="{!h.checked}" styleClass="selectHub" onclick="uncheckMassCheckbox();" />
+                    </apex:column>                                    
+                    <apex:column value="{!h.hub.Full_FAF__r.Name}"/>
+                    <apex:column value="{!h.hub.Full_FAF__r.Client_Name__c}"/>
+                    <apex:column value="{!h.hub.Full_FAF__r.FAF_Type__c}"/>
+                    <apex:column value="{!h.hub.Full_FAF__r.LOB_Subtype__c}"/>
+                    <apex:column value="{!h.hub.Full_FAF__r.LOB_Descriptor__c}"/>
+                    <apex:column value="{!h.hub.Full_FAF__r.FAF_Status__c}"/>
+                    <apex:column value="{!h.hub.Full_FAF__r.Segment__c}"/>
+                    <apex:column value="{!h.hub.Full_FAF__r.Pricing_Effective_Date__c}"/>                     
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+            <apex:pageBlockButtons location="bottom" style="float:right;width:134px;" rendered="{!hubList.size!=0}">
+                <apex:commandLink action="{!first}" styleClass="First">First </apex:commandlink>&nbsp;&nbsp;
+                <apex:commandLink action="{!previous}" styleClass="Previous" rendered="{!hasPrevious}">Previous</apex:commandlink>&nbsp;
+                <apex:commandLink action="{!next}"  styleClass="Next" rendered="{!hasNext}">Next</apex:commandlink>&nbsp;&nbsp;
+                <apex:commandLink action="{!last}" styleClass="Last">Last</apex:commandlink>                    
+            </apex:pageBlockButtons>           
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

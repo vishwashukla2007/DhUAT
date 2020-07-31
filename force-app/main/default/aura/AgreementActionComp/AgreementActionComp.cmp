@@ -1,0 +1,152 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId" controller="AgreementActionCompController" access="global">
+    <aura:handler name="init" value="{!this }" action="{!c.doInit }"/>    
+    <aura:attribute name="Draft" type="boolean" default="false"/>  
+    <aura:attribute name="ApprovalInProg" type="boolean" default="false"/>
+    <aura:attribute name="Approved" type="boolean" default="false"/>
+    <aura:attribute name="PG" type="Performance_Guarantees__c" />
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
+
+     <article class="slds-card">
+        <div class="slds-page-header ">
+            <h2>
+                <span class="slds-page-header__title slds-truncate" title="Actions">Actions</span>
+              </h2>
+        </div>
+        <div class="slds-m-around_medium">
+            <div class="slds-grid slds-wrap  slds-has-inline-block-links_space " style='width:100%'>
+                <aura:if isTrue="{!v.Draft}">
+                    <div class="slds-col actionbox slds-text-align--center slds-show_inline-block" style="width: 100px;">
+                        <button class="slds-button" label="Import PG Details" onclick="{!c.gotoDataImportWizard}">
+                            <lightning:icon iconName="action:upload" alternativeText="Import PG Details" title="Import PG Details" size="small" />
+                        </button>
+                        <br/>
+                        <a href="javascript:void(0)" onclick="{!c.gotoDataImportWizard}">Import PG <br/>Details</a>
+                    </div>     
+                    <div class="slds-col actionbox slds-text-align--center slds-show_inline-block" style="width: 100px;">
+                        <button class="slds-button" label="Edit PG Record" onclick="{!c.edit}">
+                            <lightning:icon iconName="action:edit" alternativeText="Edit PG Record" title="Edit PG Record" size="small" />
+                        </button>
+                        <br/>
+                        <a href="javascript:void(0)" onclick="{! c.edit }">Edit PG <br/>Record</a>
+                    </div>
+                    <div class="slds-col actionbox slds-text-align--center slds-show_inline-block" style="width: 100px;">
+                        <button class="slds-button" label="Create PG Detail Record" onclick="{!c.create}">
+                            <lightning:icon iconName="action:record" alternativeText="Create PG Detail Record" title="Create PG Detail Record" size="small" />
+                        </button>
+                        <br/>
+                        <a href="javascript:void(0)" onclick="{! c.create }">Create New <br/>PG Detail Record</a>
+                    </div>
+                    <div class="slds-col actionbox slds-text-align--center" style="width: 100px;">
+                        <button class="slds-button" label="Reject" onclick="{!c.generate}">
+                            <lightning:icon iconName="action:add_file" alternativeText="Generate Contract" title="Generate Contract" size="small" />
+                        </button>
+                        <br/>
+                        <a href="javascript:void(0)" onclick="{!c.generate}">Generate<br/>Contract</a>
+                    </div>
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!not(v.Draft)}">
+                            <div class="slds-col actionbox slds-text-align--center" style="width: 100px;">
+                                <button class="slds-button" label="Generate" onclick="{!c.generate}">
+                                    <lightning:icon iconName="action:add_file" alternativeText="Generate Contract" title="Generate Contract" size="small" />
+                                </button>
+                                <br/>
+                                <a href="javascript:void(0)" onclick="{!c.generate}">Generate<br/>Contract</a>
+                            </div>
+                        </aura:if>
+                        
+                      </aura:set>
+                </aura:if> 
+              
+                   
+             </div>
+             <div class="slds-border_top"></div>
+             <div class="slds-grid slds-wrap  slds-has-inline-block-links_space " style='width:100%'>
+                <div class="slds-col actionbox slds-text-align--center slds-show_inline-block" style="width: 100px; margin-top: 10px;">
+                    <button class="slds-button" label="Create PG Record Details" onclick="{!c.createPGSummary}">
+                        <lightning:icon iconName="action:new_note" alternativeText="Create New Performance Guarantees Record" title="Create New PG Summary Record" size="small" />
+                    </button>
+                    <br/>
+                    <a href="javascript:void(0)" onclick="{! c.createPGSummary }">Create New<br/>Performance Guarantees Record</a>
+                </div>
+            </div>
+        </div>
+       
+        <div role="dialog" tabindex="-1" aria-labelledby="header43" aura:id="Modalbox" class="slds-modal slds-modal_medium">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">    
+                    <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModal }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                    <h2 id="header43" class="slds-text-heading--medium">Submit For Approval Confirmation</h2>
+                </div>
+                <div class="slds-modal__content slds-p-around--medium">
+                    <div>
+                        <p>Are you sure you want to submit PG# {!v.PG.Name}.</p>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button variant="brand-outline" label="Cancel" title="Cancel" onclick="{! c.closeModal }" />
+                    <lightning:button variant="brand" label="Submit" title="Submit" onclick="{! c.submitForApproval }" />
+                </div>
+            </div>
+        </div>
+        <div role="dialog" tabindex="-1" aria-labelledby="header43" aura:id="approvalModalbox" class="slds-modal slds-modal_medium">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">    
+                    <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModal }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                    <h2 id="header43" class="slds-text-heading--medium">Approval Confirmation</h2>
+                </div>
+                <div class="slds-modal__content slds-p-around--medium">
+                    <div>
+                        <p>Are you sure you want to Approve PG# {!v.PG.Name}?</p>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button variant="brand-outline" label="Cancel" title="Cancel" onclick="{! c.closeModal }" />
+                    <lightning:button variant="brand" label="Confirm" title="Confirm" onclick="{! c.approve }" />
+                </div>
+            </div>
+        </div>
+        <div role="dialog" tabindex="-1" aria-labelledby="header43" aura:id="rejectModalbox" class="slds-modal slds-modal_medium">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header">    
+                    <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModal }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                    <h2 id="header43" class="slds-text-heading--medium">Rejection Confirmation</h2>
+                </div>
+                <div class="slds-modal__content slds-p-around--medium">
+                    <div class="slds-form-element">
+                        <label class="slds-form-element__label" >Are you sure you want to Reject PG# {!v.PG.Name}?</label>
+                        <div class="slds-form-element__control">
+                           <lightning:textarea name="rejectComments"  aura:id='rejectComments' label="Textarea field with a placeholder...." placeholder="Type Additional Comments Here..."/>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button variant="brand-outline" label="Cancel" title="Cancel" onclick="{! c.closeModal }" />
+                    <lightning:button variant="brand" label="Confirm" title="Confirm" onclick="{! c.reject }" />
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop " aura:id="Modalbackdrop"></div>
+      </article>
+      <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+           <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+             <span class="slds-assistive-text">Loading</span>
+             <div class="slds-spinner__dot-a"></div>
+             <div class="slds-spinner__dot-b"></div>
+           </div>
+        </div>
+     </aura:if>
+</aura:component>

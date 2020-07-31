@@ -1,0 +1,111 @@
+/* .MainTitle {
+    font-weight: bold;
+    font-size: large;
+}
+.tableHeader{
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    height: 2rem;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    top: 0;
+}
+.slds-table--header-fixed_container, .slds-table_header-fixed_container {
+    padding-top:0em !important;
+
+
+}
+.slds-table th {
+    position: sticky !important;
+    top: 0 !important;
+    background-color:#cd0001;
+}
+.slds-table td,{
+    z-index: 1 !important;
+} */
+.slds-truncate.slds-cell-fixed {
+    height: 40px;
+    background-color:#cc0000 !important;
+    color:white !important;
+    text-align: center !important;
+    padding-top: 10px;
+}
+.slds-checkbox.slds-truncate.slds-cell-fixed.slds-text-align_right{
+    padding-top: 5px !important;
+    padding-left: 9px!important;
+    padding-bottom: 1px!important;
+    height: 40px;
+    background-color:#cc0000 !important;
+    color:white !important;
+}
+.slds-table--header-fixed_container{
+    
+    background-color:#cc0000 !important;
+    padding-top: 40px;
+}
+a {
+    text-decoration: none;
+    color:white !important;
+}
+input::-webkit-calendar-picker-indicator {
+    display: none;
+  }
+.icon-right{
+    padding-right: 23px !important;
+}
+.padding-top-icon{
+    padding-top: 22px !important;
+}
+.padding-top-close-icon{
+    padding-top: 23px !important;
+}
+.label-Search{
+    font-size: 12px;
+}
+.button-margin-Top{
+    margin-top: 5px;
+}
+.button-outline-none{
+    outline:none !important;
+    border: 0 !important;
+    background: none;
+    box-shadow: none;
+    border-radius: 0px;
+}
+.pagination-cmb{
+    width: 75px;
+}
+.slds-listbox__icon-selected{
+    width: auto;
+}
+.customSelect select {
+    padding-right: 1.25rem;
+    min-height: inherit;
+    line-height: normal;
+    height: 1.4rem;    
+}
+.customSelect label {
+    margin-top: .1rem;
+}
+.customSelect .slds-select_container::before {
+    border-bottom: 0;
+}
+.customInput {
+    width: 3rem;
+    height: 1.4rem;
+    text-align: center;
+    border: 1px solid #dddbda;
+    border-radius: 3px;
+    background-color:#fff;
+}
+.showIt{
+    visibility: visible;
+}
+.hideIt{
+    visibility:hidden;
+}
+.cbx{
+    padding-left: 1.5em;
+}

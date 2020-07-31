@@ -1,0 +1,501 @@
+<template>
+  <lightning-card variant="narrow">
+    <!-- Add Drug Level Pricing Modal Start -->
+    <template if:true={showAddDrugModal}>
+      <c-add-drug-record special-ops-id={specOpId} onclosemodal={hanldeCloseModal}></c-add-drug-record>
+    </template>
+    <!-- Add Drug Level Pricing Modal End -->
+    <div class="slds-text-title_bold slds-p-left_medium slds-p-bottom_large slds-p-top_medium">Pharmacy Benefit:
+      {pharmacyBenefit}</div>
+    <!-- <div style="height: 300px;">
+      <lightning-datatable key-field="id" data={drugData} columns={columns}></lightning-datatable>onblur={removeSelections}
+    </div> -->
+    <div class="slds">
+      <div class="slds-grid slds-wrap slds-form-element slds-grid--vertical-align-center">
+        <div class="slds-size_1-of-4">
+
+          <div class="slds-m-around_x-small">
+            <legend class="slds-form-element__legend">Search By:
+            </legend>
+            <lightning-combobox name="progress" variant="label-hidden" label="Search By" value={selectedColumn}
+              placeholder="Select Column.." options={options} onchange={changeOption}></lightning-combobox>
+          </div>
+        </div>
+        <div class="slds-size_2-of-6">
+          <div class="slds-combobox_container">
+
+            <div class={txtclassname} data-id="resultBox" aria-expanded="false" aria-haspopup="listbox" role="combobox">
+              <div
+                class="slds-form-element__control slds-input-has-icon slds-input-has-icon slds-input-has-icon_left-right"
+                role="none">
+                <legend class="slds-form-element__legend">Search:
+                </legend>
+                <lightning-input data-id="userinput" label="Search" variant="label-hidden" name="searchText"
+                  onchange={searchField} value={selectRecordName} class="leftspace">
+                </lightning-input>
+
+                <div class="slds-float--right icon-right" if:true={iconFlag}>
+                  <!-- <span
+                    class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right iconheight padding-top-icon">
+                    <lightning-icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default"
+                      icon-name="utility:search" size="x-small" alternative-text="icon"></lightning-icon>
+                  </span> -->
+                  <button
+                    class="slds-input__icon slds-icon-utility-search slds-button  iconheight button-outline-none button-margin-Top"
+                    onclick={searchData}>
+                    <lightning-icon class="slds-icon slds-icon slds-icon_small slds" icon-name="utility:search"
+                      size="x-small" alternative-text="icon"></lightning-icon>
+                    <span class="slds-assistive-text">Search</span>
+                  </button>
+                </div>
+                <div if:true={clearIconFlag}>
+                  <button
+                    class="slds-input__icon slds-input__icon_right slds-button button-outline-none iconheight  padding-top-close-icon"
+                    onclick={resetData}>
+                    <lightning-icon class="slds-icon slds-icon slds-icon_small slds-icon-text-default"
+                      icon-name="utility:clear" size="x-small" alternative-text="icon"></lightning-icon>
+                    <span class="slds-assistive-text">Clear</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- - Second part display result - -->
+              <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid"
+                role="listbox">
+                <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                  <template for:each={searchRecords} for:item="serecord">
+                    <li role="presentation" class="slds-listbox__item" key={serecord.key}>
+
+                      <div data-id={serecord.key} data-name={serecord.option} onclick={setSelectedRecord}
+                        class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta"
+                        role="option">
+
+                        <span
+                          class="slds-listbox__option-text slds-listbox__option-text_entity">{serecord.option}</span>
+                      </div>
+                    </li>
+                  </template>
+                </ul>
+              </div>
+              <div if:true={messageFlag}>
+                No result found.
+              </div>
+              <div if:true={LoadingText}>
+                Loading...
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- <lightning-input type="text" class="slds-m-bottom_small" label="Search"  
+          value={searchKey}></lightning-input> 
+         -->
+
+      </div>
+    </div>
+    <div class="slds-p-bottom_xx-small"></div>
+    <div class="slds-table--header-fixed_container" style="height:219px;">
+      <div class="slds-scrollable" style="height:100%;  background-color:white;">
+        <table class="slds-table slds-table_bordered slds-table--header-fixed slds-table_fixed-layout">
+          <thead>
+            <tr class="slds-text-title_caps">
+              <th scope="col" style="background-color:#cd0001 !important; width:3.25rem;">
+                <div class="slds-checkbox slds-truncate slds-cell-fixed slds-text-align_left">
+                  <lightning-input type="checkbox" class="cbx" label='test' variant="label-hidden"></lightning-input>
+                </div>
+              </th>
+              <template for:each={columns} for:item='colItems'>
+                <th scope="col" key={colItems.Id} style="background-color:#cd0001 !important; color:white !important;"
+                  data-id={colItems.label}>
+                  <template if:true={colItems.sortable}>
+                    <a data-id={colItems.fieldName} onclick={sortColumn}>
+                      <div class="slds-truncate slds-cell-fixed" title={colItems.label}>
+                        {colItems.label}
+                      </div>
+                    </a>
+                  </template>
+                  <template if:false={colItems.sortable}>
+                    <div class="slds-truncate slds-cell-fixed" title={colItems.label}>
+                      {colItems.label}
+                    </div>
+                  </template>
+                </th>
+              </template>
+              <!-- Add Drug Start -->
+              <th scope="col" style="width:3.25rem;">
+                <div class="slds-truncate slds-cell-fixed ">
+                  <lightning-icon icon-name="utility:add" id="addDrug" alternative-text="Add Drug" size="small"
+                    title="Add Drug" onclick={showAddDrug} variant="inverse" style="background:#cc0000;">
+                  </lightning-icon>
+                </div>
+              </th>
+              <!-- Add Drug End -->
+            </tr>
+          </thead>
+          <tbody>
+            <!-- <div style="height:inherit;"> -->
+            <template if:true={allYear}>
+              <template if:true={hasData}>
+                <template for:each={drugData} for:item='drug'>
+                  <tr class="slds-hint-parent" key={drug.index}>
+                    <td class="slds-text-align_right">
+                      <div class="slds-checkbox">
+                        <lightning-input type="checkbox" label='test' variant="label-hidden" checked={drug.Selected}
+                          data-id={drug.Id}></lightning-input>
+                      </div>
+                    </td>
+                    <td role="gridcell">
+                      <div class="slds-truncate" title={drug.Drug_Therapy__c}>{drug.Drug_Therapy__c}</div>
+                    </td>
+                    <td role="gridcell">
+                      <div class="slds-truncate" title={drug.Drug_Name__c}>{drug.Drug_Name__c}</div>
+                    </td>
+                    <td role="gridcell">
+                      <div class="slds-truncate" title={drug.Rate__c}>{drug.Rate__c}</div>
+                    </td>
+                    <td role="gridcell">
+                      <div class="slds-truncate" title={drug.Notes}>{drug.Notes}</div>
+                    </td>
+                    <td role="gridcell">
+                    </td>
+                  </tr>
+                </template>
+              </template>
+            </template>
+            <template if:false={allYear}>
+              <template if:true={year1}>
+                <template if:true={hasData}>
+                  <template for:each={drugData} for:item='drug'>
+                    <tr class="slds-hint-parent" key={drug.index}>
+                      <td class="slds-text-align_right">
+                        <div class="slds-checkbox">
+                          <lightning-input type="checkbox" label='test' variant="label-hidden" checked={drug.Selected}
+                            data-id={drug.Id}></lightning-input>
+                        </div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Drug_Therapy__c}>{drug.Drug_Therapy__c}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Drug_Name__c}>{drug.Drug_Name__c}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year1}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Notes}>{drug.Notes}</div>
+                      </td>
+                      <td role="gridcell">
+                      </td>
+                    </tr>
+                  </template>
+                </template>
+              </template>
+              <template if:true={year2}>
+                <template if:true={hasData}>
+                  <template for:each={drugData} for:item='drug'>
+                    <tr class="slds-hint-parent" key={drug.index}>
+                      <td class="slds-text-align_right">
+                        <div class="slds-checkbox">
+                          <lightning-input type="checkbox" label='test' variant="label-hidden" checked={drug.Selected}
+                            data-id={drug.Id}></lightning-input>
+                        </div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Drug_Therapy__c}>{drug.Drug_Therapy__c}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Drug_Name__c}>{drug.Drug_Name__c}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year1}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year2}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Notes}>{drug.Notes}</div>
+                      </td>
+                      <td role="gridcell">
+                      </td>
+                    </tr>
+                  </template>
+                </template>
+              </template>
+              <template if:true={year3}>
+                <template if:true={hasData}>
+                  <template for:each={drugData} for:item='drug'>
+                    <tr class="slds-hint-parent" key={drug.index}>
+                      <td class="slds-text-align_right">
+                        <div class="slds-checkbox">
+                          <lightning-input type="checkbox" label='test' variant="label-hidden" checked={drug.Selected}
+                            data-id={drug.Id}></lightning-input>
+                        </div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Drug_Therapy__c}>{drug.Drug_Therapy__c}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Drug_Name__c}>{drug.Drug_Name__c}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year1}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year2}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year3}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Notes}>{drug.Notes}</div>
+                      </td>
+                      <td role="gridcell">
+                      </td>
+                    </tr>
+                  </template>
+                </template>
+              </template>
+              <template if:true={year4}>
+                <template if:true={hasData}>
+                  <template for:each={drugData} for:item='drug'>
+                    <tr class="slds-hint-parent" key={drug.index}>
+                      <td class="slds-text-align_right">
+                        <div class="slds-checkbox">
+                          <lightning-input type="checkbox" label='test' variant="label-hidden" checked={drug.Selected}
+                            data-id={drug.Id}></lightning-input>
+                        </div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Drug_Therapy__c}>{drug.Drug_Therapy__c}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Drug_Name__c}>{drug.Drug_Name__c}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year1}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year2}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year3}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year4}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Notes}>{drug.Notes}</div>
+                      </td>
+                      <td role="gridcell">
+                      </td>
+                    </tr>
+                  </template>
+                </template>
+              </template>
+              <template if:true={year5}>
+                <template if:true={hasData}>
+                  <template for:each={drugData} for:item='drug'>
+                    <tr class="slds-hint-parent" key={drug.index}>
+                      <td class="slds-text-align_right">
+                        <div class="slds-checkbox">
+                          <lightning-input type="checkbox" label='test' variant="label-hidden" checked={drug.Selected}
+                            data-id={drug.Id}></lightning-input>
+                        </div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Drug_Therapy__c}>{drug.Drug_Therapy__c}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Drug_Name__c}>{drug.Drug_Name__c}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year1}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year2}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year3}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year4}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Rate__c}>{drug.Year5}</div>
+                      </td>
+                      <td role="gridcell">
+                        <div class="slds-truncate" title={drug.Notes}>{drug.Notes}</div>
+                      </td>
+                      <td role="gridcell">
+                      </td>
+                    </tr>
+                  </template>
+                </template>
+              </template>
+            </template>
+            <!-- </div> -->
+            <template if:false={hasData}>
+              <tr>
+                <td colspan="5">
+                  <div class="slds-truncate slds-text-title_bold">No Specialty Drug Level Pricing
+                    Data Found</div>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    <div class={paginationShow}>
+      <div
+        class="slds-grid slds-wrap slds-form-element slds-grid--vertical-align-center slds-float_right slds-p-top_x-small slds-p-bottom_x-small slds-p-right_xx-small">
+        <div class="slds-size_3-of-9 slds-p-right_xx-small">
+          <div class="slds-list_inline slds-p-bottom_xx-small customSelect">
+            <label class="slds-text-color_weak slds-p-horizontal_x-small" for="recordsPerPage">Items per page:</label>
+            <div class="slds-select_container">
+              <select class="slds-select" id="recordsPerPage" onchange={handleRecordsPerPage}>
+                <template for:each={pageSizeOptions} for:item="option">
+                  <option key={option.key} value={option.Value}>{option.Value}</option>
+                </template>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="slds-size_2-of-9 slds-p-right_small">
+          {rowNumberStart} - {rowNumberEnd} of {totalRecords}
+        </div>
+        <div class="slds-size_2-of-9 ">
+          <button class={previousButton} onclick={previousPage}>
+            <lightning-icon class="slds-icon slds-icon slds-icon_small slds slds-align_absolute-center"
+              icon-name="utility:chevronleft" size="x-small" alternative-text="icon"></lightning-icon>
+            <span class="slds-assistive-text">Previous Page</span>
+          </button>
+          <button class={nextButton} onclick={nextPage}>
+            <lightning-icon class="slds-icon slds-icon slds-icon_small slds slds-align_absolute-center"
+              icon-name="utility:chevronright" size="x-small" alternative-text="icon"></lightning-icon>
+            <span class="slds-assistive-text">Next Page</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <table
+        class="slds-table slds-table_bordered slds-table_header-hidden slds-table_fixed-layout slds-table_resizable-cols"
+        role="grid">
+        <thead>
+          <tr class="slds-line-height_reset" style="border-top-style: none !important; height: 40px;">
+            <th class="slds-text-align_right" scope="col" style="width:3.25rem; background-color:#cd0001;">
+              <div class="slds-checkbox">
+              </div>
+            </th>
+            <template for:each={summaryColumns} for:item='sumcolItems'>
+              <th aria-label={sumcolItems.label} aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col"
+                key={sumcolItems.Id} style="background-color:#cd0001; color:white;">
+                <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate tableHeader">
+                  <span class="slds-truncate" title={sumcolItems.label}>{sumcolItems.label}</span>
+                </div>
+              </th>
+            </template>
+          </tr>
+        </thead>
+        <tbody>
+          <template if:true={sumhasData}>
+            <template for:each={summaryData} for:item='sum'>
+              <tr class="slds-hint-parent" key={sum.index}>
+                <td class="slds-text-align_right" role="gridcell">
+                  <div class="slds-checkbox">
+                  </div>
+                </td>
+                <td role="gridcell">
+                  <div class="slds-truncate" title={sum.Name}>{sum.Name} </div>
+                </td>
+                <td role="gridcell">
+                  <div class="slds-truncate"></div>
+                </td>
+                <template if:false={sumYear1}>
+                  <td>
+                    <div class="slds-grid slds-grid_vertical">
+                      <template for:each={sum.Value} for:item='val'>
+                        <div class="slds-col" key={val.Id}>
+                          {val.Rate}
+                        </div>
+                      </template>
+                    </div>
+                  </td>
+                </template>
+                <template if:true={sumYear1}>
+                  <td>
+                    <div class="slds-grid slds-grid_vertical">
+                      <template for:each={sum.Value1} for:item='val'>
+                        <div class="slds-col" key={val.Id}>
+                          {val.Rate}
+                        </div>
+                      </template>
+                    </div>
+                  </td>
+                </template>
+                <template if:true={sumYear2}>
+                  <td>
+                    <div class="slds-grid slds-grid_vertical">
+                      <template for:each={sum.Value2} for:item='val'>
+                        <div class="slds-col" key={val.Id}>
+                          {val.Rate}
+                        </div>
+                      </template>
+                    </div>
+                  </td>
+                </template>
+                <template if:true={sumYear3}>
+                  <td>
+                    <div class="slds-grid slds-grid_vertical">
+                      <template for:each={sum.Value3} for:item='val'>
+                        <div class="slds-col" key={val.Id}>
+                          {val.Rate}
+                        </div>
+                      </template>
+                    </div>
+                  </td>
+                </template>
+                <template if:true={sumYear4}>
+                  <td>
+                    <div class="slds-grid slds-grid_vertical">
+                      <template for:each={sum.Value4} for:item='val'>
+                        <div class="slds-col" key={val.Id}>
+                          {val.Rate}
+                        </div>
+                      </template>
+                    </div>
+                  </td>
+                </template>
+                <template if:true={sumYear5}>
+                  <td>
+                    <div class="slds-grid slds-grid_vertical">
+                      <template for:each={sum.Value5} for:item='val'>
+                        <div class="slds-col" key={val.Id}>
+                          {val.Rate}
+                        </div>
+                      </template>
+                    </div>
+                  </td>
+                </template>
+                <td role="gridcell">
+                  <div class="slds-truncate"></div>
+                </td>
+              </tr>
+            </template>
+          </template>
+          <template if:false={sumhasData}>
+            <tr>
+              <td colspan="4">
+                <div class="slds-truncate slds-text-title_bold" style="height:inherit;">No Specialty Pricing Data Found
+                </div>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+  </lightning-card>
+</template>

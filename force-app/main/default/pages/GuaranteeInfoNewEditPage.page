@@ -1,0 +1,712 @@
+<apex:page standardController="Guarantees_Information__c" extensions="GuaranteeInfoNewEditClass" Title="Guarantee Information Edit" id="pg" lightningStylesheets="true">
+    <script>
+        var gncOldVal = '{!guaranteeInfoObj.Guaranteed_Net_Cost_Gnc_Guarantee__c}';
+        var showGNCPopup = false;
+        function setFocusOnLoad() {
+            document.getElementById('{!$Component.pg.frm.PB.PBS2.GenericDispensing}').focus();
+        }   
+        window.onload = function() {
+              GncGuaranteeChangeJS(gncOldVal);                    
+        }
+        function populateLowerCorridor(){
+            var GNCGuarantee = document.getElementById(('{!$Component.pg.frm.PB.PBS7.GNCGuarantee}')).value;
+            var GNCShareType = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCShareType}')).value;
+            var GNCRisk = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCRisk}')).value;
+            var GNCThreshold = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCThreshold}')).value;
+            var GNCUpperPercent = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCUpperPercent}')).value;
+            var GNCLowerPercent = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCLowerPercent}')).value;
+            if(GNCGuarantee == 'Yes' && GNCShareType == 'Percent' && GNCRisk == 'Yes' && GNCThreshold == 'Yes' && GNCLowerPercent == ''){
+                document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCLowerPercent}')).value = GNCUpperPercent;
+            }
+        }
+        
+        function populateUpperCorridor(){
+            var GNCGuarantee = document.getElementById(('{!$Component.pg.frm.PB.PBS7.GNCGuarantee}')).value;
+            var GNCShareType = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCShareType}')).value;
+            var GNCRisk = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCRisk}')).value;
+            var GNCThreshold = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCThreshold}')).value;
+            var GNCUpperPercent = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCUpperPercent}')).value;
+            var GNCLowerPercent = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCLowerPercent}')).value;
+            if(GNCGuarantee == 'Yes' && GNCShareType == 'Percent' && GNCRisk == 'Yes' && GNCThreshold == 'Yes' && GNCUpperPercent == ''){
+                document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCUpperPercent}')).value = GNCLowerPercent;
+            }
+        }
+        
+        function populateLowerCorridorAmount(){
+            var GNCGuarantee = document.getElementById(('{!$Component.pg.frm.PB.PBS7.GNCGuarantee}')).value;
+            var GNCShareType = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCShareType}')).value;
+            var GNCRisk = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCRisk}')).value;
+            var GNCThreshold = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCThreshold}')).value;
+            var GNCUpperAmount = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCUpperAmount}')).value;
+            var GNCLowerAmount = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCLowerAmount}')).value;
+            if(GNCGuarantee == 'Yes' && GNCShareType == 'Amount' && GNCRisk == 'Yes' && GNCThreshold == 'Yes' && GNCLowerAmount == ''){
+                document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCLowerAmount}')).value = GNCUpperAmount;
+            }
+        }
+        
+        function populateUpperCorridorAmount(){
+            var GNCGuarantee = document.getElementById(('{!$Component.pg.frm.PB.PBS7.GNCGuarantee}')).value;
+            var GNCShareType = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCShareType}')).value;
+            var GNCRisk = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCRisk}')).value;
+            var GNCThreshold = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCThreshold}')).value;
+            var GNCUpperAmount = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCUpperAmount}')).value;
+            var GNCLowerAmount = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCLowerAmount}')).value;
+            if(GNCGuarantee == 'Yes' && GNCShareType == 'Amount' && GNCRisk == 'Yes' && GNCThreshold == 'Yes' && GNCUpperAmount == ''){
+                document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCUpperAmount}')).value = GNCLowerAmount;
+            }
+        }
+        function populateCVSH(clientShareVal){
+            var clientSharePerId = document.getElementById(('{!$Component.pg.frm.PB.PBS8.clientSharePerId}'));
+            var CVSHPerId = document.getElementById(('{!$Component.pg.frm.PB.PBS8.CVSHPerId}'));
+            if(clientShareVal > 100 || clientShareVal < 0){
+                CVSHPerId.value = 0;
+            }
+            else{
+                if(clientShareVal == ''){
+                    CVSHPerId.value = '';
+                }
+                else{
+                    var clientShareValFixed = Number(clientShareVal).toFixed(2);
+                    CVSHPerId.value = (100-clientShareValFixed).toFixed(2);
+                }
+            }   
+        } 
+        var RebateExists = '{!RebateExistsBool}';
+        
+        function GncGuaranteeChangeJS(GncGuarVal){
+            if(RebateExists != 'true'){  
+                if(gncOldVal =='Yes' && GncGuarVal !='Yes') {
+                   showGNCPopup = true;
+                } else {
+                   showGNCPopup = false;
+                }
+            }
+            if(GncGuarVal != 'Yes'){
+                document.getElementById(('{!$Component.pg.frm.PB.PBS8.CustomReq}')).disabled = true;
+                document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNClaimExcl}')).value = '';
+            }    
+            else{
+                document.getElementById(('{!$Component.pg.frm.PB.PBS8.CustomReq}')).disabled = false;                
+            }
+            GncGuaranteeChange(GncGuarVal);
+        }
+        
+        function enableDisable() {
+            var GncGuarVal = document.getElementById(('{!$Component.pg.frm.PB.PBS7.GNCGuarantee}')).value;
+            if(GncGuarVal != 'Yes'){
+                document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPTimeframeID}')).disabled = true;
+                document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPGuarBasisID}')).disabled = true;
+                document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPGuarFreqncyID}')).disabled = true;
+                document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPReconLevelID}')).disabled = true;
+            }else{
+                document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPTimeframeID}')).disabled = false;
+                document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPGuarBasisID}')).disabled = false;
+                document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPGuarFreqncyID}')).disabled = false;
+                document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPReconLevelID}')).disabled = false;
+            }            
+        } 
+
+        
+        function onSave() {
+        console.log('>>> '+showGNCPopup);
+            if(showGNCPopup) {
+               var modal = document.getElementById('myModal2');
+               modal.style.display = "block"; 
+            } else {
+                //return true;
+                var GNClaimExclVal = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNClaimExcl}')).value;
+                if(('{!guaranteeInfoObj.Id}' == '' || '{!guaranteeInfoObj.Id}' == null) && GNClaimExclVal.includes('See Files')){
+                    var modal = document.getElementById('myModal1');
+                    modal.style.display = "block";  
+                }               
+                else{
+                    saveUpdateguaranteeInfoObj();
+                }
+            }
+            return false;
+        } 
+        
+        function GncClaimYes(){                    
+            var modal = document.getElementById('myModal1');
+            modal.style.display = "none";
+            saveUpdateguaranteeInfoObj();                    
+        }
+        
+        function GncClaimNo(){
+            var modal = document.getElementById('myModal1');
+            modal.style.display = "none";  
+        }
+        
+        function GncYes(){                    
+            saveUpdateguaranteeInfoObj();                    
+        }
+        function GncNo(){
+            var modal = document.getElementById('myModal2');
+            modal.style.display = "none";  
+        }
+        
+        setTimeout(function(){ setFocusOnLoad(); }, 100);
+    </script>
+    <style>
+        body {font-family: Arial, Helvetica, sans-serif;}
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 50%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+
+        /* Add Animation */
+        @-webkit-keyframes animatetop {
+            from {top:-300px; opacity:0} 
+            to {top:0; opacity:1}
+        }
+
+        @keyframes animatetop {
+            from {top:-300px; opacity:0}
+            to {top:0; opacity:1}
+        }
+
+        .modal-header {
+            padding: 0px;
+            height: 29px;
+            color: #ff0000;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            border-top-right-radius: .25rem;
+            border-top-left-radius: .25rem;
+            border-bottom: 2px solid rgb(221, 219, 218);
+            text-align: center;
+        }
+
+        .modal-body {
+            padding: 10px 16px;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            color: #3c3d3e;
+        }
+
+        .modal-footer {
+            padding: 5px;
+            padding-right: 4px;
+            text-align: right;   
+            color: #000000;
+            border-top: 2px solid rgb(221, 219, 218);
+            background-color: rgb(243, 242, 242);
+            border-bottom-left-radius: .25rem;
+            border-bottom-right-radius: .25rem;
+        }
+
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 1px 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 2px 2px;
+            -webkit-transition-duration: 0.4s; /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius : 20px;
+        }
+        .button2 {
+            background-color: rgba(0, 68, 135, 1.0); 
+            color: white; 
+            border: 2px solid rgba(0, 68, 135, 1.0);
+            border-radius: 5px;
+            width: 80px;
+            height: 28px;
+        }
+
+        .button2:hover {
+            background-color: #002080;
+            color: white;
+        }
+        .button5 {
+            background-color: #555555;
+            color: white;
+            border: 2px solid #555555;
+            border-radius: 5px;
+            width: 80px;
+            height: 28px;
+        }
+
+        .button5:hover {
+            background-color: #262626;
+            color: white;
+        }
+    </style>
+    <apex:form id="frm" rendered="{!NOT(showerrorBool)}">
+        <apex:pagemessages id="pmsg"></apex:pagemessages>
+        <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+        
+        <apex:pageBlock title="Guarantee Information Edit" id="PB">
+            <apex:pageBlockSection title="Guarantee Information Detail" id="PBS1">
+                <apex:outputField value="{!guaranteeInfoObj.FAF_ID__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="GDR Guarantee Information" id="PBS2">
+               <apex:inputField value="{!guaranteeInfoObj.Generic_Dispensing_Rate_GDR_Guarantee__c}" id="GenericDispensing" onchange="gdrGuaranteeChange(this.value);"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.GDR_Guarantee_Basis__c}" id="guaranteebasis" required="{!Not(gdrGuarBoolean)}"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.GDR_Guarantee_Payout__c}" required="{!Not(gdrGuarBoolean)}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="GDR Guarantee Reconciliation" id="PBS3">                
+               <apex:inputField value="{!guaranteeInfoObj.GDR_Recon_Method__c}" required="{!Not(gdrGuarBoolean)}"/>               
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.GDR_Recon_Timeframe__c}" required="{!Not(gdrGuarBoolean)}"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.GDR_Recon_Level__c}" required="{!Not(gdrGuarBoolean)}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Trend Guarantee Information" id="PBS4">
+               <apex:inputField value="{!guaranteeInfoObj.Trend_Guarantee__c}" id="trendGuarID" onchange="trendGuarChange(this.value)" />
+               <apex:inputField value="{!guaranteeInfoObj.Trend_Guarantee_Payout_Amount_Per_Basis__c}" id="perBasisID" required="{!trendRequiredBool}" />
+               <apex:inputField value="{!guaranteeInfoObj.Guarantee_Payout_Basis__c}" required="{!trendRequiredBool}" />
+               <apex:inputField value="{!guaranteeInfoObj.Trend_Guarantee_Max_Amount_at_Risk__c }" id="atRiskID" required="{!trendRequiredBool}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Trend Guarantee Shared Risk Information" id="PBS5">
+               <apex:inputField value="{!guaranteeInfoObj.Trend_Guarantee_Shared_Risk__c}" id="sharedRiskID" onchange="sharedRiskChange(this.checked)" />
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.Client_Trend_Gtee_Shared_Risk_Client__c}" id="clientID" required="{!sharedRiskValue}" onkeyup="updateCVSShare(this.value);"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.CVS_Health_Trend_Gtee_Shared_Risk_CV__c}" id="cvsID" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Trend Guarantee Reconciliation" id="PBS6">
+               <apex:inputField value="{!guaranteeInfoObj.Trend_Recon_Method__c}" required="{!trendRequiredBool}" />
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.Trend_Recon_Timeframe__c}" required="{!trendRequiredBool}" />
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.Trend_Recon_Level__c}" required="{!trendRequiredBool}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Gnc Guarantee Information" id="PBS7">
+                <apex:inputField value="{!guaranteeInfoObj.Guaranteed_Net_Cost_Gnc_Guarantee__c}" id="GNCGuarantee" onchange="GncGuaranteeChangeJS(this.value)"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Gnc Guarantee Requirements" id="PBS8">
+               <!-- Prakarsh W-000726 Commented reference of fields-->
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Guarantee_Risk_Sharing__c}" id="GNCRisk" required="{!gncGuaranteeBool}" onchange="enableRiskDependentFields(this.value)"/>
+               <apex:outputlabel />
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Payout_Cap__c}" id="GNCPayoutId" required="{!gncPayoutCapBool}" onchange="changePayOutCap(this.value);"/>
+               
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Payout_Cap_Amount__c}" id="GNCPayoutAmtId" required="{!NOT(gncPayoutCapAmtBool)}"/>
+               <apex:inputField value="{!guaranteeInfoObj.Client_Share_Percent__c}" id="clientSharePerId" onkeyup="populateCVSH(this.value);" required="{!clientSharePercentBool}" />
+               <apex:inputField value="{!guaranteeInfoObj.CVSH_Share_Percent__c}" id="CVSHPerId" />
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Guarantee_Corridor_Threshold__c}" id="GNCThreshold" onchange="enableShareType(this.value)" required="{!gncCorridorThresholdBool}"/>
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Guarantee_Share_Type__c}" id="GNCShareType" onchange="showHidePercentDollarField(this.value)" required="{!gncGuarShareTypeBool}"/>
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Corridor_Lower__c}" onfocus="populateLowerCorridor()" id="GNCLowerPercent" required="{!upperLowerPercentBool}" rendered="{!shareTypePercentShowBool}"/>
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Corridor_Lower_Amount__c}" id="GNCLowerAmount" onfocus="populateLowerCorridorAmount()" rendered="{!shareTypeAmountShowBool}" required="{!upperLowerAmountBool}"/>
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Claim_Exclusions__c}" id="GNClaimExcl" required="{!gncGuaranteeBool}"/>               
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Corridor_Upper_Amount__c}" id="GNCUpperAmount" rendered="{!shareTypeAmountShowBool}" required="{!upperLowerAmountBool}" onfocus="populateUpperCorridorAmount()"/>               
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Corridor_Upper__c}" id="GNCUpperPercent" required="{!upperLowerPercentBool}" onfocus="populateUpperCorridor()" rendered="{!shareTypePercentShowBool}"/>               
+               <apex:inputField value="{!guaranteeInfoObj.Custom_Requirements_or_Restrictions__c}" id="CustomReq"/>
+                                                          
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Gnc Guarantee Reconciliation" id="PBS9">
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Guarantee_Basis__c}" id="ASPGuarBasisID" required="{!aspGuarValue}"/>
+               <!--<apex:outputLabel />-->
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Retain_Rebates_After_Reconciliation__c}" id="GncReconciliationID" required="{!gncGuaranteeBool}"/>
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Guarantee_Frequency__c}" id="ASPGuarFreqncyID" required="{!aspGuarValue}"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Recon_Timeframe__c}" id="ASPTimeframeID" required="{!aspGuarValue}"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.Gnc_Recon_Level__c}" id="ASPReconLevelID" required="{!aspGuarValue}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Performance Guarantee" id="PBS10">
+               <apex:inputField value="{!guaranteeInfoObj.Performance_Guarantee__c}" onchange="onchangePerfGuarant(this.checked);"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.PG_Client_Specific_Are_there__c}" id="ClientSpecificId"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.PG_Path__c}"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.PG_At_Risk_Dollar_Amount__c}" id="RiskDollarAmtId" required="{!NOT(enbDisbperfGuarantee)}"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.PG_Metric__c}" id="MetricId" required="{!NOT(enbDisbperfGuarantee)}"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!guaranteeInfoObj.PG_Maximum_Dollar_Amount_at_Risk__c}" id="MaxDollarAmtRiskId"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Additional Guarantee Information" id="PBS11">
+               <apex:inputField value="{!guaranteeInfoObj.Additional_Guarantee_Information__c}" style="width:800px"/>
+            </apex:pageBlockSection>
+            
+            <apex:actionFunction name="trendGuarChange" action="{!changeTrendGuarField}" reRender="trndGuarPanel,sharedRiskPanel,PBS4,PBS5,PBS6" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!trendGuarValue}" value="" />               
+            </apex:actionFunction>
+            <apex:actionFunction name="gdrGuaranteeChange" action="{!changeGdrGuarField}" reRender="gdrGuarPanel,PBS2,PBS3" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!gdrGuarValue}" value="" />               
+            </apex:actionFunction>
+            <apex:actionFunction name="sharedRiskChange" action="{!changeSharedRiskField}" reRender="sharedRiskPanel,PBS5" immediate="true" status="status">
+                <apex:param name="param2" assignTo="{!sharedRiskValue}" value="" />               
+            </apex:actionFunction>
+            <apex:actionFunction name="aspGuarChange" action="{!changeASPGuarField}" reRender="aspGuarPanel,PBS7,PBS8,PBS9" immediate="true" status="status">
+                <apex:param name="param3" assignTo="{!aspGuarValue}" value="" />               
+            </apex:actionFunction>
+            <apex:actionFunction name="aspSpcDgnChange" action="{!changeASPDesignField}" reRender="PBS8,aspGuarPanel" immediate="true" status="status">
+                <apex:param name="param4" assignTo="{!aspSpcDgnValue}" value="" />               
+            </apex:actionFunction>
+            <apex:actionFunction name="onchangePerfGuarant" action="{!actionOnChangePerfGuarantee}" reRender="perfGuarantPanel,PBS10" immediate="true" status="status">
+                <apex:param name="paramperf" assignTo="{!perfGuaranteeBool}" value="" />               
+            </apex:actionFunction>
+            <apex:actionFunction name="valueFormChanged" action="{!actionOnChangeValueForm}" reRender="togglePanel" immediate="true" status="status">
+                <apex:param name="param5" assignTo="{!valueFormBool}" value="" />               
+            </apex:actionFunction>
+            <apex:actionFunction name="otherFormChanged" action="{!actionOnChangeOtherForm}" reRender="togglePanel" immediate="true" status="status">
+                <apex:param name="param6" assignTo="{!otherFormBool}" value="" />               
+            </apex:actionFunction>
+            <apex:actionFunction name="GncGuaranteeChange" action="{!GncGuaranteeChange}" reRender="PBS8, GncGuaranteePanel, payOutAmtPanel, shareTypePanel, corridorPercentPanel, customReqPanel, GncReconciliationPanel, PBS9" immediate="true" oncomplete="enableDisable();" status="status">
+                <apex:param name="param7" assignTo="{!gncGuaranteeVal}" value="" />               
+            </apex:actionFunction>
+            <apex:actionFunction name="showHidePercentDollarField" action="{!showHidePercentDollarField}" reRender="payOutAmtPanel, corridorPercentPanel, PBS8, shareTypePanel, GncGuaranteePanel" immediate="true" status="status">
+                <apex:param name="param8" assignTo="{!shareTypeVal}" value="" />               
+            </apex:actionFunction>
+            <apex:actionFunction name="enableRiskDependentFields" action="{!enableRiskDependentFields}" reRender="corridorPercentPanel, GncGuaranteePanel, PBS8, shareTypePanel, payOutAmtPanel" immediate="true" status="status">
+                <apex:param name="param9" assignTo="{!gncGuarRiskSharingVal}" value="" />               
+            </apex:actionFunction>
+            <apex:actionFunction name="changePayOutCap" action="{!changePayOutCapMeth}" reRender="payOutAmtPanel, PBS8, shareTypePanel, corridorPercentPanel, GncGuaranteePanel" immediate="true" status="status">
+                <apex:param name="param11" assignTo="{!gncPayOutCapStr}" value="" />               
+            </apex:actionFunction>
+            <apex:actionFunction name="enableShareType" action="{!enableShareType}" reRender="payOutAmtPanel, shareTypePanel, corridorPercentPanel, GncGuaranteePanel, PBS8" immediate="true" status="status">
+                <apex:param name="param10" assignTo="{!gncCorridorThresholdVal}" value="" />               
+            </apex:actionFunction>
+            <apex:actionFunction name="saveUpdateguaranteeInfoObj" action="{!saveUpdateguaranteeInfoObj}" status="status" 
+            reRender="pmsg, PB, perfGuarantPanel, trndGuarPanel, sharedRiskPanel, GncGuaranteePanel, shareTypePanel, corridorPercentPanel, GncReconciliationPanel, payOutAmtPanel">
+            </apex:actionFunction>
+            
+        <apex:pageBlockButtons >
+            <apex:commandButton title="Save" value="Save" onclick="if(onSave())saveUpdateguaranteeInfoObj();"
+            reRender="" oncomplete="window.scrollTo(0, 0);"/>
+            <apex:commandButton action="{!Cancel}" title="Cancel" value="Cancel" immediate="true"/>
+        </apex:pageBlockButtons>
+        </apex:pageBlock>
+        
+        <apex:outputpanel id="trndGuarPanel">
+        <script>
+        //Workaround to work HelpText in Lightning Component
+        function workaround() { 
+            if ((window.sfdcPage) && (sfdcPage.executeOnloadQueue)) { 
+            sfdcPage.executeOnloadQueue(); 
+                } 
+            } 
+            window.addEventListener('load', workaround);
+            var amtPerBasis = document.getElementById(('{!$Component.pg.frm.PB.PBS4.perBasisID}'));
+            var amtAtRisk = document.getElementById(('{!$Component.pg.frm.PB.PBS4.atRiskID}'));
+            var sharedRisk = document.getElementById(('{!$Component.pg.frm.PB.PBS5.sharedRiskID}'));
+            
+            amtPerBasis.disabled = {!enableDisableMap['payoutAmtPerBasisBool']};
+            amtAtRisk.disabled = {!enableDisableMap['maxAmtAtRiskBool']};
+            sharedRisk.disabled = {!enableDisableMap['sharedRiskBool']};
+            
+            if({!enableDisableMap['payoutAmtPerBasisBool']} == true){
+                amtPerBasis.value = '{!guaranteeInfoObj.Trend_Guarantee_Payout_Amount_Per_Basis__c}';
+            }
+            if({!enableDisableMap['maxAmtAtRiskBool']} == true){
+                amtAtRisk.value = '{!guaranteeInfoObj.Trend_Guarantee_Max_Amount_at_Risk__c}';
+            }
+            if({!enableDisableMap['sharedRiskBool']} == true){
+                sharedRisk.checked = {!guaranteeInfoObj.Trend_Guarantee_Shared_Risk__c};
+            }
+            
+        </script>
+        </apex:outputPanel>
+        <apex:outputpanel id="sharedRiskPanel">
+        <script>
+            var cvsSharedRisk = document.getElementById(('{!$Component.pg.frm.PB.PBS5.cvsID}'));
+            var clientSharedRisk = document.getElementById(('{!$Component.pg.frm.PB.PBS5.clientID}'));
+            
+            
+            cvsSharedRisk.disabled = true;
+            clientSharedRisk.disabled = {!enableDisableMap['cvssharedRiskBool']};
+            
+            
+            if({!enableDisableMap['cvssharedRiskBool']} == true){
+                cvsSharedRisk.value = '{!guaranteeInfoObj.CVS_Health_Trend_Gtee_Shared_Risk_CV__c}';
+            }
+            if({!enableDisableMap['clientsharedRiskBool']} == true){
+                clientSharedRisk.value = '{!guaranteeInfoObj.Client_Trend_Gtee_Shared_Risk_Client__c}';
+            }
+            
+            function updateCVSShare(clientVal){
+                var clientShareVar = document.getElementById(('{!$Component.pg.frm.PB.PBS5.clientID}'));
+                var cvsShareVar = document.getElementById(('{!$Component.pg.frm.PB.PBS5.cvsID}'));
+                if(clientVal > 100 || clientVal < 0){
+                    cvsShareVar.value = 0;
+                }else{
+                    if(clientVal == ''){
+                        cvsShareVar.value = '';
+                    }else{
+                        cvsShareVar.value = (100-clientVal).toFixed(2);
+                    }
+                }
+            }
+            
+            
+        </script>
+        </apex:outputPanel>
+        <apex:outputpanel id="aspGuarPanel">
+        <script>
+            //var aspPayoutAmt = document.getElementById(('{!$Component.pg.frm.PB.PBS7.ASPAmtID}'));
+            //var aspValForm = document.getElementById(('{!$Component.pg.frm.PB.PBS8.ASPValFormID}'));
+            //var aspSpcDsgn = document.getElementById(('{!$Component.pg.frm.PB.PBS8.ASPSpcDsgnID}'));
+            //var aspOthrForm = document.getElementById(('{!$Component.pg.frm.PB.PBS8.ASPOthrFormID}'));
+            //var aspGSTP = document.getElementById(('{!$Component.pg.frm.PB.PBS8.ASPGSTPID}'));
+            //var aspMchoice = document.getElementById(('{!$Component.pg.frm.PB.PBS8.ASPMchoiceID}'));
+            //var aspExSpcty = document.getElementById(('{!$Component.pg.frm.PB.PBS8.ASPExSpctyID}'));
+            //var aspSGM = document.getElementById(('{!$Component.pg.frm.PB.PBS8.ASPSGMID}'));
+            var aspGuarBasis = document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPGuarBasisID}'));
+            var aspGuarFreqncy = document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPGuarFreqncyID}'));
+            var aspTimeframe = document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPTimeframeID}'));
+            var aspReconLevel = document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPReconLevelID}'));
+            //var aspSpcDsgnDetails = document.getElementById(('{!$Component.pg.frm.PB.PBS8.ASPDetailsID}'));
+            
+            //aspPayoutAmt.disabled = {!aspEnableDisableBool};
+            //aspValForm.disabled = {!aspEnableDisableBool};
+            //aspSpcDsgn.disabled = {!aspEnableDisableBool};
+            //aspOthrForm.disabled = {!aspEnableDisableBool};
+            //aspGSTP.disabled = {!aspEnableDisableBool};
+            //aspMchoice.disabled = {!aspEnableDisableBool};
+            //aspExSpcty.disabled = {!aspEnableDisableBool};
+            //aspSGM.disabled = {!aspEnableDisableBool};
+            aspGuarBasis.disabled = {!aspEnableDisableBool};
+            aspGuarFreqncy.disabled = {!aspEnableDisableBool};
+            aspTimeframe.disabled = {!aspEnableDisableBool};
+            aspReconLevel.disabled = {!aspEnableDisableBool};
+            //aspSpcDsgnDetails.disabled = {!aspSpcDgnBool};
+                      
+            if({!aspEnableDisableBool} == true){
+                aspGuarBasis.value = '{!guaranteeInfoObj.Gnc_Guarantee_Basis__c}';
+                aspGuarFreqncy.value = '{!guaranteeInfoObj.Gnc_Guarantee_Frequency__c}';
+                aspTimeframe.value = '{!guaranteeInfoObj.Gnc_Recon_Timeframe__c}';
+                aspReconLevel.value = '{!guaranteeInfoObj.Gnc_Recon_Level__c}';
+            }
+            
+        </script>
+        </apex:outputPanel>
+        <apex:outputPanel id="perfGuarantPanel">
+            <script>
+                var clientSpecificVar = document.getElementById(('{!$Component.pg.frm.PB.PBS10.ClientSpecificId}'));              
+                var riskDollarAmtVar = document.getElementById(('{!$Component.pg.frm.PB.PBS10.RiskDollarAmtId}'));
+                var metricVar = document.getElementById(('{!$Component.pg.frm.PB.PBS10.MetricId}'));
+                var maxDollarAmtRiskVar = document.getElementById(('{!$Component.pg.frm.PB.PBS10.MaxDollarAmtRiskId}'));
+                clientSpecificVar.disabled = {!enbDisbperfGuarantee};              
+                riskDollarAmtVar.disabled = {!enbDisbperfGuarantee};
+                metricVar.disabled = {!enbDisbperfGuarantee};
+                maxDollarAmtRiskVar.disabled = {!enbDisbperfGuarantee};
+                if({!enbDisbperfGuarantee} == true){
+                    clientSpecificVar.checked = {!guaranteeInfoObj.PG_Client_Specific_Are_there__c};
+                }               
+                if({!enbDisbperfGuarantee} == true){
+                    riskDollarAmtVar.value = '{!guaranteeInfoObj.PG_At_Risk_Dollar_Amount__c}';
+                }
+                if({!enbDisbperfGuarantee} == true){
+                    metricVar.value = '{!guaranteeInfoObj.PG_Metric__c}';
+                }
+                if({!enbDisbperfGuarantee} == true){
+                    maxDollarAmtRiskVar.value = '{!guaranteeInfoObj.PG_Maximum_Dollar_Amount_at_Risk__c}';
+                }
+            </script>
+        </apex:outputPanel>
+        <apex:outputPanel id="payOutAmtPanel">
+            <script>
+                var payOutAmt = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCPayoutAmtId}'));
+                console.log('>>> '+'{!gncPayoutCapAmtBool}');
+                payOutAmt.disabled = {!gncPayoutCapAmtBool};
+                if({!gncPayoutCapAmtBool}){
+                    payOutAmt.value = '{!guaranteeInfoObj.Gnc_Payout_Cap_Amount__c}';
+                }
+            </script>
+        </apex:outputPanel>
+        
+        <apex:outputPanel id="togglePanel">
+            <script>
+                //var aspValForm = document.getElementById(('{!$Component.pg.frm.PB.PBS8.ASPValFormID}'));
+                //var aspOthrForm = document.getElementById(('{!$Component.pg.frm.PB.PBS8.ASPOthrFormID}'));
+                
+                //aspValForm.checked = {!valueFormBool};
+                //aspOthrForm.checked = {!otherFormBool};
+            </script>
+        </apex:outputPanel>
+        <apex:outputPanel id="GncGuaranteePanel">
+            <script>
+                var GNCThreshold = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCThreshold}'));
+                var CVSHPerId = document.getElementById(('{!$Component.pg.frm.PB.PBS8.CVSHPerId}'));
+                var clientSharePerId = document.getElementById(('{!$Component.pg.frm.PB.PBS8.clientSharePerId}'));
+                var GNCPayoutId = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCPayoutId}'));
+                var GNCUpperPercent = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCUpperPercent}'));
+                var GNCLowerPercent = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCLowerPercent}'));
+                GNCThreshold.disabled = {!gncGuarRiskSharingEnaDisBool};
+                CVSHPerId.disabled  = true;
+                clientSharePerId.disabled = {!gncGuarRiskSharingEnaDisBool};
+                GNCPayoutId.disabled = {!gncGuarRiskSharingEnaDisBool};
+                if({!gncGuarRiskSharingEnaDisBool}){
+                    GNCThreshold.value = '{!guaranteeInfoObj.Gnc_Guarantee_Corridor_Threshold__c}';
+                    CVSHPerId.value = '{!guaranteeInfoObj.CVSH_Share_Percent__c}';
+                    clientSharePerId.value = '{!guaranteeInfoObj.Client_Share_Percent__c}';
+                    GNCPayoutId.value = '{!guaranteeInfoObj.Gnc_Payout_Cap__c}';
+                    GNCUpperPercent.value = '{!guaranteeInfoObj.Gnc_Corridor_Upper__c}';
+                    GNCLowerPercent.value = '{!guaranteeInfoObj.Gnc_Corridor_Lower__c}';
+                }
+            </script> 
+        </apex:outputPanel>
+        <apex:outputPanel id="shareTypePanel">
+            <script>
+                var GNCShareType = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCShareType}'));
+                var GNCUpperPercent = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCUpperPercent}'));
+                var GNCLowerPercent = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCLowerPercent}'));
+                GNCShareType.disabled = {!gncShareType};
+                if({!gncShareType}){
+                    GNCShareType.value = '{!guaranteeInfoObj.Gnc_Guarantee_Share_Type__c}';
+                    GNCUpperPercent.value = '{!guaranteeInfoObj.Gnc_Corridor_Upper__c}';
+                    GNCLowerPercent.value = '{!guaranteeInfoObj.Gnc_Corridor_Lower__c}';
+                }
+            </script>
+        </apex:outputPanel>
+        
+        
+        
+        <apex:outputPanel id="corridorPercentPanel">
+            <script>
+                var GNCUpperPercent = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCUpperPercent}'));
+                var GNCLowerPercent = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCLowerPercent}'));
+                var GNCLowerAmount = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCLowerAmount}'));
+                var GNCUpperAmount = document.getElementById(('{!$Component.pg.frm.PB.PBS8.GNCUpperAmount}'));
+                if({!shareTypePercentDisBool}){
+                    GNCUpperPercent.disabled = true;
+                    GNCLowerPercent.disabled = true;
+                    GNCUpperPercent.value = '{!guaranteeInfoObj.Gnc_Corridor_Upper__c}';
+                    GNCLowerPercent.value = '{!guaranteeInfoObj.Gnc_Corridor_Lower__c}';
+                }
+                else{
+                    GNCUpperPercent.disabled = false;
+                    GNCLowerPercent.disabled = false;
+                }
+            </script> 
+        </apex:outputPanel>
+        <apex:outputPanel id="customReqPanel">
+            <script>
+                console.log('>>>???? '+{!customReqEnaDisBool} + ' ' + '{!guaranteeInfoObj.Gnc_Claim_Exclusions__c}' + ' ' + '{!guaranteeInfoObj.Custom_Requirements_or_Restrictions__c}');
+                var CustomReq = document.getElementById(('{!$Component.pg.frm.PB.PBS8.CustomReq}'));
+                CustomReq.disabled = {!customReqEnaDisBool}; 
+                CustomReq.value = '{!guaranteeInfoObj.Custom_Requirements_or_Restrictions__c}'; 
+            </script>
+        </apex:outputPanel>
+        <apex:outputPanel id="GncReconciliationPanel">
+            <script>
+                var GncReconciliation = document.getElementById(('{!$Component.pg.frm.PB.PBS9.GncReconciliationID}'));
+                var CustomReq = document.getElementById(('{!$Component.pg.frm.PB.PBS8.CustomReq}'));
+                var ASPReconLevelID = document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPReconLevelID}'));
+                var ASPTimeframeID = document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPTimeframeID}'));
+                var ASPGuarFreqncyID = document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPGuarFreqncyID}'));
+                var ASPGuarBasisID = document.getElementById(('{!$Component.pg.frm.PB.PBS9.ASPGuarBasisID}'));
+                GncReconciliation.disabled = {!gncReconciliationEnaDisBool};
+                CustomReq.disabled = {!customReqEnaDisBool}; 
+                ASPReconLevelID.disabled = {!gncreconlevelEnaDisBool};
+                ASPGuarFreqncyID.disabled = {!gncfrequencyEnaDisBool};
+                ASPTimeframeID.disabled = {!gnctimeframeEnaDisBool};
+                ASPGuarBasisID.disabled = {!gncbasisEnaDisBool};
+                if({!gncReconciliationEnaDisBool}){
+                    ASPReconLevelID.value = '{!guaranteeInfoObj.Gnc_Recon_Level__c}';
+                    ASPGuarFreqncyID.value = '{!guaranteeInfoObj.Gnc_Guarantee_Frequency__c}';
+                    ASPTimeframeID.value = '{!guaranteeInfoObj.Gnc_Recon_Timeframe__c}';
+                    ASPGuarBasisID.value = '{!guaranteeInfoObj.Gnc_Guarantee_Basis__c}';   
+                    CustomReq.value = '{!guaranteeInfoObj.Custom_Requirements_or_Restrictions__c}'; 
+                    GncReconciliation.value = '{!guaranteeInfoObj.Gnc_Retain_Rebates_After_Reconciliation__c}';
+                }
+            </script>
+        </apex:outputPanel>
+        <apex:outputpanel id="gdrGuarPanel">
+        <script>
+            document.getElementById(('{!$Component.pg.frm.PB.PBS2.guaranteebasis}')).disabled = {!gdrGuarBoolean};
+        </script>
+        </apex:outputpanel>
+        <div id="myModal1" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p><center>You must include an attachment when Gnc Claim Exclusions is equal to See Files. Do you wish to continue?</center></p>
+              
+            </div>
+            
+            <div class="modal-footer">
+              
+              <button class="button button2" type="button" onclick="GncClaimYes()">Continue</button>
+              <button class="button button2" type="button" onclick="GncClaimNo()">Cancel</button>
+            </div>
+          </div>
+
+        </div>
+        
+        <div id="myModal2" class="modal">
+                  <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p><center> Changing the value of Guaranteed Net Cost (Gnc) Guarantee? from Yes to No will remove any existing Gnc Guarantees. Do you wish to continue?</center></p>
+              
+            </div>
+            
+            <div class="modal-footer">
+              
+              <button class="button button2" type="button" onclick="GncYes()">Continue</button>
+              <button class="button button2" type="button" onclick="GncNo()">Cancel</button>
+            </div>
+          </div>
+
+        </div>
+    </apex:form>
+    <apex:form rendered="{!showerrorBool}">
+        <apex:pageBlock title="Guarantee Information">
+            <h1>A FAF may contain only a single Guarantee Information record.</h1>
+            <br/>
+            <br/>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton title="Cancel" action="{!Cancel}" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>  
+</apex:page>

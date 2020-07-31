@@ -1,0 +1,46 @@
+.THIS .container {
+    width : 100%;
+}
+.THIS .red {
+    background-color: rgb(231, 50, 66);
+    color: white;
+    height: 23px;
+}
+.THIS .white {
+    background-color: white;
+}
+.THIS .icon {
+    zoom: 35%;
+}
+.THIS .layoutheight {
+    height: 140%;
+}
+.THIS .layoutheightCustom {
+    height: 40px;
+}
+.THIS .paddingclass {
+  padding: 0 26rem;
+}
+.THIS .icn
+{ 
+  fill: white; 
+  padding: 0.5px;
+}
+.THIS .width {
+    left: 190px;
+}
+.THIS header.slds-card__header.slds-grid{
+    padding-top:0px;
+    margin-top:-10px
+}
+
+
+.THIS .slds-form-element__label {
+    font-weight: 500!important; 
+    font-size: var(--lwc-fontSize3,0.8125rem)!important;
+}
+        
+.THIS .slds-checkbox_faux {
+    width: 1rem !important;
+    height: 1rem !important;     
+}

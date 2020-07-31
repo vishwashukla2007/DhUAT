@@ -1,0 +1,111 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <aura:attribute name="options" type="List" default="[
+    {'label': 'Retail Network', 'value': 'Network_Pricing__c'},
+    {'label': 'Mail', 'value': 'Mail_Pricing__c'},
+    {'label': 'Specialty', 'value': 'Specialty_Pricing__c'},
+    {'label': 'Administrative Fees', 'value': 'Billing_Admin_Fee__c'},     
+    {'label': 'Rebate', 'value': 'Rebate_Guarantee__c'},                                                   
+    {'label': 'Additional Program', 'value': 'Clinical_Solutions__c'}, 
+    {'label': 'SRx Fee Schedule', 'value': 'Specialty_Drug_Level_Pricing__c'}                                                    
+    ]"/>
+    <aura:attribute name="clickNewModal" type="Boolean" default="false" />
+    <aura:attribute name="params" type="String"/>
+    <aura:attribute name="OpsId" type="String"/>
+    <aura:attribute name="disablebtn" type="Boolean"/>
+    <aura:attribute name="disablesavebtn" type="Boolean" default="true"/>
+    <aura:attribute name="display" type="Boolean" default="true"/>
+    <aura:attribute name="value" type="String" default="Network_Pricing__c"/>
+    <aura:attribute name="DisplaySpinner" type="Boolean" default="false" />
+    <aura:registerEvent name="GridNameEvent" type="c:Apttus_Grid_Name_Event"/>
+    <aura:registerEvent name="closeModal" type="c:Apttus_Grid_NT_Open_Event"/>
+    <aura:registerEvent name="saveEvent" type="c:Apttus_Grid_NT_Save_Event"/>
+    <aura:registerEvent name="closeEvent" type="c:Apttus_Grid_NT_Close_Event"/>
+    <aura:handler event="c:Apttus_Grid_Ops_Id_Event" action="{!c.OpsIdupdate}" />
+    <!-- <aura:handler event="c:Apttus_Grid_NT_Close_Event" action="{!c.handleCloseEdit}"/> -->
+    <aura:handler event="c:Apttus_Grid_NT_Notify_Error_Event" action="{!c.handleError}"/>
+    <aura:handler event="c:Apttus_Grid_Height_Event" action="{!c.stylechange}"/>
+    <aura:handler event="c:Apttus_Grid_Close_New_Event" action="{!c.handleCloseEdit}"/>
+    <aura:handler event="c:Apttus_Grid_Cancel_Parent_Event" action="{!c.handleClose}"/> 
+    <aura:attribute name="headerTitle" type="Aura.Component[]">
+        <h1>
+            <b>Setup Pricing</b>
+        </h1>
+     </aura:attribute>
+    <lightning:card  class="container" title="{!v.headerTitle}">
+    <aura:if isTrue="{!v.clickNewModal}">
+            <!-- <c:Apttus_Copy_NT_Grid aura:id="NewPricing" display="{!v.display}" params="{!v.params}"/>  -->
+             <div class="demo-only"  style="width:90%;"> 
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" aura:id="modalheight">
+                <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Network Pricing</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                    <c:Apttus_Grid_New_NP aura:id="compmod"  fafid="{!v.OpsId}"/>
+                </div>
+                <footer class="slds-modal__footer">
+                    <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                    <button type="button" disabled="{!v.disablesavebtn}" class="slds-button slds-button_brand" onclick="{!c.updatepricing}">Save</button>
+                </footer>
+            </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if> 
+    <lightning:layout>
+     <lightning:tabset  selectedTabId="Network_Pricing__c">
+        <lightning:tab class="tab" label="Retail Network" id="Network_Pricing__c" onactive="{! c.onChange }">
+        </lightning:tab>
+        <lightning:tab class="tab" label="Mail" id="Mail_Pricing__c" onactive="{! c.onChange }">
+        </lightning:tab>
+        <lightning:tab class="tab" label="Specialty" id="Specialty_Pricing__c" onactive="{! c.onChange }">
+        </lightning:tab>
+        <lightning:tab class="tab" label=" Administrative Fees" id="Billing_Admin_Fee__c" onactive="{! c.onChange }">
+        </lightning:tab>
+         <lightning:tab class="tab" label="Rebate" id="Rebate_Guarantee__c" onactive="{! c.onChange }">
+        </lightning:tab>
+        <lightning:tab class="tab" label="Additional Program" id="Clinical_Solutions__c" onactive="{! c.onChange }">
+        </lightning:tab>
+         <lightning:tab class="tab" label="SRx Fee Schedule" id="Specialty_Drug_Level_Pricing__c" onactive="{! c.onChange }">
+        </lightning:tab>
+    </lightning:tabset>
+    <div class="slds-p-below_medium"></div>
+    </lightning:layout>
+    </lightning:card>
+    <!--       
+    <lightning:layoutitem>
+    <lightning:radioGroup name="radioGroup"
+                          options="{!v.options }"
+                          value="{!v.value}"
+                          type="button"
+                          onchange="{!c.onChange}"/>
+    </lightning:layoutitem>    
+        
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_xx-large"></div>
+    <div class="slds-p-left_large"></div>
+    <lightning:layoutitem>
+
+       <lightning:button label="Add New Item" disabled="{!v.disablebtn}" iconName="utility:add" iconPosition="left" class="slds-button slds-button_brand" onclick="{!c.create}"/>
+    </lightning:layoutitem> -->
+
+</aura:component>

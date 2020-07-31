@@ -1,0 +1,87 @@
+<aura:component controller="Apttus_GridObjectdata" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <aura:attribute name="objects" type="Object"/>
+    <aura:attribute name="newobject" type="Specialty_Pricing__c" />
+    <aura:attribute name="nnameoptions" type="Object"/>
+    <aura:attribute name="ntypeoptions" type="Object"/>
+    <aura:attribute name="spobjects" type="Specialty_Pricing__c"/>
+    <aura:attribute name="fafid" type="String" default="" />
+    <aura:attribute name="networkname" type="String" default="" />
+    <aura:attribute name="pharmacyBenefit" type="String" default="" />
+    <aura:attribute name="networktype" type="String" default="" />
+    <aura:attribute name="loboptions" type="String" default="" />
+    <aura:attribute name="lob" type="String" default="" />
+    <aura:attribute name="desc" type="String" default="" />
+    <aura:attribute name="opid" type="String" default="" />
+    <aura:attribute name="readonly" type="Boolean" default="false" />
+    <aura:attribute name="descrequired" type="Boolean" default="false" />
+    <aura:attribute name="descreadonly" type="Boolean" default="false" /> 
+    <aura:attribute name="typereadonly" type="Boolean" default="false" /> 
+    <aura:attribute name="disablebtn" type="Boolean" default="false" /> 
+    <aura:attribute name="DisplaySpinner" type="Boolean" default="false" />
+    <aura:attribute name="pricingcount" type="Integer" default="" />
+    <aura:attribute name="yearcount" type="Integer" default="" />
+    <aura:attribute name="recordcount" type="Integer" default="" />
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Notify_Save_Event" action="{!c.handleSaveVerify}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Notify_Error_Event" action="{!c.handleError}"/>
+    <aura:registerEvent name="savecomplete" type="c:Apttus_Grid_NT_Close_Event"/>
+    <aura:handler event="c:Apttus_Grid_NT_Save_Event" action="{!c.handleSave}"/>
+    <aura:handler event="c:Apttus_Grid_Refresh_Parent_Event" action="{!c.doInit}"/>
+    <aura:handler event="c:Apttus_Grid_Inactive_Parent_Event" action="{!c.displayspinner}"/>
+    <lightning:card  class="container">
+        <lightning:layout>
+            <aura:if isTrue="{!v.DisplaySpinner}">
+                <lightning:spinner alternativeText="Saving" variant="brand" size="medium" class="slds-spinner_container"/>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </aura:if>   
+        </lightning:layout>
+         <lightning:layout class="text-label--large" horizontalAlign="left" multipleRows="false">
+        <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="slds-text-body_small" size="4">
+             <lightning:input type="text"  required="true" aura:id="Desc" name="Custom Description" value="{!v.desc}" label="Specialty Display Name"  onchange="{!c.updatedesc}" >
+    		</lightning:input>
+        </lightning:layoutItem>
+        
+    </lightning:layout >
+        <div class="slds-p-bottom_x-large"></div>
+        <lightning:layout  class="width">
+            <div class="slds-scrollable">
+                <table style="table-layout: unset !important;" class="slds-table slds-table_bordered inner">
+                    <thead>
+                        <tr class="slds-text-heading_label slds-line-height_reset">
+                            <th scope="col"><div class="" title=""></div></th>
+                            <th scope="col"><div class="yr" title="Year">Year</div></th>
+                            <th scope="col"><div class="planyr"  title="Plan Year">Plan Year</div></th>
+                            <th scope="col"><div class="" style="width: 96px;" title="LOB">LOB</div></th>
+                            <th scope="col"><div class=""  style="width: 200px;" title="Pharmacy Benefit">Pharmacy Benefit</div></th>
+                            <th scope="col"><div class="" style="width: 243px;" title="Price List">Price List</div></th>
+                            <th class="slds-is-resizable" scope="col"><div class="brbasis" title="Brand Basis">Brand Basis</div></th>
+                            <th scope="col"><div class="" title="Brand Rate">Brand Rate %</div></th>
+                            <th scope="col"><div class="" title="Brand Dispensing Fee">Brand Dispensing Fee</div></th>
+                            <th class="slds-is-resizable"  scope="col"><div class="gbasis"  title="Generic Basis">Generic Basis</div></th>
+                            <th scope="col"><div class="" title="Generic Rate">Generic Rate %</div></th>
+                            <th scope="col"><div class="" title="Generic Dispensing Fee">Generic Dispensing Fee</div></th>
+                            <th scope="col"><div class="" title="LDD Rate">Limited Distribution Drug(LDD) Rate %</div></th>
+                            <th scope="col"><div class="" title="New To Market Generic Rate">New To Market Generic Rate %</div></th>
+                            <th scope="col"><div class="" title="LDD No Access Rate">LDD No Access Rate %</div></th>
+                            <th scope="col"><div class="" title="Biosimilar Rate">Biosimilar Rate %</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Use the Apex model and controller to fetch server side data -->
+                        <aura:iteration items="{!v.spobjects}" var="p" indexVar="index">
+                            <c:Apttus_Grid_Edit_SP_Child aura:id="compB" yearcount="{!v.yearcount}"  lob="{!v.lob}" objects="{!p}" opid="{!v.opid}" desc="{!v.desc}"/>
+                        </aura:iteration> 
+                        
+                    </tbody>
+                </table>   
+            </div>
+        </lightning:layout>
+        <lightning:layout>
+            <lightning:layoutitem>
+                <div class="slds-p-top_x-large"></div>
+                <lightning:button label="Add Year"  iconName="utility:add" iconPosition="left" class="slds-button" onclick="{!c.create}"/>
+            </lightning:layoutitem>
+        </lightning:layout>
+    </lightning:card>
+    
+</aura:component>

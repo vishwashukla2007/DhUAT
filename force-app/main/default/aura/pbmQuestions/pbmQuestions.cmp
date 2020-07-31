@@ -1,0 +1,43 @@
+<aura:component implements="lightning:availableForFlowScreens" controller="pbmQuestionParentController">
+	<aura:attribute name="mydata_custom1" type="PBM_Questions__c[]" access="public"/>
+    <aura:attribute name="pbmQuestAns" type="PBM_Questions_Answers__c[]"/>
+    <aura:attribute name="insertedpbmQuestAnsList" type="PBM_Questions_Answers__c[]"/>
+    <aura:attribute name="insertedQuestAnsId" type="String[]"/>
+    <aura:attribute name="isValidInput" type="Boolean" default="true"/>
+    <aura:handler name="questcmpEvent" event="c:pbmQuestionaireCompEvent" action="{!c.handleComponentEvent}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="fafId" type="String"/>
+    <ltng:require styles="{!$Resource.multilineToastCSS}" />
+    
+    <div class="slds-text-color_error">
+    	<strong>System detects insufficient information. Please fill in question/s below</strong>
+    </div>
+     
+    
+    
+    <div aura:id="list">
+        <aura:iteration items="{! v.pbmQuestAns }" var="questAns" indexVar="index">
+            <aura:if isTrue="{!questAns.Section_Header__c != null }">
+                <br/>  
+                <div class="slds-border_bottom slds-text-heading_small">
+                    <strong>{!questAns.Section_Header__c}</strong>
+                </div>
+            </aura:if>
+                      
+            <aura:if isTrue="{!questAns.Field_API__c == 'Client_Share__c'}">
+                <c:pbmQuestionsItem pbmQuestAnsItem ="{!questAns}" aura:id="Client_Share__c"/>
+                <aura:set attribute="else">
+                    <c:pbmQuestionsItem pbmQuestAnsItem ="{!questAns}"/>
+                </aura:set>
+            </aura:if>       
+        </aura:iteration>
+    </div>
+    <br/>
+    
+    <div style="float: right;">
+        <lightning:button variant="brand" label="Save and Next" title="" onclick="{! c.handleSave }" />
+    </div>
+     
+    
+          
+</aura:component>

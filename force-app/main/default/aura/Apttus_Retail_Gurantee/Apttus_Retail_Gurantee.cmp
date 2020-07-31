@@ -1,0 +1,323 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"  access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="isAccess" type="boolean"/>
+    <aura:attribute name="retailgurantee" type="Retail_Network_Guarantees__c[]" />
+    <aura:attribute name="dependentFieldMap" type="map" description="store controller(key)--> dependent(values) picklist value as a map." />
+    <aura:attribute name="type" type="String[]"/>
+    <aura:attribute name="rate" type="String"/>
+    <aura:attribute name="zbd" type="String[]" />
+    <aura:attribute name="uc" type="String[]" />
+    <aura:attribute name="ssg" type="String[]" />
+    <aura:attribute name="otc" type="String[]" />
+    <aura:attribute name="vb" type="String[]" />
+    <aura:attribute name="comp" type="String[]" />
+    <aura:attribute name="vacc" type="String[]" />
+    <aura:attribute name="vaccExc" type="String[]" />
+    <aura:attribute name="paper" type="String[]" />
+    <aura:attribute name="clickEdit" type="Boolean" default="true" />
+    <aura:attribute name="clickNew" type="Boolean" default="true" />
+    <aura:attribute name="cob" type="String[]" />
+    <aura:attribute name="params" type="String" />
+    <aura:attribute name="readonly" type="Boolean" default="true" />
+    <aura:attribute name="clickEditModal" type="Boolean" default="false" />
+    <aura:attribute name="isDependentTypeDisable" type="Boolean" default="false"  access="global"/>
+    <aura:attribute name="pricingid" type="String[]" />
+    
+    <!-- <aura:registerEvent name="oSelectedRecordEvent" type="c:selectedCheckboxtRecordEvent"/> -->
+    <table class="tableLayout" width="100%">
+        <tr style="padding: 3px !important;width: 100%;"> 
+            <td style="padding: 4px !important;" width="2%">
+                <aura:if isTrue="{!v.clickEditModal}">
+                    <c:Apttus_Edit_Ret_Guarantees_Vf aura:id="EditGuarantees" params="{!v.params}"/>  
+                </aura:if>
+            </td>
+            
+            <td style="padding: 4px !important;" width="2%">
+              
+                <div class="pricing_link slds-p-right_small slds-p-left_small slds-grow" data-aura-rendered-by="23:409;a">
+                    <div class="slds-form-element__control slds-form-element" style="font-weight: 600;" data-aura-rendered-by="20:409;a">
+                         <a onclick="{!c.handleClick}">{!v.retailgurantee.Name}</a> 
+                    </div>
+                </div>
+            </td>
+			<td width="2%">
+				<div style="width: 83px;padding: 4px;" >
+					<lightning:select disabled= "{!v.readonly}"  name="type" label="Type" required="false" value="{!v.retailgurantee.Type__c}">
+						<option value="{!v.retailgurantee.Type__c}" text="{!v.retailgurantee.Type__c}"></option>
+					</lightning:select>
+				</div>
+			</td>
+           <td  width="3%">
+               <div style="width:100px;padding: 4px;">
+                <lightning:input disabled="{!v.readonly}" type="number" style="width:90px"  label="Rate"  name="rate" value="{!v.retailgurantee.Rate__c}" formatter="percent-fixed" step="0.01"/>
+                   </div>
+            </td>
+           
+            <td width="2%">
+            <div style="width:67px;padding: 4px;">
+                <lightning:select disabled="{!v.readonly}" name="zbd" label="ZBD" required="false"  >
+                    <aura:if isTrue= "{!or(v.retailgurantee.ZBD__c == 'Yes', v.retailgurantee.ZBD__c == 'No')}">
+                        <option value="{!v.retailgurantee.ZBD__c}" text="{!v.retailgurantee.ZBD__c == 'Yes' ? 'Y' : 'N'}"></option>
+                    </aura:if>
+                </lightning:select>
+            </div>
+			</td>
+            
+            <td width="2%">
+            <div style="width:74px;padding: 4px;">
+               <lightning:select disabled="{!v.readonly}" name="uc" label="U&amp;C" required="false">
+                    <aura:if isTrue= "{!or(v.retailgurantee.U_C__c == 'Yes', v.retailgurantee.U_C__c == 'No')}">
+                        <option value="{!v.retailgurantee.U_C__c}" text="{!v.retailgurantee.U_C__c == 'Yes' ? 'Y' : 'N'}"></option>
+                    </aura:if>
+                </lightning:select>
+            </div>
+			</td>
+            <!--td style="padding: 10px !important;width: 200px;" width="5%">
+                <lightning:select disabled="{!v.readonly}" name="uc" label="U&amp;C" required="false">
+                    <aura:if isTrue= "{!or(v.retailgurantee.U_C__c == 'Yes', v.retailgurantee.U_C__c == 'No')}">
+                        <option value="{!v.retailgurantee.U_C__c}" text="{!v.retailgurantee.U_C__c == 'Yes' ? 'Y' : 'N'}"></option>
+                    </aura:if>
+                </lightning:select>
+            </td-->
+            <td width="2%">
+            <div style="width:67px;padding: 4px;">
+                <lightning:select disabled="{!v.readonly}" name="ssg" label="SSG" required="false">
+                    <aura:if isTrue= "{!or(v.retailgurantee.SSG__c == 'Yes', v.retailgurantee.SSG__c == 'No')}">
+                        <option value="{!v.retailgurantee.SSG__c}" text="{!v.retailgurantee.SSG__c == 'Yes' ? 'Y' : 'N'}" style="width:50px;"></option>
+                    </aura:if>
+                </lightning:select>
+            </div>
+			</td>
+            <!--td style="padding: 10px !important;width: 120px;" width="5%">
+                <lightning:select disabled="{!v.readonly}" name="ssg" label="SSG" required="false">
+                    <aura:if isTrue= "{!or(v.retailgurantee.SSG__c == 'Yes', v.retailgurantee.SSG__c == 'No')}">
+                        <option value="{!v.retailgurantee.SSG__c}" text="{!v.retailgurantee.SSG__c == 'Yes' ? 'Y' : 'N'}" style="width:50px;"></option>
+                    </aura:if>
+                </lightning:select>
+            </td-->
+            <td width="2%">
+            <div style="width:67px;padding: 4px;">
+                <lightning:select disabled="{!v.readonly}" name="otc" label="OTC" required="false" >
+                    <aura:if isTrue= "{!or(v.retailgurantee.OTC__c == 'Yes', v.retailgurantee.OTC__c == 'No')}">
+                        <option value="{!v.retailgurantee.OTC__c}" text="{!v.retailgurantee.OTC__c == 'Yes' ? 'Y' : 'N'}"></option>
+                    </aura:if>
+                </lightning:select>
+            </div>
+			</td>
+            <!--td style="padding: 10px !important;width: 150px;" width="5%">
+                <lightning:select disabled="{!v.readonly}" name="otc" label="OTC" required="false" >
+                    <aura:if isTrue= "{!or(v.retailgurantee.OTC__c == 'Yes', v.retailgurantee.OTC__c == 'No')}">
+                        <option value="{!v.retailgurantee.OTC__c}" text="{!v.retailgurantee.OTC__c == 'Yes' ? 'Y' : 'N'}"></option>
+                    </aura:if>
+                </lightning:select>
+                
+            </td-->
+            
+            <td style="padding: 4px !important;width: 44px;" width="2%">
+                <lightning:select disabled="{!v.readonly}" name="comp" label="Compound" required="false" >
+                    <aura:if isTrue= "{!or(v.retailgurantee.Compound__c == 'Yes', v.retailgurantee.Compound__c == 'No')}">
+                        <option value="{!v.retailgurantee.Compound__c}" text="{!v.retailgurantee.Compound__c == 'Yes' ? 'Y' : 'N'}"></option>
+                    </aura:if>
+                </lightning:select>
+            </td>
+            
+            <td width="2%">
+            <div style="width:67px;padding: 4px;">
+                <lightning:select disabled="{!v.readonly}" name="cob" label="COB" required="false" >
+                    <aura:if isTrue= "{!or(v.retailgurantee.COB__c== 'Yes', v.retailgurantee.COB__c == 'No')}">
+                        <option value="{!v.retailgurantee.COB__c}" text="{!v.retailgurantee.COB__c== 'Yes' ? 'Y' : 'N'}"></option>
+                    </aura:if>
+                </lightning:select>
+            </div>
+			</td>
+            <td width="2%">
+            <div style="width:67px;padding: 4px;">
+              <lightning:select disabled="{!v.readonly}" name="paper" label="Paper" required="false" >
+                <aura:if isTrue= "{!or(v.retailgurantee.Paper__c== 'Yes', v.retailgurantee.Paper__c == 'No')}">
+                    <option value="{!v.retailgurantee.Paper__c}" text="{!v.retailgurantee.Paper__c== 'Yes' ? 'Y' : 'N'}"></option>
+                </aura:if>
+            </lightning:select>
+            </div>
+			</td>
+            <!--td style="padding: 10px !important;width: 150px;" width="5%">
+                <lightning:select disabled="{!v.readonly}" name="cob" label="COB" required="false" >
+                    <aura:if isTrue= "{!or(v.retailgurantee.COB__c== 'Yes', v.retailgurantee.COB__c == 'No')}">
+                        <option value="{!v.retailgurantee.COB__c}" text="{!v.retailgurantee.COB__c== 'Yes' ? 'Y' : 'N'}"></option>
+                    </aura:if>
+                </lightning:select>
+            </td>
+            <td style="padding: 4px !important;" width="2%">
+            <lightning:select disabled="{!v.readonly}" name="paper" label="Paper" required="false" >
+                <aura:if isTrue= "{!or(v.retailgurantee.Paper__c== 'Yes', v.retailgurantee.Paper__c == 'No')}">
+                    <option value="{!v.retailgurantee.Paper__c}" text="{!v.retailgurantee.Paper__c== 'Yes' ? 'Y' : 'N'}"></option>
+                </aura:if>
+            </lightning:select>
+            </td-->
+
+	<!--td style="padding: 10px !important;width: 100px;" width="5%">
+	<lightning:select disabled="{!v.readonly}" name="vacc" label="Vaccine" required="false" >
+		<aura:if isTrue= "{!or(v.retailgurantee.Vaccine__c== 'Yes', v.retailgurantee.Vaccine__c == 'No')}">
+			<option value="{!v.retailgurantee.Vaccine__c}" text="{!v.retailgurantee.Vaccine__c== 'Yes' ? 'Y' : 'N'}"></option>
+		</aura:if>
+	</lightning:select>
+
+	</td-->
+            <td width="2%">
+	<div style="padding: 4px; width: 75px;" >
+	<lightning:select disabled="{!v.readonly}" name="vacc" label="Vaccine" required="false" >
+		<aura:if isTrue= "{!or(v.retailgurantee.Vaccine__c== 'Yes', v.retailgurantee.Vaccine__c == 'No')}">
+			<option value="{!v.retailgurantee.Vaccine__c}" text="{!v.retailgurantee.Vaccine__c== 'Yes' ? 'Y' : 'N'}"></option>
+		</aura:if>
+	</lightning:select>
+
+	</div>
+	</td>
+	<td width="2%">
+	<div style="padding:4px; width: 278px;color:gray;" >
+	<lightning:textarea disabled="{!v.readonly}" name="vaccExc" label="Vaccine Option" required="false" value="{!v.retailgurantee.Vaccine_Inclusion_Option__c}">
+		<!--<aura:if isTrue= "{!or(v.retailgurantee.Vaccine__c== 'Yes', v.retailgurantee.Vaccine__c == 'No')}">
+			<option value="{!v.retailgurantee.Vaccine__c}" text="{!v.retailgurantee.Vaccine__c== 'Yes' ? 'Y' : 'N'}"></option>
+		</aura:if>
+		<option value="{!v.retailgurantee.Vaccine_Inclusion_Option__c}" text="{!v.retailgurantee.Vaccine_Inclusion_Option__c}"></option>-->
+	</lightning:textarea>
+
+	</div>
+	</td>
+	<!--td style="padding: 10px !important;width: 180px;" width="5%">
+	<lightning:select disabled="{!v.readonly}" aura:id="vb" name="vb" label="340B" required="false" >
+		<aura:if isTrue= "{!or(v.retailgurantee.X340B__c == 'Yes', v.retailgurantee.X340B__c == 'No')}">
+			<option value="{!v.retailgurantee.X340B__c}" text="{!v.retailgurantee.X340B__c == 'Yes' ? 'Y' : 'N'}"></option>
+		</aura:if>
+	</lightning:select>
+	</td-->
+            <td>
+	 <div style="width:75px;padding: 4px;">
+              <lightning:select disabled="{!v.readonly}" aura:id="vb" name="vb" label="340B" required="false" >
+		<aura:if isTrue= "{!or(v.retailgurantee.X340B__c == 'Yes', v.retailgurantee.X340B__c == 'No')}">
+			<option value="{!v.retailgurantee.X340B__c}" text="{!v.retailgurantee.X340B__c == 'Yes' ? 'Y' : 'N'}"></option>
+		</aura:if>
+	</lightning:select>
+            </div>
+			</td>
+	<td width="2%">
+	<div style="width:164px;padding: 4px;">
+	<lightning:select disabled= "{!v.readonly}"  name="340boption" label="340B Option" required="false" value="{!v.retailgurantee.X340B_Inclusion_Option__c}">
+		<option value="{!v.retailgurantee.X340B_Inclusion_Option__c}" text="{!v.retailgurantee.X340B_Inclusion_Option__c}"></option>
+	</lightning:select> 
+	</div>
+	</td>
+     <td>
+	 <div style="width:71px;padding: 4px;">
+              <lightning:select disabled="{!v.readonly}" name="ldd" label="LDD" required="false" >
+		<aura:if isTrue= "{!or(v.retailgurantee.LDD__c== 'Yes', v.retailgurantee.LDD__c == 'No')}">
+			<option value="{!v.retailgurantee.LDD__c}" text="{!v.retailgurantee.LDD__c== 'Yes' ? 'Y' : 'N'}"></option>
+		</aura:if>
+	</lightning:select>
+            </div>
+			</td>
+
+	<td width="2%">
+	<div style="width:357px;padding: 4px;">
+	<lightning:select disabled= "{!v.readonly}"  name="lddoption" label="LDD Option"   required="false" value="{!v.retailgurantee.LDD_Inclusion_Option__c}">
+		<option value="{!v.retailgurantee.LDD_Inclusion_Option__c}" text="{!v.retailgurantee.LDD_Inclusion_Option__c}"></option>
+	</lightning:select> 
+	</div>
+	</td>
+	<td width="2%">
+	<div style="width:75px;padding: 4px;">
+	<lightning:select disabled="{!v.readonly}" name="biosimliars" label="Biosimilar" required="false" >
+		<aura:if isTrue= "{!or(v.retailgurantee.Biosimilars__c== 'Yes', v.retailgurantee.Biosimilars__c == 'No')}">
+			<option value="{!v.retailgurantee.Biosimilars__c}" text="{!v.retailgurantee.Biosimilars__c== 'Yes' ? 'Y' : 'N'}"></option>
+		</aura:if>
+	</lightning:select>
+	</div>
+	</td>
+
+	<td style="padding: 6px !important;" width="2%">
+
+	<aura:if isTrue="{!v.isAccess}">
+		<div style="margin-top: 26px;">
+		<lightning:button aura:id="clickEdit" value="clickEdit" label="Edit" 
+						  variant="brand"
+						  class="slds-button "
+						  onclick="{!c.clickEdit}"/>
+		</div>    
+	</aura:if>
+	 
+	</td>
+        </tr>
+    </table>
+    <div style="float: right;">
+        <lightning:input disabled="{!v.readonly}" type="checkbox" label="Mirror Mail Guarantee" name="mirrmailgurantee" checked="{!v.retailgurantee.Mirror_Mail_Guarantees__c}"/>
+    </div>
+    
+    <!-- <div class="slds-col slds-size_5-of-5">
+    <span>
+    <lightning:layout horizontalAlign="center" class="fontsize">
+            <lightning:layoutItem  flexibility="grow" class="fontsize" padding="horizontal-small" size="1">
+                <lightning:select disabled= "{!v.readonly}"  name="type" label="Type" required="false" value="{!v.retailgurantee.Type__c}">
+                 <option value="{!v.retailgurantee.Type__c}" text="{!v.retailgurantee.Type__c}"></option>
+       </lightning:select> 
+            </lightning:layoutItem>
+         <lightning:layoutItem  flexibility="grow" class="fontsize"  padding="horizontal-small"   size="1">
+         <lightning:input disabled="{!v.readonly}" type="text" label="Rate"  name="rate" value="{!v.retailgurantee.Rate__c}"
+                                 onchange="{!c.onSubmit}"/>
+         </lightning:layoutItem>
+         <lightning:layoutItem  flexibility="grow" class="fontsize" padding="horizontal-small" size="1">
+            <lightning:select disabled="{!v.readonly}" name="zbd" label="ZBD" required="false" value="{!v.retailgurantee.ZBD__c}" >
+          <option value="{!v.retailgurantee.ZBD__c}" text="{!v.retailgurantee.ZBD__c}"></option>
+      </lightning:select>
+            </lightning:layoutItem>
+         <lightning:layoutItem  flexibility="grow" class="fontsize" padding="horizontal-small"  size="1">
+            <lightning:select disabled="{!v.readonly}" name="uc" label="UC" required="false" value="{!v.retailgurantee.U_C__c}">
+          <option value="{!v.retailgurantee.U_C__c}" text="{!v.retailgurantee.U_C__c}"></option>
+      </lightning:select>
+            </lightning:layoutItem>
+          <lightning:layoutItem  flexibility="grow" class="fontsize" padding="horizontal-small"  size="1">
+            <lightning:select disabled="{!v.readonly}" name="ssg" label="SSG" required="false" value="{!v.retailgurantee.SSG__c}">
+          <option value="{!v.retailgurantee.SSG__c}" text="{!v.retailgurantee.SSG__c}"></option>
+      </lightning:select>
+            </lightning:layoutItem>
+         <lightning:layoutItem  flexibility="grow" class="fontsize" padding="horizontal-small"  size="1">
+            <lightning:select disabled="{!v.readonly}" name="otc" label="OTC" required="false" value="{!v.retailgurantee.OTC__c}">
+          <option value="{!v.retailgurantee.OTC__c}" text="{!v.retailgurantee.OTC__c}"></option>
+      </lightning:select>
+            </lightning:layoutItem>
+             <lightning:layoutItem padding="horizontal-small" flexibility="grow" class="fontsize" size="1">
+                <lightning:select disabled="{!v.readonly}" aura:id="vb" name="vb" label="340B" required="false" value="{!v.retailgurantee.X340B__c}">
+          <option value="{!v.retailgurantee.X340B__c}" text="{!v.retailgurantee.X340B__c}"></option>
+      </lightning:select>
+            </lightning:layoutItem>
+         <lightning:layoutItem padding="horizontal-small" flexibility="grow" class="fontsize" size="1">
+            <lightning:select disabled="{!v.readonly}" name="comp" label="Comp." required="false" value="{!v.retailgurantee.Compound__c}">
+          <option value="{!v.retailgurantee.Compound__c}" text="{!v.retailgurantee.Compound__c}"></option>
+      </lightning:select>
+            </lightning:layoutItem>
+         <lightning:layoutItem padding="horizontal-small" flexibility="grow" class="fontsize" size="1">
+            <lightning:select disabled="{!v.readonly}" name="vacc" label="Vacc." required="false" value="{!v.retailgurantee.Vaccine__c}">
+          <option value="{!v.retailgurantee.Vaccine__c}" text="{!v.retailgurantee.Vaccine__c}"></option>
+      </lightning:select>
+            </lightning:layoutItem>
+         <lightning:layoutItem padding="horizontal-small" flexibility="grow" class="fontsize" size="1">
+            <lightning:select disabled="{!v.readonly}" name="cob" label="COB" required="false" >
+          <option value="{!v.retailgurantee.COB__c}" text="{!v.retailgurantee.COB__c}"></option>
+       </lightning:select>
+             </lightning:layoutItem>
+         <lightning:layoutItem padding="horizontal-small" flexibility="grow" class="fontsize" size="1">
+            <lightning:select disabled="{!v.readonly}" name="paper" label="Paper" required="false" >
+          <option value="{!v.retailgurantee.Paper__c}" text="{!v.retailgurantee.Paper__c}"></option>
+       </lightning:select>
+             </lightning:layoutItem>   
+         <lightning:layoutItem padding="horizontal-small" flexibility="grow" >
+             <div class="slds-align_absolute-center">
+
+          <lightning:button aura:id="clickEdit" value="clickEdit" label="Edit" 
+                          variant="brand"
+                          class="slds-button"
+                          onclick="{!c.clickEdit}"/> 
+         </div>
+            </lightning:layoutItem>  
+    </lightning:layout>
+    </span>
+    </div> -->
+</aura:component>

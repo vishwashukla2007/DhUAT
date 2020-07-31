@@ -1,0 +1,59 @@
+<aura:component controller="pbmQuestionController">
+    <aura:attribute name="pbmQuestAnsItem" type="PBM_Questions_Answers__c" default="{'sobjectType':'PBM_Questions_Answers__c', 'PBM_Question__c':null, 'Answer__c':null}"/>
+    <aura:attribute name="pbmQestItem" type="PBM_Questions__c" access="public" default="{'sobjectType':'PBM_Questions__c', 'Question__c':null, 'Sort_Order__c':0, 'Data_Type__c':'Text', 'Disabled__c':false}" />
+    <aura:attribute name="isText" type="boolean" default="false"/>
+    <aura:attribute name="isDate" type="boolean" default="false"/>
+    <aura:attribute name="isPicklist" type="boolean" default="false"/>
+    <aura:attribute name="isLookup" type="boolean" default="false"/>
+    <aura:attribute name="isClientShareField" type="boolean" default="false"/>
+    <aura:attribute name="disabledInput" type="Boolean" default="true"/>
+    <aura:attribute name="disabledInput2" type="Boolean" default="false"/>
+    <aura:attribute name="getDisabled" type="Boolean" default="false"/>
+    <aura:attribute name="PickVal" type="String[]"/>
+    <aura:attribute name="selectedId" type="String" />
+
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="change" value="{!v.selectedId}" action="{!c.handleValueChange}"/>
+    <aura:registerEvent name="questcmpEvent" type="c:pbmQuestionaireCompEvent"/> 
+    
+    <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size_4-of-12">
+            <div class="slds-float_right">
+                {!v.pbmQestItem.Question__c}
+            </div>
+        </div>
+        
+        <div class="slds-col slds-size_6-of-12">
+            <div class="slds-p-around_x-small">
+                <aura:if  isTrue="{!or(v.isText, v.isDate)}" >
+                    <lightning:input type="{!v.pbmQestItem.Data_Type__c}" name="{!v.pbmQuestAnsItem.PBM_Question__c + '-' + v.pbmQestItem.Field_API__c}"  value="{!v.pbmQuestAnsItem.Answer__c}" onchange="{!c.handleChange}" disabled="{!v.getDisabled}" />              
+                </aura:if>
+                
+                <aura:if  isTrue="{!v.isClientShareField}" >
+                    <lightning:input type="{!v.pbmQestItem.Data_Type__c}" aura:id="Client_Share__c" name="{!v.pbmQuestAnsItem.PBM_Question__c + '-' + v.pbmQestItem.Field_API__c}"  value="{!v.pbmQuestAnsItem.Answer__c}" onchange="{!c.handleChange}" formatter="percent-fixed" disabled="{!v.disabledInput}" />
+                </aura:if>
+                
+                <aura:if  isTrue="{!v.isPicklist}" >
+                    <lightning:select  name="{!v.pbmQuestAnsItem.PBM_Question__c + '-' + v.pbmQestItem.Field_API__c}" onchange="{!c.handleChange}" disabled="{!v.getDisabled}">
+                        <option value="">--None--</option>
+                        <aura:iteration items="{!v.PickVal}" var="item">
+                            <option value="{!item}">{!item}</option>
+                        </aura:iteration>
+                    </lightning:select>
+                </aura:if>
+                
+                <aura:if  isTrue="{!v.isLookup}" >
+                    <c:lookupField 
+                    objectAPIName="Account" 
+                    returnFields="['Name','Phone','Website']" 
+                    queryFields="['Name','Phone','Website']"
+                    selectedId="{!v.selectedId}"
+                    disabled="{!v.getDisabled}"/>
+                </aura:if>
+                
+            </div>
+        </div>
+    </div>
+     
+</aura:component>

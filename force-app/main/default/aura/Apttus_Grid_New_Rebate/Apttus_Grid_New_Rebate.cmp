@@ -1,0 +1,144 @@
+<aura:component controller="Apttus_GridObjectdata" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <aura:attribute name="objects" type="Rebate_Guarantees__c" />
+    <aura:attribute name="newobject" type="Rebate_Guarantees__c" default="{'LOB2__c':'Dummy'}"/>
+    <aura:attribute name="nnameoptions" type="Object"/>
+    <aura:attribute name="ntypeoptions" type="Object"/>
+    <aura:attribute name="netobjects" type="Rebate_Guarantees__c" default="{'LOB2__c':'Dummy'}"/>
+    <aura:attribute name="fafid" type="String" default="" />
+	<aura:attribute name="plan" type="String" default="" />
+	<aura:attribute name="basis" type="String" default="" />
+
+    <aura:attribute name="specForm" type="String" default="" />
+	 <aura:attribute name="showInSpec" type="String" default="" />
+     <aura:attribute name="nonspecForm" type="String" default="" />
+    
+    <aura:attribute name="gstp" type="String" default="" />
+     <aura:attribute name="percentageCheck" type="Boolean" default="false" />
+	 
+	<aura:attribute name="year" type="String" default="" />
+    <aura:attribute name="networkname" type="String" default="" />
+    <aura:attribute name="networktype" type="String" default="" />
+    <aura:attribute name="loboptions" type="String" default="" />
+    <aura:attribute name="activerownum" type="Integer"/>
+    <aura:attribute name="lob" type="String" default="" />
+    <aura:attribute name="desc" type="String" default="" />
+    <aura:attribute name="readonly" type="Boolean" default="false" />
+    <aura:attribute name="descrequired" type="Boolean" default="false" />
+    <aura:attribute name="descreadonly" type="Boolean" default="false" /> 
+    <aura:attribute name="typereadonly" type="Boolean" default="false" /> 
+    <aura:attribute name="disablebtn" type="Boolean" default="false" /> 
+    <aura:attribute name="DisplaySpinner" type="Boolean" default="false" />
+    <aura:attribute name="pricingcount" type="Integer" default="" />
+    <aura:attribute name="yearcount" type="Integer" default="" />
+    <aura:attribute name="recordcount" type="Integer" default="" />
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Notify_Save_Event" action="{!c.handleSaveVerify}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Notify_Error_Event" action="{!c.handleError}"/>
+    <aura:registerEvent name="savecomplete" type="c:Apttus_Grid_NT_Close_Event"/>
+    <aura:handler event="c:Apttus_Grid_NT_Save_Event" action="{!c.handleSave}"/>
+    <aura:handler event="c:Apttus_Grid_Refresh_Parent_Event" action="{!c.doInit}"/>
+    <aura:handler event="c:Apttus_Grid_Inactive_Parent_Event" action="{!c.displayspinner}"/>
+    <aura:registerEvent name="copystart" type="c:Apttus_Grid_Copy_Start_Event"/>
+    <aura:handler event="c:Apttus_Grid_Copy_Complete_Event" action="{!c.copycomplete}"/>	
+    <lightning:card  class="container">
+    <lightning:layout>
+        <aura:if isTrue="{!v.DisplaySpinner}">
+  			<lightning:spinner alternativeText="Saving" variant="brand" size="medium" class="slds-spinner_container"/>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+	</aura:if>   
+    </lightning:layout>
+    
+       <!--<lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="4">
+             <lightning:select disabled="{!v.readonly}" aura:id="Forumulary" name="Forumulary" label="Forumulary" required="true" onchange="{!c.update}">
+                <aura:iteration items="{!v.nnameoptions}" var="opt">
+  				<option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    			</aura:iteration>
+        		<option value="{!v.objects.Non_Specialty_Formulary_2__c}" text="{!v.objects.Non_Specialty_Formulary_2__c}"></option>
+    		</lightning:select>
+        </lightning:layoutItem>
+        <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="4">
+             <lightning:select  aura:id="Type" name="Rebates Paid" label="Rebates Paid" disabled="{!v.typereadonly}" required="true" onchange="{!c.updatetype}">
+                <aura:iteration items="{!v.ntypeoptions}" var="opt">
+  				<option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    			</aura:iteration>
+        		<option value="{!v.objects.Basis__c}" text="{!v.objects.Basis__c}"></option>
+    		</lightning:select>
+         </lightning:layoutItem>
+		 <lightning:layoutItem padding="horizontal-large" flexibility="grow" class="" size="4">
+            <lightning:input type="checkbox" label="2TQ"/>	
+			<lightning:input type="checkbox" label="3TNQ" />	
+			<lightning:input type="checkbox" label="3TQ"/>	
+			<lightning:input type="checkbox" label="Closed"/>	
+        </lightning:layoutItem>-->
+       
+   
+        <div class="slds-p-bottom_x-large"></div>
+        <div class="slds-p-bottom_x-large"></div>
+        <lightning:layout  class="width">
+        <div class="slds-scrollable">
+        <table  style="table-layout: unset !important;" class="slds-table slds-table_bordered inner">
+		<aura:if isTrue="{!v.percentageCheck}">
+            <thead>
+                <tr class="slds-text-heading_label slds-line-height_reset">
+                    <th scope="col"><div class="" title="Retail"></div></th>
+					<th scope="col"><div class="yr" title="YEAR">YEAR</div></th>
+					<th scope="col"><div class="planyr" title="PLAN YEAR">PLAN YEAR</div></th>
+                    <th scope="col"><div class="plan" title="Plan">Plan Design</div></th>
+					<th scope="col"><div class="brbasis" title="GSTP">GSTP</div></th>
+					<th scope="col"><div class="gbasis" title="Non-Specialty Formulary">Non-Specialty Formulary</div></th>
+					<th scope="col"><div class="gbasis" title="Non-Specialty Formulary">Specialty Formulary</div></th>
+					<th scope="col"><div class="brbasis" title="Basis">Basis</div></th>
+                    <th scope="col"><div class="" title="Retail 30(%)">Retail 30(%)</div></th>
+					<th scope="col"><div class="" title="Retail 90(%)">Retail 90(%)</div></th>
+                    <th scope="col"><div class="" title="Client Owned (30)(%)">Client Owned (30)(%)</div></th>
+                    <th scope="col"><div class="" title="Client Owned (90)(%)">Client Owned (90)(%)</div></th>
+                    <th scope="col"><div class="" title="Mail(%)">Mail(%)</div></th>
+                    <th scope="col"><div class="" title="Mchoice(%)">Mchoice(%)</div></th>
+                    <th scope="col"><div class="" title="Specialty(%)">Specialty(%)</div></th> 
+                    <th scope="col"><div class="" title="Specialty Retail(%)">Specialty Retail(%)</div></th> 
+                </tr>
+            </thead>
+		</aura:if>
+		<aura:if isTrue="{!v.percentageCheck==false}">
+            <thead>
+                <tr class="slds-text-heading_label slds-line-height_reset">
+                     <th scope="col"><div class="" title=""></div></th>
+					<th scope="col"><div class="yr" title="YEAR">YEAR</div></th>
+					<th scope="col"><div class="planyr" title="PLAN YEAR">PLAN YEAR</div></th>
+                    <th scope="col"><div class="plan" title="Plan">Plan Design</div></th>
+					<th scope="col"><div class="brbasis" title="GSTP">GSTP</div></th>
+					<th scope="col"><div class="gbasis" title="Non-Specialty Formulary">Non-Specialty Formulary</div></th>
+					<th scope="col"><div class="gbasis" title="Non-Specialty Formulary">Specialty Formulary</div></th>
+					<th scope="col"><div class="brbasis" title="Basis">Basis</div></th>
+                    <th scope="col"><div class="" title="Retail 30($)">Retail 30($)</div></th>
+					<th scope="col"><div class="" title="Retail 90($)">Retail 90($)</div></th>
+                     <th scope="col"><div class="" title="Client Owned (30)($)">Client Owned (30)($)</div></th>
+                    <th scope="col"><div class="" title="Client Owned (90)($)">Client Owned (90)($)</div></th>
+                    <th scope="col"><div class="" title="Mail($)">Mail($)</div></th>
+					<th scope="col"><div class="" title="Mchoice($)">Mchoice($)</div></th>
+                    <th scope="col"><div class="" title="Specialty($)">Specialty($)</div></th> 
+                    <th scope="col"><div class="" title="Specialty Retail($)">Specialty Retail($)</div></th> 
+                </tr>
+            </thead>
+		</aura:if>
+		
+            <tbody>
+                <!-- Use the Apex model and controller to fetch server side data -->
+               
+                <aura:iteration items="{!v.netobjects}" var="p" indexVar="index">
+                        <c:Apttus_Grid_New_Rebate_child aura:id="compB" objects="{!p}" percentageCheck="{!v.percentageCheck}" yearcount="{!v.yearcount}" lob="{!v.lob}" activerownum ="{!v.activerownum}"/>
+                </aura:iteration> 
+                
+            </tbody>
+        </table>   
+        </div>
+       </lightning:layout>
+       <lightning:layout>
+        <lightning:layoutitem>
+        <div class="slds-p-top_x-large"></div>
+        <lightning:button label="Add Year" disabled="{!v.disablebtn}" iconName="utility:add" iconPosition="left" class="slds-button" onclick="{!c.create}"/>
+        </lightning:layoutitem>
+       </lightning:layout>
+    </lightning:card>
+     
+</aura:component>

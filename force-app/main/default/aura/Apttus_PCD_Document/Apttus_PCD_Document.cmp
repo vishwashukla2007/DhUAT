@@ -1,0 +1,36 @@
+<aura:component controller="PCD_GridObjectdata" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"  >
+<aura:attribute name="selected" type="Integer"/> 
+<aura:attribute name="doccount" type="Integer"/> 
+<aura:attribute name="displaycount" type="Integer"/> 
+<aura:attribute name="objects" type="Apttus__DocumentVersionDetail__c" />
+<aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}"/>
+<aura:attribute name="fafid" type="String" />   
+<aura:attribute name="item" type="Apttus__AgreementLineItem__c" />
+<aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+<aura:handler event="c:Apttus_PCD_Document_Event" action="{!c.handleDocEvent}"/>
+ <aura:iteration items="{!v.objects}" var="docs" indexVar="index">
+    <c:Apttus_PCD_Document_Child selected ="{!index}" displaycount="{!v.displaycount}" docs="{!docs}" />
+ </aura:iteration> 
+<aura:if isTrue="{!(v.doccount ==0)}">
+    <div class="slds-p-top_large"></div>
+    <p> No Documents Found</p>
+<aura:set attribute="else">
+<aura:if isTrue="{!(v.doccount > v.displaycount)}">
+<lightning:layout >
+<div class="slds-p-left_large"></div>
+<div class="slds-p-left_large"></div>
+<div class="slds-p-left_large"></div>
+<lightning:button class="fontcolor" variant="base" label="View Previously Generated PCDs" title="View Previously Generated PCDs" onclick="{!c.ViewallDocs}"/>
+</lightning:layout>
+</aura:if>
+<aura:if isTrue="{!and(v.doccount == v.displaycount , v.doccount != 2)}">
+<lightning:layout >
+<div class="slds-p-left_large"></div>
+<div class="slds-p-left_large"></div>
+<div class="slds-p-left_large"></div>
+<lightning:button class="fontcolor" variant="base" label="Hide Previously Generated PCDs" title="Hide Previously Generated PCDs" onclick="{!c.ViewlessDocs}"/>
+</lightning:layout>
+</aura:if>
+</aura:set>
+</aura:if>
+</aura:component>

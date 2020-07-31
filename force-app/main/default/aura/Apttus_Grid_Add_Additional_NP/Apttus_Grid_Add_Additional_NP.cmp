@@ -1,0 +1,224 @@
+<aura:component controller="PCD_Network_MultipleLOB" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="fafid" type="String"/>
+    <aura:attribute name="ali" type="String"/>
+    <aura:attribute name="selectedtabId" type="String" />
+    <aura:attribute name="baseLobId" type="String" />
+    <aura:attribute name="basefafId" type="String" />
+    <aura:attribute name="baselobDesId" type="String" />
+    
+    <aura:attribute name="selectedLOB" type="PCD_Multiple_LOB__c" />
+    <aura:attribute name="lob1" type="LOB__c" />
+    <aura:attribute name="lob2" type="LOB__c" />
+    <aura:attribute name="lob3" type="LOB__c" />
+    <aura:attribute name="lob4" type="LOB__c" />
+    <aura:attribute name="lob5" type="LOB__c" />
+    <aura:attribute name="lob6" type="LOB__c" />
+    
+    <aura:attribute name="lob1visible" type="Boolean" default="false"/>
+    <aura:attribute name="lob2visible" type="Boolean" default="false"/>
+    <aura:attribute name="lob3visible" type="Boolean" default="false"/>
+    <aura:attribute name="lob4visible" type="Boolean" default="false"/>
+    <aura:attribute name="lob5visible" type="Boolean" default="false"/>
+    <aura:attribute name="lob6visible" type="Boolean" default="false"/>
+    <aura:attribute name="isSelectAll" type="boolean" default="false"/>
+    <aura:attribute name="addlobcount" type="Boolean" default="false"/>
+    <aura:attribute name="dropdownOver" type="Boolean" default="false" />
+    
+    <aura:attribute name="dropdownLength" type="Integer" default="4" />
+    
+    <aura:attribute name="lstmultplelob" type="List" /> 
+    <aura:attribute name="lobList" type="List" /> 
+    <aura:attribute name="wrapperList" type="List" />
+    <aura:attribute name="loboptiondefault" type="List"/>
+    <aura:attribute name="loboption" type="List"/>
+    <aura:attribute name="mlobcreation" type="List"/>
+    <aura:attribute name="mlobcreationdefault" type="List"/>
+    <aura:attribute name="options" type="List" default="[
+                                                        {'label': 'LOB 1', 'value': 'LOB1'},
+                                                        {'label': 'LOB 2', 'value': 'LOB2'},
+                                                        {'label': 'LOB 3', 'value': 'LOB3'},
+                                                        {'label': 'LOB 4', 'value': 'LOB4'},     
+                                                        {'label': 'LOB 5', 'value': 'LOB5'},                                                   
+                                                        {'label': 'LOB 6', 'value': 'LOB6'}                                                 
+                                                        ]"/>        
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    
+    <lightning:layout>
+        <lightning:layoutitem size="9">
+            <lightning:tabset  selectedTabId="{!v.selectedtabId}">
+                <aura:if isTrue="{!v.lob1visible}">
+                    <lightning:tab class="tab" label="LOB 1" id="LOB1" onactive="{!c.onChange }">
+                    </lightning:tab>
+                </aura:if>
+                <aura:if isTrue="{!v.lob2visible}">
+                    <lightning:tab class="tab" label="LOB 2" id="LOB2" onactive="{!c.onChange }">
+                    </lightning:tab>
+                </aura:if>
+                <aura:if isTrue="{!v.lob3visible}">
+                    <lightning:tab class="tab" label="LOB 3" id="LOB3" onactive="{!c.onChange }">
+                    </lightning:tab>
+                </aura:if>
+                <aura:if isTrue="{!v.lob4visible}">
+                    <lightning:tab class="tab" label="LOB 4" id="LOB4" onactive="{!c.onChange }">
+                    </lightning:tab>
+                </aura:if>
+                <aura:if isTrue="{!v.lob5visible}">
+                    <lightning:tab class="tab" label="LOB 5" id="LOB5" onactive="{!c.onChange }">
+                    </lightning:tab>
+                </aura:if>
+                <aura:if isTrue="{!v.lob6visible}">
+                    <lightning:tab class="tab" label="LOB 6" id="LOB6" onactive="{!c.onChange }">
+                    </lightning:tab>
+                </aura:if>
+            </lightning:tabset>
+        </lightning:layoutitem> 
+        
+        
+        
+        <lightning:layoutitem size="4">
+            <div aura:id="main-div" class=" slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click ">
+                <button class="slds-button slds-button--neutral slds-picklist__label" disabled="{!v.addlobcount}" style="width: 250px;" aria-haspopup="true" 
+                        onclick="{!c.handleClick}" onmouseleave="{!c.handleMouseOutButton}">
+                    <span class="slds-truncate" title="Add LOBs">Add LOBs</span>
+                    <lightning:icon iconName="utility:down" size="small" class="slds-icon" />
+                </button>
+                <div class="slds-dropdown slds-dropdown--left" style="width: 250px;" onmouseenter="{!c.handleMouseEnter}" onmouseleave="{!c.handleMouseLeave}">
+                    <ul class="{!'slds-dropdown__list slds-dropdown--length-' + v.dropdownLength}" style="width: 250px;" role="menu">
+                        <aura:iteration items="{!v.loboption}" var="option">
+                            <li class="{!'slds-dropdown__item ' + (option.selected ? 'slds-is-selected' : '')}" style="width: 250px;" role="presentation" 
+                                onclick="{!c.handleSelection}" data-value="{!option.label}" data-selected="{!option.selected}">
+                                <a href="javascript:void(0);" role="menuitemcheckbox" aria-checked="true" tabindex="0">
+                                    <span class="slds-truncate" style="width: 250px;">
+                                        <lightning:icon iconName="utility:check" size="x-small" class="slds-icon slds-icon--selected slds-icon--x-small 
+                                                                                                       slds-icon-text-default slds-m-right--x-small" />
+                                        {!option.label}
+                                    </span>
+                                </a>
+                            </li>
+                        </aura:iteration>
+                    </ul>
+                </div>   
+            </div>
+        </lightning:layoutitem>
+    </lightning:layout><br/>
+    
+    <div>
+        <lightning:layout class="text-label--small" horizontalAlign="left" >
+            <div class="slds-text-heading_small"><b>{!v.selectedtabId} - {!v.selectedLOB.Additional_LOB_ID__c}</b></div>
+        </lightning:layout><br/>
+        <aura:if isTrue="{!not(empty(v.wrapperList))}">
+            <aura:iteration items="{!v.wrapperList}" var="wr" indexVar="index">
+                <div class="slds-grid slds-wrap">
+                    <div class="slds-size_12-of-12">
+                        <!--b>{!wr.networkName}</b-->
+                        <br/>
+                    </div>
+                    <div class="slds-size_12-of-12">
+                        
+                        <aura:if isTrue="{!not(empty(wr.npList))}"> 
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                <thead>
+                                    <tr class="slds-text-title_caps">
+                                        <th style="width:3.25rem;" class="slds-text-align_right">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <label class="slds-checkbox">
+                                                        <ui:inputCheckbox value="{!wr.isSelectedAll}" change="{!c.handleSelectAll}" text="{!wr.networkName}" aura:id="{!wr.networkName}"/>
+                                                        <span class="slds-checkbox_faux"></span>
+                                                        <span class="slds-form-element__label text"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Year" style="width: 35px;">Year</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Name" style="width: 125px;">Network Name</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Plan Year" style="width: 105px;">Network Type</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="LOB" style="width: 35px;">LOB</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Brand Basic" style="width: 150px;">Brand Basis</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Generic Basic" style="width: 150px;">Generic Basis</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!wr.npList}" var="obj">
+                                        <tr>
+                                            <th scope="row" class="slds-text-align_right" style="width:3.25rem;">
+                                                <div class="slds-form-element">
+                                                    <div class="slds-form-element__control">
+                                                        <label class="slds-checkbox">
+                                                            <ui:inputCheckbox change="{!c.handleSelectCheckBox}" value="{!obj.isSelected}"/>
+                                                            <span class="slds-checkbox_faux"></span>
+                                                            <span class="slds-form-element__label text"></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <th scope="row">
+                                                <div class="slds-truncate" style="width: 35px;">
+                                                    {!obj.np.Year__c}
+                                                </div>
+                                            </th> 
+                                            <th scope="row">
+                                                <div class="slds-truncate" style="width: 125px;">
+                                                    {!obj.np.Network_Name__c}
+                                                </div>
+                                            </th>
+                                            <th scope="row">
+                                                <div class="slds-truncate" style="width: 105px;">
+                                                    {!obj.np.Network_Type__c}
+                                                </div>
+                                            </th>
+                                            <th scope="row">
+                                                <div class="slds-truncate" style="width: 35px;">
+                                                    {!obj.np.LOB__c}
+                                                </div>
+                                            </th>
+                                            <th scope="row">
+                                                <div class="slds-truncate" style="width: 150px;">
+                                                    {!obj.np.Brand_Basis__c}
+                                                </div>
+                                            </th>
+                                            <th scope="row">
+                                                <div class="slds-truncate" style="width: 150px;">
+                                                    {!obj.np.Generic_Basis__c}
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                            <aura:set attribute="else">
+                                <div style="width: 1600px;">
+                                    <div class="slds-p-top_large"></div>    
+                                    <ui:message title="" severity="info" closable="false" > 
+                                        No records found.
+                                    </ui:message>
+                                </div>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </div>
+            </aura:iteration>
+            <aura:set attribute="else">
+                <div style="width: 1600px;">
+                    <div class="slds-p-top_large"></div>    
+                    <ui:message title="" severity="info" closable="false" > 
+                        No records found.
+                    </ui:message>
+                </div>
+            </aura:set>
+        </aura:if>
+    </div>
+</aura:component>

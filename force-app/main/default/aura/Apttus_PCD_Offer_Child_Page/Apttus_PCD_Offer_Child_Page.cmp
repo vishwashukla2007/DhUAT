@@ -1,0 +1,32 @@
+<aura:component controller="Apttus_GridObjectdata" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"  >
+<aura:attribute name="item" type="Offer__c" />
+<aura:attribute name="accountid" type="String" default="" /> 
+<aura:attribute name="selected" type="Integer"/> 
+<aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+<aura:handler event="c:Apttus_PCD_Offer_Select_Event" action="{!c.handleofferEvent}"/>
+<aura:registerEvent name="offerEvent" type="c:Apttus_PCD_Offer_Select_Event"/>
+ <div aura:id="outerborder">
+  <lightning:card aura:id = "card" variant="base" class="innercontainer bordercolor">
+   <div aura:id = "border" onclick="{!c.clickHandler}">
+            <lightning:layout>
+            <div class="slds-p-left_small"></div>
+            <p class="card-detail-value"><b>{!v.item.Name}</b></p>  
+            </lightning:layout>
+            <lightning:layout>
+            <div class="slds-p-left_small"></div>
+            <lightning:layoutitem>
+            <p class="card-detail-value">Offer Revenue: $</p> 
+            </lightning:layoutitem>
+            <lightning:layoutitem>
+                <lightning:formattedNumber value="{!v.item.OfferTotalRevenue__c}" maximumFractionDigits="2"/>
+            </lightning:layoutitem>
+            </lightning:layout>
+            <lightning:layout>
+            <div class="slds-p-left_small"></div>
+            <p class="card-detail-value">{!v.item.OfferDescriptor__c}</p>
+            </lightning:layout>
+            <div class="slds-p-bottom_small"></div>
+    </div>
+  </lightning:card>
+  </div>
+</aura:component>

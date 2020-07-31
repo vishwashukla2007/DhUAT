@@ -1,0 +1,232 @@
+<aura:component >
+
+<aura:attribute name="mailGuarantee" type="Mail_Guarantees__c" />
+<aura:attribute name="isAccess" type="boolean"/>
+<aura:attribute name="readOnly" type="boolean" default="true" />
+<aura:attribute name="mgEdit" type="Boolean" default="false" />
+<aura:attribute name="mgParams" type="String" default="" />
+<aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}" />
+
+<div class="slds-grid slds-gutters">  
+        <!--<div >
+            <div class="slds-form-element">
+                <div class="slds-form-element__control link_style">
+                    <a  onclick="{!c.handleClick}">{!v.mailGuarantee.Name}</a>
+                </div>
+
+        </div> -->
+    	<table width="100%">
+    		<tr style="padding: 6px !important;width: 100%;" >
+            	<td width="2%">
+				<div class="pricing_link slds-p-right_small slds-p-left_small slds-grow" data-aura-rendered-by="23:409;a" style="width:83px;padding: 4px;">
+                    <div class="slds-form-element__control slds-form-element" style="font-weight: 600;" data-aura-rendered-by="20:409;a">
+                    <a onclick="{!c.handleClick}">{!v.mailGuarantee.Name}</a>
+					</div>
+				</div>
+                </td>
+                
+                <td width="2%">
+				<div style="width: 100px;padding: 6px;padding-top: 2.0em;">
+                	 <lightning:select disabled= "{!v.readOnly}"  name="type" label="Type" required="false" value="{!v.mailGuarantee.Type__c}">
+                	<option value="{!v.mailGuarantee.Type__c}" text="{!v.mailGuarantee.Type__c}"></option>
+    				</lightning:select> 
+				</div>
+                </td>
+                
+                <td width="2%">
+                    <div class="slds-form-element" style="width:110px;padding: 6px;padding-top: 2.0em;">
+                        <div class="slds-form-element__control">
+                            
+                            <aura:if isTrue="{!v.readonly}">
+                                
+                                <lightning:select disabled= "{!v.readOnly}"  name="rate" label="Rate" required="false" value="{!v.mailGuarantee.Rate__c}">
+                                    <option value="{!v.mailGuarantee.Rate__c}" text="{!v.mailGuarantee.Rate__c}"></option>
+                                </lightning:select> 
+                                
+                                <aura:set attribute="else">
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label slds-no-flex" >Rate</label>
+                                        
+                                        <div class="slds-form-element__control slds-grow" >
+                                            <div class="slds-select_container" >
+                                                <select class="slds-select" disabled="true">
+                                                    <option >
+                                                        
+                                                        <ui:outputNumber  value="{!v.mailGuarantee.Rate__c}"   format="####.00" /> 
+                                                        <aura:if isTrue="{!v.mailGuarantee.Rate__c}">%</aura:if>
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </aura:set>
+                            </aura:if>
+                            
+                        </div>
+                    </div>
+                    
+                </td>
+                
+                <td width="2%">
+				<div style="width:77px;padding: 6px;padding-top: 2.0em;">
+                	<lightning:select disabled= "{!v.readOnly}"  name="zbd" label="ZBD" required="false" value="{!v.mailGuarantee.ZBD__c}">
+                     <aura:if isTrue= "{!or(v.mailGuarantee.ZBD__c == 'Yes', v.mailGuarantee.ZBD__c == 'No')}">
+                   		 <option value="{!v.mailGuarantee.ZBD__c}" text="{!v.mailGuarantee.ZBD__c == 'Yes' ? 'Y' : 'N'}"></option>
+                     </aura:if>                	
+					</lightning:select> 
+				</div>
+                </td>
+                
+                <td width="2%">
+				<div style="width:77px;padding: 6px;padding-top: 2.0em;">
+                    <lightning:select disabled= "{!v.readOnly}"  name="ssg" label="SSG" required="false" value="{!v.mailGuarantee.SSG__c}">
+                        <aura:if isTrue= "{!or(v.mailGuarantee.SSG__c == 'Yes', v.mailGuarantee.SSG__c == 'No')}">
+                            <option value="{!v.mailGuarantee.SSG__c}" text="{!v.mailGuarantee.SSG__c == 'Yes' ? 'Y' : 'N'}"></option>
+                        </aura:if>
+                    </lightning:select> 
+				</div>
+                </td>
+                
+                <td width="2%">
+				<div style="width: 77px;padding: 6px;padding-top: 2.0em;">
+                    <lightning:select disabled= "{!v.readOnly}"  name="otc" label="OTC" required="false" value="{!v.mailGuarantee.OTC__c}">
+                        <aura:if isTrue= "{!or(v.mailGuarantee.OTC__c == 'Yes', v.mailGuarantee.OTC__c == 'No')}">
+                            <option value="{!v.mailGuarantee.OTC__c}" text="{!v.mailGuarantee.OTC__c == 'Yes' ? 'Y' : 'N'}"></option>
+                        </aura:if>
+                    </lightning:select>
+				</div>
+                </td>
+                
+                <td width="2%">
+				<div style="width: 77px;padding: 6px;padding-top: 2.0em;">
+                    <lightning:select disabled= "{!v.readOnly}"  name="compound" label="Compound" required="false" value="{!v.mailGuarantee.Compound__c}">
+                        <aura:if isTrue= "{!or(v.mailGuarantee.Compound__c == 'Yes', v.mailGuarantee.Compound__c == 'No')}">
+                            <option value="{!v.mailGuarantee.Compound__c}" text="{!v.mailGuarantee.Compound__c == 'Yes' ? 'Y' : 'N'}"></option>
+                        </aura:if>
+                    </lightning:select> 
+				</div>
+                </td>
+                
+				
+                <td width="2%">
+				<div style="padding: 6px; width: 75px;padding-top: 2.0em;">
+                    <lightning:select disabled= "{!v.readOnly}"  name="vaccine" label="Vaccine" required="false" value="{!v.mailGuarantee.Vaccine__c}">
+                        <aura:if isTrue= "{!or(v.mailGuarantee.Vaccine__c== 'Yes', v.mailGuarantee.Vaccine__c == 'No')}">
+                            <option value="{!v.mailGuarantee.Vaccine__c}" text="{!v.mailGuarantee.Vaccine__c== 'Yes' ? 'Y' : 'N'}"></option>
+                        </aura:if>
+                    </lightning:select> 
+				</div>
+                </td>
+				<td width="2%">
+				<div style="padding: 6px; width: 293px;padding-top: 2.0em;color:gray;">  
+                    <lightning:textarea disabled= "{!v.readOnly}" name="vacOption" label="Vaccine Option" required="false" value="{!v.mailGuarantee.Vaccine_Inclusion_Option__c}">
+                       <!-- <option value="{!v.mailGuarantee.Vaccine_Inclusion_Option__c}" text="{!v.mailGuarantee.Vaccine_Inclusion_Option__c}"></option> -->
+                    </lightning:textarea>				
+                </div>
+				</td>
+                
+                <td width="2%">
+				<div style="width: 77px;padding: 6px;padding-top: 2.0em;">
+                    <lightning:select disabled= "{!v.readOnly}"  name="cob" label="COB" required="false" value="{!v.mailGuarantee.COB__c}">
+                        <aura:if isTrue= "{!or(v.mailGuarantee.COB__c== 'Yes', v.mailGuarantee.COB__c == 'No')}">
+                            <option value="{!v.mailGuarantee.COB__c}" text="{!v.mailGuarantee.COB__c== 'Yes' ? 'Y' : 'N'}"></option>
+                        </aura:if>
+                    </lightning:select> 
+				</div>
+                </td>
+                
+                <td width="2%">
+				<div style="width: 77px;padding: 6px;padding-top: 2.0em;">
+                    <lightning:select disabled= "{!v.readOnly}"  name="paper" label="Paper" required="false" value="{!v.mailGuarantee.Paper__c}">
+                        <aura:if isTrue= "{!or(v.mailGuarantee.Paper__c== 'Yes', v.mailGuarantee.Paper__c == 'No')}">
+                            <option value="{!v.mailGuarantee.Paper__c}" text="{!v.mailGuarantee.Paper__c== 'Yes' ? 'Y' : 'N'}"></option>
+                        </aura:if>
+                    </lightning:select> 
+				</div> 
+                </td>
+                <td>
+				<div style="width:77px;padding: 6px;padding-top: 2.0em;">
+                    <lightning:select disabled= "{!v.readOnly}"  name="340b" label="340B" required="false" value="{!v.mailGuarantee.X340B__c}">
+                        <aura:if isTrue= "{!or(v.mailGuarantee.X340B__c == 'Yes', v.mailGuarantee.X340B__c == 'No')}">
+                            <option value="{!v.mailGuarantee.X340B__c}" text="{!v.mailGuarantee.X340B__c == 'Yes' ? 'Y' : 'N'}"></option>
+                        </aura:if>
+                    </lightning:select>
+				</div>
+                </td>
+                
+				<td width="2%">
+                <div style="width: 169px;padding: 6px;padding-top: 2.0em;">
+                    <lightning:select disabled= "{!v.readOnly}"  name="340option" label="340B Option" required="false" value="{!v.mailGuarantee.X340B_Inclusion_Option__c}">
+                        <option value="{!v.mailGuarantee.X340B_Inclusion_Option__c}" text="{!v.mailGuarantee.X340B_Inclusion_Option__c}"></option>
+                    </lightning:select> 
+                </div>
+				</td>
+                
+                <td>
+				<div style="width: 77px;padding: 6px;padding-top: 2.0em;">
+                    <lightning:select disabled= "{!v.readOnly}"  name="ldd" label="LDD" required="false" value="{!v.mailGuarantee.LDD__c}">
+                        <aura:if isTrue= "{!or(v.mailGuarantee.LDD__c == 'Yes', v.mailGuarantee.LDD__c == 'No')}">
+                            <option value="{!v.mailGuarantee.LDD__c}" text="{!v.mailGuarantee.LDD__c == 'Yes' ? 'Y' : 'N'}"></option>
+                        </aura:if>
+                    </lightning:select> 
+				</div>
+                </td>
+                
+                <td width="2%">
+				<div style="width:362px;padding: 6px;padding-top: 2.25em;">
+                	 <lightning:select disabled= "{!v.readOnly}"  name="lddoption" label="LDD Option" required="false" value="{!v.mailGuarantee.LDD_Inclusion_Option__c}">
+                	<option value="{!v.mailGuarantee.LDD_Inclusion_Option__c}" text="{!v.mailGuarantee.LDD_Inclusion_Option__c}"></option>
+    				</lightning:select> 
+                </div>
+				</td>
+                
+                <td width="2%">
+				<div style="width: 77px;padding: 6px;padding-top: 2.25em;">
+                    <lightning:select disabled= "{!v.readOnly}"  name="biosimilars" label="Biosimilar" required="false" value="{!v.mailGuarantee.Biosimilars__c	}">
+                        <aura:if isTrue= "{!or(v.mailGuarantee.Biosimilars__c	 == 'Yes', v.mailGuarantee.Biosimilars__c	 == 'No')}">
+                            <option value="{!v.mailGuarantee.Biosimilars__c	}" text="{!v.mailGuarantee.Biosimilars__c	 == 'Yes' ? 'Y' : 'N'}"></option>
+                        </aura:if>
+                    </lightning:select>
+				</div>
+                </td>
+                
+                <td style="padding: 10px !important;padding-top: 4.0em;" width="2%">
+                    <aura:if isTrue="{!v.isAccess}">
+                        <div style="margin-top: 38px;">
+                            <lightning:button aura:id="clickEdit" value="clickEdit" label="Edit" 
+                                              variant="brand"
+                                              class="slds-button"
+                                              onclick="{!c.clickEdit}"/> 
+                        </div>   
+                    </aura:if>
+                </td>
+            </tr>
+    	</table>
+  
+
+    <aura:if isTrue="{!v.mgEdit}">
+        <div class="demo-only" style="height: 90%;width:90%;"> 
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="height: 100%;width:100%;max-width: 100%;">
+                <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                <span class="slds-assistive-text">Close</span>
+                </button>
+                <!--
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New MailPricing</h2>
+                -->
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                    <iframe aura:id="vfFrame"  src="{! 'https://' +v.vfHost + '/apex/MailGuaranteesEditNewPage?' +v.mgParams}" height="100%" width="100%"/>
+                </div>
+                <footer class="slds-modal__footer">
+                   
+                </footer>
+            </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>        
+</div> 
+    
+</aura:component>

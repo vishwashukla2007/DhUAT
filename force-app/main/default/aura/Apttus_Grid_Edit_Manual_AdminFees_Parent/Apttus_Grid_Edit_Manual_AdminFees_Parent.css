@@ -1,0 +1,32 @@
+.THIS .width {
+    width: 100%;
+}
+.THIS .admtype {
+    width: 200px;
+}
+.THIS .gbasis {
+    width: 200px;
+}
+.THIS .planyr {
+    width: 190px;
+}
+.THIS .lob {
+    width: 120px;
+}
+.THIS .base {
+    width: 55px;
+}
+.THIS .yr {
+    width: 50px;
+}
+.THIS .paddingleft 
+{
+    padding-left: 5px;
+}
+.THIS .slds-spinner_container  {
+    background-color: white;
+    height:25%;
+    width:30%;
+    top:50%;
+    left:30%;
+}

@@ -1,0 +1,228 @@
+<template>
+               
+    <div style="height: 10px;">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+
+                <!-- Modal Header -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" size="medium">
+                        </lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <div class="headerClass1">
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Add Specialty Drug(s)</h2>
+                    </div>
+                    
+                </header>
+
+               <!-- Modal Column Header -->
+                <header class="slds-modal__header">
+                    <div class="headerClass2">
+                        <div class="slds-grid slds-var-p-around_xx-small">
+                            
+
+                            <div class="slds-col slds-size_1-of-8 slds-var-m-left_small " >
+                                <div class="slds-grid" >
+                                    <div class="slds-col slds-size_1-of-5 " >                                                                                
+                                        <lightning-icon icon-name="utility:delete"
+                                            alternative-text="Delete Drug" size="small" title="Delete Drug" onclick={removeRow} class="slds-hide">
+                                        </lightning-icon>                                         
+                                    </div>
+                                    <div class="slds-col slds-size_4-of-5 " style >                                            
+                                        <div class="slds-truncate" title="Year"><span class="star">* </span>Year</div>                                                                                                                                                                                   
+                                    </div>                                                                                                                                                                                      
+                                </div>                                                                                                                                               
+                            </div>
+                            
+                            <div class="slds-col slds-size_2-of-8 slds-var-m-left_small" >                                        
+                                <div class="slds-truncate" title="Drug Therapy"><span class="star">* </span>Drug Therapy</div>                                                                                                                                                                                                                                                                       
+                            </div>
+
+                            <!-- Column 3 Drug Name-->
+                            <div class="slds-col slds-size_1-of-8 " >                                    
+                                <div class="slds-truncate" title="Drug Name"><span class="star">* </span>Drug Name</div>                                                                                                             
+                            </div>
+
+                            <!-- Column 4 Drug Type--> 
+                            <div class="slds-col slds-size_1-of-8 slds-var-p-left_x-small" >
+                                <div class="slds-truncate" title="Drug Type"><span class="star">* </span>Drug Type</div>                                 
+                            </div>
+
+                             <!-- Column 5 Mac and Rate-->
+                             <div class="slds-col slds-size_1-of-8 slds-var-m-left_medium slds-var-p-left_xx-small" >
+                                <div class="slds-grid">
+                                    <div class="slds-col slds-size_3-of-12 " >
+                                        <div class="slds-truncate" title="MAC">MAC</div>         
+                                    </div>
+                                    <div class="slds-col slds-size_9-of-12 slds-var-p-left_xx-small " >
+                                        <div class="slds-truncate" title="AWP Discount">AWP Discount</div>                                                                                           
+                                    </div>                                                                                                                                                                                                                            
+                                </div>                                                                                                             
+                            </div>
+
+                             <!-- Column 6 Notes -->                                 
+                             <div class="slds-col slds-size_1-of-8 slds-var-p-left_small">
+                                <div class="slds-truncate" title="Notes">Notes</div>                                                                                                                                                              
+                            </div>
+
+                            <!-- Column 7 -->                                 
+                            <div class="slds-col slds-size_1-of-7 slds-var-m-left_small">
+                                                                                                                                                                                      
+                            </div>  
+                                                        
+                        </div>
+                    </div>                                                               
+                </header>
+
+                
+
+                <!-- Modal Content -->
+                <div class="slds-modal__content " id="modal-content-id-1">                                         
+                                        
+                    <div class="spinner">
+                        <template if:true={openSpinner}>
+                                <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+                                </lightning-spinner>
+                        </template>
+                    </div> 
+
+                    <div class="container"> 
+                        
+                        <!-- Detail -->
+                        <template for:each={itemList} for:item="item">
+                            <div key={item.id} id={item.id} class="rowItem" style="margin-right:10px;margin-left : 10px;">
+
+                                <div class="slds-grid slds-var-p-around_xx-small" key={item.id}>
+                                    <!-- Column 1  Delete and Year-->
+                                    <div class="slds-col slds-size_1-of-8 slds-var-m-left_small" >
+                                        <div class="slds-grid" key={item.id}>
+                                            <div class="slds-col slds-size_1-of-5 " >
+                                                <template if:true={itemListSize}>
+                                                    <lightning-icon icon-name="utility:delete" access-key={item.id} id={index}
+                                                        alternative-text="Delete Drug" size="small" title="Delete Drug" onclick={removeRow} >
+                                                    </lightning-icon>
+                                                </template>
+                                                <template if:false={itemListSize}>
+                                                    <lightning-icon icon-name="utility:delete" access-key={item.id} id={index}
+                                                        alternative-text="Delete Drug" size="small" title="Delete Drug" onclick={removeRow} class="slds-hide">
+                                                    </lightning-icon>
+                                                </template>     
+                                            </div>
+                                            <div class="slds-col slds-size_4-of-5 slds-var-m-right_medium " style >                                            
+                                                <lightning-combobox name="year"
+                                                    variant = "label-hidden" 
+                                                    placeholder="-Select Year-"
+                                                    access-key={item.id}
+                                                    id={item.id}
+                                                    value={item.year}                                                                                                                         
+                                                    options={yearOptions2}
+                                                    onchange={handleChange}
+                                                    class="year"
+                                                    required>
+                                                </lightning-combobox>                                                                                                                                                                                  
+                                            </div>                                                                                                                                                                                      
+                                        </div>                                                                                                             
+                                    </div>
+    
+                                    <!-- Column 2 Drug Theraphy required dropdown-alignment="bottom-left"-->
+                                    <div class="slds-col slds-size_2-of-8 slds-var-m-left_small" >                                        
+                                        <lightning-combobox name="drugTherapy"
+                                            variant = "label-hidden" 
+                                            placeholder="-Select Drug Therapy-"
+                                            access-key={item.id}
+                                            id={item.id}
+                                            value={item.drugTherapy}                                                                                                                         
+                                            options={drugTherapyOptions}
+                                            onchange={handleChange} class="drugTherapy" >
+                                        </lightning-combobox>                                                                                                                                                                                                                                                                         
+                                    </div>
+                                    
+                                    <!-- Column 3 Drug Name-->
+                                    <div class="slds-col slds-size_1-of-8 slds-var-m-left_small" >                                    
+                                        <lightning-input type="text" name="drugName" 
+                                            value={item.drugName} id={item.id} 
+                                            variant="label-hidden" label=" "
+                                            placeholder="Enter Drug Name"
+                                            access-key={item.id} onchange={handleChange} class="drugName" required>
+                                        </lightning-input>                                                                                                           
+                                    </div>
+    
+                                    <!-- Column 4 Drug Type--> 
+                                    <div class="slds-col slds-size_1-of-8 slds-var-m-left_small" >
+                                        <lightning-combobox name="drugType"
+                                            variant = "label-hidden" 
+                                            placeholder="-Select Drug Type-"
+                                            access-key={item.id}
+                                            id={item.id}
+                                            value={item.drugType}                                                                                                                         
+                                            options={drugTypeOptions}
+                                            onchange={handleChange} class="drugType" required>
+                                        </lightning-combobox>                                 
+                                    </div>
+    
+                                    <!-- Column 5 Mac and Rate-->
+                                    <div class="slds-col slds-size_1-of-8 slds-var-m-left_small" >
+                                        <div class="slds-grid" key={item.id}>
+                                            <div class="slds-col slds-size_3-of-12 " >
+                                                <lightning-input type="checkbox" name="mac" 
+                                                    checked={item.mac} id={item.id} 
+                                                    variant="label-hidden" label=" "                                        
+                                                    access-key={item.id} onchange={handleChange} class="mac">
+                                                </lightning-input>     
+                                            </div>
+                                            <div class="slds-col slds-size_9-of-12  " >
+                                                <lightning-input type="number" name="rate" label=" " 
+                                                    value={item.rate} id={item.id} variant="label-hidden"
+                                                    formatter="percent-fixed" step=".01" max="999.99" access-key={item.id} onchange={handleChange} class="rate" disabled={item.disabledRate}>
+                                                </lightning-input>                                                                                          
+                                            </div>
+                                                                                                                                                                                                                                    
+                                        </div>                                                                                                             
+                                    </div>
+
+                                    <!-- Column 6  Notes and Copy-->
+                                    <div class="slds-col slds-size_2-of-8 slds-var-m-left_small" >
+                                        <div class="slds-grid" key={item.id}>
+                                            <div class="slds-col slds-size_7-of-12 " >
+                                                <lightning-input type="text" name="notes" 
+                                                    value={item.notes} id={item.id} 
+                                                    variant="label-hidden" label=" "
+                                                    placeholder="Enter Notes"
+                                                    access-key={item.id} onchange={handleChange} class="notes">
+                                                </lightning-input>     
+                                            </div>
+                                            <div class="slds-col slds-size_2-of-12 slds-var-m-left_medium " >                                            
+                                                <lightning-icon icon-name="utility:copy" access-key={item.id} id={index}
+                                                    alternative-text="Copy Drug" size="small" title="Copy Drug" onclick={cloneRow} >
+                                                </lightning-icon>                                                                                                                                                                                 
+                                            </div>                                                                                                                                                                                      
+                                        </div>                                                                                                             
+                                    </div>                        
+
+                                </div>
+
+                            </div>
+                            
+                        </template>
+                    </div>                                                                                                                                            
+                </div>
+
+                                
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">                   
+                     <lightning-button label="Add Another Record" icon-name="utility:add" onclick={addRow} disabled={isButtonDisabled}></lightning-button>&nbsp;&nbsp;&nbsp;&nbsp;
+                     <lightning-button label="Cancel" variant="neutral" onclick={closeModal} disabled={isButtonDisabled}></lightning-button>&nbsp;&nbsp;&nbsp;&nbsp;
+                     <lightning-button label="Save & Close" variant="brand" onclick={handleSubmit} disabled={isButtonDisabled}></lightning-button>               
+                </footer>
+
+            </div>
+        </section>               
+    </div>
+    
+
+
+
+
+</template>

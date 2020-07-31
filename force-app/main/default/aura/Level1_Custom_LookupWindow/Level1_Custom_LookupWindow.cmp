@@ -1,0 +1,134 @@
+<!--Level1 Custom Lookup Window component to open Lookup and display Carrier Information.
+Carrier Information are filtered based on Platform, FAF Account and Status
+It has Search Button to search on keyword and also Clear filter.
+Clear Filter Button to come out from Account level Filter. User can select one record and will be added
+in the lookup
+
+Parent Component : Level1_Custom_Lookup
+Date: 10/01/2018
+
+-->
+<aura:component controller= "Level1customLookUpController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="carrid" type="String" default=""/>
+    <aura:attribute name="fafid" type="String" default=""/>
+    <aura:attribute name="carrname" type="String" default=""/>
+    <aura:attribute name="AccountId" type="String" />
+    <aura:attribute name="platform" type="String" default="" access= "Global"/>
+    <aura:attribute name="lob" type="String" default="" access= "Global"/>
+    <aura:attribute name="SearchKeyWord" type="String" default=""/>
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="oRecord" type="sObject" />
+    <aura:attribute name="recordIdentify" type="String" default=""/>
+    <aura:attribute name="isOpen" type="Boolean" default="true"/>
+    <aura:attribute name="isClear" type="Boolean" default="false"/>
+    <aura:attribute name="total" type="Integer" default=""/>
+    <aura:attribute name="isClearFilter" type="Boolean" default="false"/>
+    <aura:attribute name="isSearch" type="Boolean" default="true"/>
+    <aura:attribute name="isMessage" type="Boolean" default="false"/>
+    <aura:attribute name="issummaryMessage" type="Boolean" default="false"/>
+    <aura:attribute name="summaryMessage" type="String" default=""/>
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:registerEvent name="carrierselect" type="c:Level1_Custom_CarrierAdd_WSelect"/>
+        <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+           <aura:if isTrue="{!v.isOpen}"> 
+            <!--###### MODAL BOX Start######--> 
+               <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open" >
+                <div class="slds-modal__container">
+                    <!-- ###### MODAL BOX HEADER Start ######-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Carrier Information</h2>
+                    </header>
+                    <!--###### MODAL BOX BODY Part Start######-->
+                    <div class="slds-modal__content slds-p-around_large" id="modal-content-id-1">
+             		 <div class="slds-grid slds-gutters">
+ 						    <div class="slds-size_4-of-12">
+                            <span>
+                                 <div class="slds-m-right_large"></div>
+                                 <ui:inputText   value="{!v.SearchKeyWord}" placeholder="Search .."/>
+                            </span>
+                            <div class="slds-m-right_large"></div>
+                            </div>
+                         	<aura:if isTrue="{!v.isSearch}"> 
+                         	<div class="slds-size_3-of-12">
+                            <span>
+                                 <div class="slds-m-left_large"></div>
+                                 <lightning:button variant="brand" 
+                                          label="Search"
+                                          title="Search"
+                                          onclick="{! c.performsearch}"/>
+                            </span>
+                            </div>
+                            </aura:if>
+                         	<aura:if isTrue="{!v.isClear}"> 
+                            <div class="slds-size_3-of-12">
+                            <span>
+                                 <div class="slds-m-left_xx-small"></div>
+                                 <lightning:button variant="brand" 
+                                          label="Clear"
+                                          title="Clear"
+                                          onclick="{! c.clearsearch}"/>
+                            </span>
+                            </div>
+                            </aura:if>
+                            <div class="slds-size_2-of-12">
+                            <span>
+                                <lightning:button variant="neutral" 
+                                          label="Clear Filter"
+                                          title="Clear Filter"
+                                          onclick="{! c.clearFilter }"/>
+                            </span>
+                            </div>
+                         	<div class="slds-size_2-of-12">
+                            <span>
+                                <lightning:button variant="neutral" 
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.closeModel }"/>
+                            </span>
+                            </div>
+                     </div>
+                        <!-- Below change to display message on Default Account Filter  -->
+                        <aura:if isTrue="{!(v.isClearFilter == false)}"> 
+                            <div class="slds-text-color_error slds-text-body_small">
+                                The results are by default filtered by Account on FAF. Use 'Clear Filter' button to remove the filter 
+                            </div> 
+                            <div class="slds-text-color_error slds-text-body_small">
+                                and search against all existing Carriers.
+                            </div>
+                        </aura:if>
+                        <!--End of this change -->
+                            <div class="slds-grid slds-gutters">
+ 						    <div class="slds-col">
+                            <span>
+                                <div class="slds-m-top_large"></div>
+                                <lightning:datatable
+               					    keyField="id"
+                					data="{! v.data }"
+                					columns="{! v.columns }"
+                					hideCheckboxColumn="false"
+                                    onrowselection="{!c.updateSelectedText }"/>
+                            </span>
+                            </div>
+                            </div>
+                    </div>
+                     <!--###### MODAL BOX FOOTER Part Start ######-->
+                    <footer class="slds-modal__footer">
+                                <aura:if isTrue="{!v.isMessage}"> 
+                                <p><lightning:formattedText value="No active Level1/Carrier Information found" /></p>
+                                </aura:if>
+                        		<aura:if isTrue="{!v.issummaryMessage}"> 
+                                    <p><lightning:formattedText value= "{!v.summaryMessage}" /></p>
+                                </aura:if>
+                    </footer>
+                </div>
+           </section>
+           <div class="slds-backdrop slds-backdrop_open"></div> 
+           </aura:if>
+            <!--###### MODAL BOX Part END Here ######-->
+</aura:component>

@@ -1,0 +1,40 @@
+.THIS .container {
+    width : 100%;
+    height: 6%;
+    padding: 0rem;
+    font-weight: bold;
+}
+h1.THIS{ 
+    font-size:18pt; 
+}
+.THIS .left-align {
+    text-align: left;
+}
+.THIS .right-align {
+    text-align: right;
+}
+.THIS .initheight {
+    height: 50%;
+    width:90%;
+    max-width: 90%;
+}
+.THIS .finalheight {
+    height: 100%;
+    width:90%;
+    max-width: 90%;
+}
+.THIS .tab {
+    width: 400px;
+    padding: 0rem;
+}
+.THIS .slds-spinner_container  {
+    background-color: white;
+    height:25%;
+    width:30%;
+    top:20%;
+    left:50%;
+}
+.THIS .field-title
+{
+    font-weight: bold;
+}

@@ -1,0 +1,148 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" 
+        controller="Apttus_Mail_Guarantees" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+      <aura:attribute name="isAccess" type="boolean"/>
+    <aura:attribute name="mpId" type="String"/>
+    <aura:attribute name="vfHost" type="String"/>
+    <aura:attribute name="mailGuranteeList" type="Mail_Guarantees__c[]" />
+    <aura:attribute name="mgNew" type="Boolean" default="false" />
+    <aura:attribute name="mgParams" type="String"  />
+        <aura:attribute name="isDeleteAlertOpen" type="Boolean" default="false" />
+        <aura:attribute name="isCreateable" type="Boolean" default="true"/>
+    <aura:attribute name="isDeletable" type="Boolean" default="true"/>
+        <aura:attribute name="isEditable" type="Boolean" default="true"/>
+
+     <aura:if isTrue="{!v.mgNew}">
+        <div class="demo-only" style="height: 90%;width:90%;"> 
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="height: 100%;width:100%;max-width: 100%;">
+                <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                <span class="slds-assistive-text">Close</span>
+                </button>
+                <!--
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New MailPricing</h2>
+                -->
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                    <iframe aura:id="vfFrame" src="{! 'https://' +v.vfHost + '/apex/MailGuaranteesEditNewPage?' +v.mgParams}" height="100%" width="100%"/>
+                </div>
+                <footer class="slds-modal__footer">
+                   
+                </footer>
+            </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>
+        
+        <div class="slds-grid slds-wrap slds-p-left_large" style="margin-bottom: -4.75rem;">
+            <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--12-of-12 slds-large-size--12-of-12">
+                <hr style="margin: 0.1rem;"></hr>
+            </div>
+            
+            <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--10-of-12 slds-large-size--10-of-12" >
+                <header class="slds-grid" data-aura-rendered-by="100:421;a" style="padding-top: 5px;">
+                    <div class="slds-media slds-media_center slds-has-flexi-truncate" data-aura-rendered-by="101:421;a">
+                        <div class="slds-media__body slds-truncate" data-aura-rendered-by="102:421;a">
+                            <h2 data-aura-rendered-by="103:421;a">
+                                <span class="slds-text-heading_small" data-aura-rendered-by="104:421;a" style=" ">
+                                    <b data-aura-rendered-by="105:421;a">Mail Guarantees</b>
+                                </span>
+                            </h2>
+                        </div>
+                    </div>
+                </header>
+            </div>
+            <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--2-of-2 slds-large-size--2-of-2">
+                <div style="float:right;margin-top: -0.75rem;margin-bottom: 1.6rem;font-size:13px;">
+                    <aura:if isTrue="{!v.isAccess}">
+                        <lightning:button aura:id="clickNew" value="clickNew" label=" New Mail Guarantees" 
+                                          variant="brand"
+                                          class="slds-button"
+                                          onclick="{!c.clickNew}" /> 
+                        <aura:if isTrue="{!v.mailGuranteeList.length != 0}">
+                            <lightning:button  aura:id="changeIt" label="Delete Mail Guarantees"
+                                              iconName="utility:delete"
+                                              iconPosition="right"
+                                              variant="destructive"
+                                              onclick="{!c.deleteSelected}" >
+                            </lightning:button>
+                        </aura:if>
+                    </aura:if>
+                </div>
+            </div>
+        </div>    
+         <aura:if isTrue="{!v.mailGuranteeList.length != 0}">
+
+             <div class="slds-grid slds-wrap" style="margin-top: 3.3rem;">
+                 <div  style="width: 1%;" class="slds-p-horizontal--small slds-size--12-of-1 slds-medium-size--12-of-12 slds-large-size--1-of-12">
+                      <div style="margin-left: 3px;">
+                          <ui:inputCheckbox aura:id="cbox" change="{!c.selectAllRecords}"/>
+                      </div>
+                 </div>
+                 
+             </div>
+             
+           
+             <div class="slds-grid slds-wrap slds-grid--pull-padded">
+                 <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--12-of-12 slds-large-size--12-of-12">
+                     
+                     <aura:iteration items="{!v.mailGuranteeList}" var="mailGuarantee">  
+                         <div class="slds-grid slds-wrap ">
+                             <div style="width: 3.2% !important;" class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-12 slds-large-size--1-of-12">
+                                 <div style="margin-top: 28px; margin-left: 4px;">
+                                     
+                                     <ui:inputCheckbox text="{!mailGuarantee}" aura:id="cboxRow"  change="{!c.onCheckboxSelect}"/>				
+                                 </div>
+                             </div>
+                             
+                             <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--9-of-12 slds-large-size--9-of-12">
+                                 <c:Apttus_MailGuarantees isAccess="{!v.isAccess}" mailGuarantee="{!mailGuarantee}"/>
+                             </div>
+                             
+                             <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--2-of-12 slds-large-size--2-of-12"></div>
+                             
+                         </div>
+                         
+                         
+                     </aura:iteration>
+                 </div>
+             </div>
+        </aura:if>
+		
+    
+        <aura:if isTrue="{!v.mailGuranteeList.length == 0}">
+            <ui:message title="Information" severity="info" closable="false">
+                No Mail Guarantees defined. 
+            </ui:message>
+        </aura:if>     
+        
+        <aura:if isTrue="{!v.isDeleteAlertOpen}">
+        <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container" style="Width: 31%">
+                <div class="slds-modal__header">
+                    <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                        X
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="header99" class="slds-text-heading--medium">Delete Mail Guarantee Record</h2>
+                </div>
+                <div class="slds-modal__content slds-p-around--medium">
+                    <center><p>
+                        Are you sure you want to delete the selected record(s).
+                        </p>
+                    </center>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                    <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete</lightning:button>                    
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>        
+    </aura:if>
+    
+        
+
+</aura:component>

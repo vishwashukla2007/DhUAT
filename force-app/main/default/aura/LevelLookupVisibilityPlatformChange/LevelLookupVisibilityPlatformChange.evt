@@ -1,0 +1,5 @@
+<aura:event type="APPLICATION" description="Event template" >
+    <aura:attribute name="isLevel2Visible" type="Boolean" />
+    <aura:attribute name="isLevel3Visible" type="Boolean"  />
+    <aura:attribute name="recordIdentify" type="String"  />
+</aura:event>

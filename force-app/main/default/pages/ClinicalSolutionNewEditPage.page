@@ -1,0 +1,309 @@
+<apex:page standardController="Clinical_Solutions__c" id="Pg" title="Clinical Solution Edit" name="Clinical Soluiton Edit" extensions="ClinicalSolutionNewEditClass" lightningStylesheets="true" >
+      
+       <script>
+        
+        window.onload=function()
+          {
+           document.getElementById('{!$Component.frm.PB.PBS2.clinicalSolType}').focus();
+           var area2 = document.getElementById('{!$Component.frm.PB.PBS3.roiPercentageID}');
+            var area3 = document.getElementById('{!$Component.frm.PB.PBS3.roiAmountID}');
+            var area4 = document.getElementById('{!$Component.frm.PB.PBS3.clientShareID}');
+            var area5 = document.getElementById('{!$Component.frm.PB.PBS3.cvsShareID}');
+            var area6 = document.getElementById('{!$Component.frm.PB.PBS2.optInOut}');
+             
+                    
+                    if('{!percentageFlagDisable}' == 'true') {               
+                        area2.disabled= true;   
+                        area2.value= '';                                  
+                    }
+                    
+                    if('{!amountFlagDisable}' == 'true') {               
+                        area3.disabled= true;   
+                        area3.value= '';                                  
+                    }
+            
+            
+            
+            if('{!sosFlag}' == 'false') {
+                    area4.disabled= true;                
+                    area5.disabled= true;
+                    area4.value= ''; 
+                    area5.value= ''; 
+               } 
+              area5.disabled= true; 
+              
+              var inputValue = '{!clinicalSol.Clinical_Solution__c}';
+             
+              var n = inputValue.includes("Accordant");
+             
+                if(!n){
+                   area6.disabled = true; 
+                   area6.value= ''; 
+                  }
+            
+             
+          };
+           
+         function textareaDep(ClientSolution){
+            
+            var inputValue = document.getElementById(ClientSolution).value; 
+          
+               solutionCheckOptIn(inputValue);
+              
+                      
+        };
+        
+        function textareaDep1(picklist){
+                               
+            var area3 = document.getElementById('{!$Component.frm.PB.PBS3.roiPercentageID}');
+            var area4 = document.getElementById('{!$Component.frm.PB.PBS3.roiAmountID}');
+                    
+                    if(picklist.value != 'Yes') {                                      
+                        area4.value= '';                                  
+                        area3.value= '';                                  
+                    }   
+            
+            roiMetricFlagaction(picklist.value);                        
+        }
+        
+        
+        function textareaDep2(String){   
+            var area3 = document.getElementById('{!$Component.frm.PB.PBS3.roiPercentageID}');
+            var area4 = document.getElementById('{!$Component.frm.PB.PBS3.roiAmountID}');
+                    
+                    if( String == 'Percentage') {                                      
+                        area4.value= '';                                  
+                    }
+                    
+                    if(String == 'Flat Dollar') {               
+                        area3.value= '';                                  
+                    }    
+                                       
+            checkPercentageFlag(String);                       
+        }
+        
+        function textareaDep3(checkbox){
+           sosFlag(checkbox.checked);                       
+        }
+        
+        function textareaDep4(picklist){
+           guaranteeFlag(picklist.value);                       
+        }
+        
+         function textareaDep5(percentage){ 
+          var minus = 100 - percentage                        
+          var diff = minus.toFixed(2);;
+           var cvsShare = document.getElementById('{!$Component.frm.PB.PBS3.cvsShareID}');
+          if(diff >0 && diff <100){          
+             cvsShare.value= diff ; 
+             }else{
+                      cvsShare.value= null;
+                  }
+          
+                                   
+        }
+        
+     </script>
+      <apex:form id="frm" >
+      
+        <apex:pagemessages id="pmsg"></apex:pagemessages>
+        <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+        
+        <apex:pageBlock title="Clinical Solution Edit" id="PB">
+            <apex:pageBlockSection title="Clinical Solution Detail" id="PBS1">
+                <apex:outputField value="{!clinicalSol.FAF_ID__c}" id="PBS1F1" />
+                <apex:outputField value="{!clinicalSol.Clinical_Operations__c}" id="ClinicOperationsId" />
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Clinical Solution Information" id="PBS2">
+               
+                <apex:inputField value="{!clinicalSol.Clinical_Solution_Type__c}" id="clinicalSolType" required="true" />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:pageBlockSectionItem >
+                   <apex:outputLabel for="yearPnl" value="Year" />
+                   <apex:outputPanel id="yearPnl">
+                      <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                       
+                       <apex:selectList value="{!clinicalSol.Year__c}"  required="true" label="Year" id="year" size="1">
+                       <apex:selectOptions value="{!yearOptions}" />
+                        </apex:selectList>
+                         </div> 
+                   </apex:outputPanel>
+               </apex:pageBlockSectionItem>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField rendered="{!IF(ISNULL(clinicalSol.PBM_Services__c), true , false)}" value="{!clinicalSol.Clinical_Solution__c}" id="ClientSolution" required="true" onchange="textareaDep('{!$Component.ClientSolution}')" />
+                <apex:inputField rendered="{!IF(ISNULL(clinicalSol.PBM_Services__c), false , true)}" value="{!clinicalSol.Clinical_Solution2__c}" id="ClientSolution2" required="true" onchange="textareaDep('{!$Component.ClientSolution2}')" />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalSol.Opt_In_Out__c}" id="optInOut" />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalSol.Contingent__c}" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField rendered="{!IF(ISNULL(clinicalSol.PBM_Services__c), true , false)}" value="{!clinicalSol.Fee_Basis__c}" required="true" onchange="feeBasisValue(this.value);"/>
+                <apex:inputField rendered="{!IF(ISNULL(clinicalSol.PBM_Services__c), false , true)}" value="{!clinicalSol.Fee_Basis2__c}" required="true" onchange="feeBasisValue(this.value);"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalSol.Fee_Amount__c}" required="{!feeAmtFlag}" id="feeamtId"/> 
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalSol.Service_Effective_Date__c}" />
+            </apex:pageBlockSection>
+           
+            <apex:pageBlockSection title="Clinical Solution Guarantee Information" id="PBS3">
+             
+                <apex:inputField value="{!clinicalSol.ROI_Metric__c}" onchange="textareaDep2(this.value);"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalSol.ROI_Percentage__c}" id="roiPercentageID" required="{!percentageReq}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalSol.ROI_Amount__c}" id="roiAmountID" required="{!amountReq}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalSol.SOS__c}" id="sosID" onchange="textareaDep3(this);"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalSol.Client_Share__c}" id="clientShareID" required="{!sosreqFlag}" onchange="textareaDep5(this.value);" onkeyup="textareaDep5(this.value);" />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalSol.CVS_Share__c}" id="cvsShareID" />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalSol.Guarantee__c}" onchange="textareaDep4(this);"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalSol.Recon_Type__c}" required="{!reconTypeFlag}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalSol.Recon_Timeframe__c}" required="{!reconTimeframeFlag}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalSol.Recon_Level__c}" required="{!reconLevelFlag}"/>
+                
+            </apex:pageBlockSection>    
+                
+             <apex:pageBlockSection title="Client Savings Guarantee" id="PBS4">
+                 <apex:inputField value="{!clinicalSol.Included_In_Client_Savings_Guarantee__c}" />
+             </apex:pageBlockSection>
+             
+             <apex:pageBlockButtons >
+                <apex:commandButton action="{!saveUpdateCS}" title="Save" value="Save" onclick="this.onclick=function(){return false;}" reRender="frm" />
+                <apex:commandButton action="{!Cancel}" title="Cancel" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+            <apex:actionFunction name="roiMetricFlagaction" action="{!roiMetricFlagCheck}" reRender="PBS3,scriptpanel1,scriptpanel2,scriptpanel3,pmsg" oncomplete="" immediate="true" status="status">
+                    <apex:param name="param1" id="param1" value=""/>                    
+            </apex:actionFunction>
+            <apex:actionFunction name="checkPercentageFlag" action="{!amountPercetageCheck}" reRender="PBS3,scriptpanel2,pmsg" oncomplete="" immediate="true" status="status">
+                    <apex:param name="param2" id="param2" value=""/>                    
+            </apex:actionFunction>
+             <apex:actionFunction name="sosFlag" action="{!sosFlagCheck}" reRender="PBS3,scriptpanel2,scriptpanel3,pmsg" oncomplete="" immediate="true" status="status">
+                    <apex:param name="param3" id="param3" value=""/>                    
+            </apex:actionFunction>
+             <apex:actionFunction name="guaranteeFlag" action="{!guaranteeCheck}" reRender="PBS3,scriptpanel1,scriptpanel2,scriptpanel3" oncomplete="" immediate="true" status="status">
+                    <apex:param name="param4" id="param4" value=""/>                    
+            </apex:actionFunction>
+            <apex:actionFunction name="feeBasisValue" action="{!feeBasisValueAction}" reRender="PBS2,scriptpanel4" oncomplete="" immediate="true" status="status">
+                    <apex:param name="param5" id="param5" assignTo="{!feeBasisValue}" value=""/>                    
+            </apex:actionFunction>
+            
+            
+            <apex:actionFunction name="solutionCheckOptIn" action="{!solutionCheckOptIn}" reRender="PBS2,scriptpanel4" oncomplete="" immediate="true" status="status">
+                    <apex:param name="param6" id="param6" value=""/>                    
+            </apex:actionFunction>
+             <apex:outputPanel id="scriptpanel1">
+                <script>
+                    var area1 = document.getElementById('{!$Component.frm.PB.PBS3.roiMetricID}');
+                    var area2 = document.getElementById('{!$Component.frm.PB.PBS3.roiPercentageID}');
+                    var area3 = document.getElementById('{!$Component.frm.PB.PBS3.roiAmountID}');
+                    var area6 = document.getElementById('{!$Component.frm.PB.PBS3.cvsShareID}');
+                    
+                    if('{!clientSavingsTrue }' == 'false') {  
+                       
+                        area2.disabled= true;   
+                        area2.value= ''; 
+                        area3.disabled= true;   
+                        area3.value= '';                                  
+                    }
+                  
+                    if('{!percentageFlagDisable}' == 'true') {               
+                        area2.disabled= true;   
+                        area2.value= '';                                  
+                    }
+                    
+                    if('{!amountFlagDisable}' == 'true') {               
+                        area3.disabled= true;   
+                        area3.value= '';                                  
+                    }
+                        area6.disabled= true;             
+                </script>
+            </apex:outputPanel>
+            <apex:outputPanel id="scriptpanel2">
+                <script>
+                    var area3 = document.getElementById('{!$Component.frm.PB.PBS3.roiPercentageID}');
+                    var area4 = document.getElementById('{!$Component.frm.PB.PBS3.roiAmountID}');
+                    var area5 = document.getElementById('{!$Component.frm.PB.PBS3.clientShareID}');
+                    var area6 = document.getElementById('{!$Component.frm.PB.PBS3.cvsShareID}');
+                    
+                    if('{!percentageFlagDisable}' == 'true') {               
+                        area3.disabled= true;   
+                        area3.value= '';                                  
+                    }
+                    
+                    if('{!amountFlagDisable}' == 'true') {               
+                        area4.disabled= true;   
+                        area4.value= '';                                  
+                    }
+                    
+                    if('{!sosFlag}' == 'false') {               
+                        area5.disabled= true;   
+                        area5.value= ''; 
+                        area6.disabled= true;   
+                        area6.value= '';                                  
+                    }  
+                    area6.disabled= true;
+                                    
+                </script>
+            </apex:outputPanel>
+            <apex:outputPanel id="scriptpanel3">
+                <script>
+                    var area5 = document.getElementById('{!$Component.frm.PB.PBS3.clientShareID}');
+                    var area6 = document.getElementById('{!$Component.frm.PB.PBS3.cvsShareID}');
+                     var area2 = document.getElementById('{!$Component.frm.PB.PBS3.roiPercentageID}');
+                    var area3 = document.getElementById('{!$Component.frm.PB.PBS3.roiAmountID}');
+                    
+                    if('{!sosFlag}' == 'false') {               
+                        area5.disabled= true;   
+                        area5.value= ''; 
+                        area6.disabled= true;   
+                        area6.value= '';                                  
+                    }  
+                    
+                    if('{!percentageFlagDisable}' == 'true') {               
+                        area2.disabled= true;   
+                        area2.value= '';                                  
+                    }
+                    
+                    if('{!amountFlagDisable}' == 'true') {               
+                        area3.disabled= true;   
+                        area3.value= '';                                  
+                    }
+                    
+                    area6.disabled= true;                              
+                </script>
+            </apex:outputPanel>
+            <apex:outputPanel id="scriptpanel4">
+                <script>
+                    var inputValue ='{!optInOutFlag}';
+                    var field1 = document.getElementById('{!$Component.frm.PB.PBS2.optInOut}');
+                    
+                    if(inputValue == 'false'){
+                       field1.disabled = true; 
+                       field1.value= ''; 
+                       
+                      }                         
+                </script>
+            </apex:outputPanel>
+        </apex:pageBlock>
+    </apex:form>        
+</apex:page>

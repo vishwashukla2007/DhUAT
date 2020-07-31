@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION">
+    <aura:attribute name="accountid" type="String"/>
+    <aura:attribute name="accntid" type="String"/>
+</aura:event>

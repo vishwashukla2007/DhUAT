@@ -1,0 +1,75 @@
+<apex:page standardController="Trend_Guarantee__c" extensions="TrendGuaranteeNewEditClass" Title="Trend Guarantee Edit" id="pg" lightningStylesheets="true"> 
+   <apex:form id="frm">
+       <script>
+            function setFocusOnLoad() {
+                document.getElementById('{!$Component.pg.frm.PB1.PBS2.PBSI1.year}').focus();
+            }   
+        </script>
+        <apex:pagemessages id="pmsg"></apex:pagemessages> 
+            <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+             <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+        <apex:pageBlock title="Trend Guarantee Edit" id="PB1">
+            <apex:pageBlockSection title="Trend Guarantee Detail" id="PBS1">
+                <apex:outputField value="{!trendGuaranteeObj.FAF_ID__c}"/>
+                <apex:outputField value="{!trendGuaranteeObj.Guarantee_Information__c}"/>
+             </apex:pageBlockSection>
+                 
+             <apex:pageBlockSection title="Trend Guarantee Information" id="PBS2">
+               <!--apex:inputField value="{!trendGuaranteeObj.Year__c}" required="true"/-->
+               <apex:pageBlockSectionItem id="PBSI1">
+                   <apex:outputLabel for="yearPnl" value="Year" />
+                   <apex:outputPanel id="yearPnl">
+                      <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                       
+                       <apex:selectList value="{!trendGuaranteeObj.Year__c}"  required="true" label="Year" id="year" size="1" onchange="changeYearVal(this.value);">
+                       <apex:selectOptions value="{!yearList}" />
+                        </apex:selectList>
+                         </div> 
+                   </apex:outputPanel>
+               </apex:pageBlockSectionItem>
+               <apex:outputLabel />
+               <apex:inputField value="{!trendGuaranteeObj.LOB__c}" required="true"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!trendGuaranteeObj.Guarantee_Type__c}" required="true"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!trendGuaranteeObj.Drug_Type__c}" required="true" />
+               <apex:outputLabel />
+               <apex:inputField value="{!trendGuaranteeObj.Trend__c}" required="true" />
+               <apex:outputLabel />
+               <apex:inputField value="{!trendGuaranteeObj.At_Risk_Amount__c}" id="riskAmtId" required="{!NOT(tgReconBool)}"/>
+               <apex:outputLabel />
+            </apex:pageBlockSection> 
+              <apex:actionFunction name="changeYearVal" action="{!changeYearMeth}" reRender="PB1,AtRiskPanel" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!yearval}" value="" />
+            </apex:actionFunction>    
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!saveUpdatetrendGuaranteeObj}" title="Save" value="Save" reRender="pmsg, PB1, AtRiskPanel" oncomplete="window.scrollTo(0, 0);" status="status"/>
+                <apex:commandButton action="{!Cancel}" title="Cancel" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+        
+        <apex:outputpanel id="AtRiskPanel">
+        <script>
+            var atRiskAmount = document.getElementById(('{!$Component.pg.frm.PB1.PBS2.riskAmtId}'));
+            
+             if('{!tgReconBool}' == 'true'){
+                atRiskAmount.disabled = true;
+                atRiskAmount.value = '{!trendGuaranteeObj.At_Risk_Amount__c}';
+            }
+            
+        </script>
+        </apex:outputPanel>
+    </apex:form>    
+</apex:page>

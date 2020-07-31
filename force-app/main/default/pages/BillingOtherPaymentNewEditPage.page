@@ -1,0 +1,75 @@
+<apex:page standardController="Contractual_Payments__c" extensions="BillingOtherPaymentNewEditClass" id="pg" lightningStylesheets="true">
+    <script>
+        function setFocusOnLoad() {
+            document.getElementById('{!$Component.pg.frm.PB.PBS2.PBSI1.year}').focus();
+        }   
+    </script>
+    <apex:form id="frm">
+        <apex:pagemessages id="pmsg"></apex:pagemessages>
+        <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+        <script>
+
+        </script>
+        <apex:pageBlock title="Contractual Payments Edit" id="PB">
+            <apex:pageBlockSection title="Contractual Payments Detail" id="PBS1">
+                <apex:outputField value="{!bop.FAF_ID__c}" />
+                 <apex:outputLabel ></apex:outputLabel>
+                <apex:outputField value="{!bop.Billing_Operations__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Contractual Payments Information" id="PBS2">
+                 <!-- Defect fix for Year required-->
+                 <apex:pageBlockSectionItem id="PBSI1">
+                   <apex:outputLabel for="yearPnl" value="Year" />
+                   <apex:outputPanel id="yearPnl">
+                      <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                       
+                       <apex:selectList value="{!bop.Years__c}"  required="true" label="Year" id="year" size="1">
+                       <apex:selectOptions value="{!yearList}" />
+                        </apex:selectList>
+                         </div> 
+                   </apex:outputPanel>
+               </apex:pageBlockSectionItem>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bop.Basis__c}" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bop.LOB2__c}" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bop.Payment_Terms__c}" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bop.Type__c}" required="true"/> <!-- US82 updated by Sneha Inturi-->
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bop.Level__c}" id="level"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bop.Amount__c}" id="AmtId" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bop.Expiration__c}" id="ExpId"/> <!-- US82 Expiration field is updated as Optional by Sneha Inturi-->              
+                
+                
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Additional Contractual Payments Information" id="PBS3">
+                <apex:inputField value="{!bop.Additional_Other_Payment_Information__c}" style="width:800px"/>
+            </apex:pageBlockSection>
+        <apex:pageBlockButtons >
+            <apex:commandButton action="{!saveUpdateBOP}" title="Save" value="Save" reRender="pmsg,PB" oncomplete="window.scrollTo(0, 0);" status="status" />
+            <apex:commandButton action="{!Cancel}" title="Cancel" value="Cancel" immediate="true"/>
+        </apex:pageBlockButtons>
+        </apex:pageBlock>
+        <!-- Expiration Date Not Required Method-->
+        <!--apex:actionFunction name="changeType" action="{!expirationNotRequiredMethod}" oncomplete="" immediate="true" status="status" reRender="PBS2,pmsg">
+        <apex:param name="param1" assignTo="{!typeExp}" value="" />
+        </apex:actionFunction> -->
+    </apex:form>
+</apex:page>

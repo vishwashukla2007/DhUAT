@@ -1,0 +1,148 @@
+<aura:component controller="PCD_GridObjectdata" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"  >
+<aura:attribute name="objects" type="Apttus__AgreementLineItem__c" />
+<aura:attribute name="offername" type="String" /> 
+<aura:attribute name="offerid" type="String" /> 
+<aura:attribute name="accountid" type="String" /> 
+<aura:attribute name="taskid" type="String" /> 
+<aura:attribute name="tasksubtype" type="String" /> 
+<aura:attribute name="alertmsg" type="String" /> 
+<aura:attribute name="loblist" type="LOB__c" /> 
+<aura:attribute name="offerlist" type="Offer__c" /> 
+<aura:attribute name="isCreatePCDOpen" type="Boolean" />  
+<aura:attribute name="DisplaySpinner" type="Boolean" />  
+<aura:attribute name="selected" type="Integer"/> 
+<aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}"/>
+<aura:attribute name="options" type="List"/>
+<aura:attribute name="value" type="List"/>
+<aura:attribute name="selectedLOBs"  type="string[]" default="[]"/>
+<aura:attribute name="newLOBs"  type="string[]" default="[]"/>
+<aura:attribute name="LOBcount" type="Integer"/>
+<aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+<aura:handler event="c:Apttus_PCD_Offer_Select_Event" action="{!c.handleofferEvent}"/>
+<aura:registerEvent name="offerEvent" type="c:Apttus_PCD_Offer_Select_Event"/>
+<div class="slds-p-top_large"></div>
+ <lightning:layout>
+             <aura:if isTrue="{!v.isCreatePCDOpen}">
+                    <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" >
+                            <div class="slds-modal__header">
+                                <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closePcdCreate}">
+                                    X
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="header99" class="slds-text-heading--medium"><b>Start PCD</b></h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around--medium">
+                              <lightning:layout>
+           					  <aura:if isTrue="{!v.DisplaySpinner}">
+  							  <lightning:spinner variant="brand" alternativeText="Saving" size="medium" class="slds-spinner_container"/>
+            				  <div class="slds-backdrop_open"></div>
+	                          </aura:if>   
+                              </lightning:layout>
+                             <lightning:layout>
+                                 <div class="slds-p-left_large"></div>
+                                <lightning:layoutitem class="fontlobsize" size="3">
+                                 <div class="slds-p-top_large"></div>
+                                <lightning:formattedText value="Select Base LOB"/>
+                                </lightning:layoutitem>
+                                <lightning:layoutitem size="5">
+                                <lightning:select aura:id="selectlob" name="selectlob" onchange="{!c.handleChange}">
+        						<aura:iteration items="{!v.loblist}" var="lob">
+            					<option value="{!lob.LobId__c}" text="{!lob.LOB_Description__c}" ></option>
+        						</aura:iteration>
+    							</lightning:select>
+                                </lightning:layoutitem>
+                             </lightning:layout>
+                             <aura:if isTrue="{!(v.LOBcount > 1)}">
+                             <lightning:layout>
+                                <div class="slds-p-left_large"></div>
+                                <lightning:layoutitem class="fontlobsize" size="3">
+                                 <div class="slds-p-top_large"></div>
+                                <lightning:formattedText value="Include Additional LOBs"/>
+                                </lightning:layoutitem>
+                                <lightning:layoutitem size="7">   
+                                <div class="slds-p-top_large"></div>
+                                <lightning:checkboxGroup
+      							aura:id="lobgroup"
+        						name="checkboxGroup"
+        						options="{!v.options}"
+        						value="{!v.value}"
+        						required="false" />
+                             </lightning:layoutitem>
+                             </lightning:layout>    
+                             </aura:if>
+                            <div class="slds-p-top_large"></div>
+                            <div class="modalwidth">
+                            <div class="modalmargin">   
+                                <p> <lightning:layout >
+                                    <lightning:layoutitem>
+                                    <lightning:icon iconName="utility:warning" size="small" alternativeText="Warning!"/>
+                                    </lightning:layoutitem>
+                                    <div class="slds-p-left_small"></div>
+                                    <lightning:layoutitem class="fontsize">
+                                    <b>Alert Message</b>
+                                    </lightning:layoutitem>
+                                    </lightning:layout>
+                                    <br></br><br></br>
+                                    <aura:if isTrue="{!(v.alertmsg != null)}">
+                                    <lightning:formattedText  value="{!v.alertmsg}" />
+                                    </aura:if>
+                                    <aura:if isTrue="{!(v.alertmsg == null)}">
+                                    <lightning:formattedText  value="No Alert message available for review." />
+                                    </aura:if>
+                                </p> 
+                            </div>  </div>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closePcdCreate}">Cancel</lightning:button>    
+                                <lightning:button class="slds-button slds-button--brand" onclick="{!c.startPCD}">Start</lightning:button>                    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-backdrop slds-backdrop--open"></div>        
+               </aura:if>
+  </lightning:layout>
+  <lightning:layout >
+    <lightning:layoutitem class="fontsize">
+     <a href="{!'https://'+ v.vfHost + '/lightning/r/Offer__c/' + v.offerid +'/view'}" style="color:blue">{!v.offername}</a>
+    </lightning:layoutitem>
+    <div class="slds-p-left_medium"></div>  
+    <lightning:layoutitem class="fontsize">
+        <p><lightning:formattedText value="{!v.tasksubtype}" /></p>
+    </lightning:layoutitem> 
+      
+    <div class="slds-p-left_medium"></div>
+    <lightning:layoutitem>
+       <aura:if isTrue="{!(empty(v.objects))}">
+        <lightning:button variant="brand" label="Start PCD" title="Start PCD" onclick="{!c.createPCD}" />
+       </aura:if>
+    </lightning:layoutitem>
+  </lightning:layout>     
+  <div class="slds-p-top_large"></div>  
+  <aura:iteration items="{!v.objects}" var="item" indexVar="index">
+    <c:Apttus_PCD_LOB_Child alertmsg="{!v.alertmsg}" selected ="{!index}"  item="{!item}" />
+    <div class="slds-p-bottom_medium"></div>  
+  </aura:iteration>  
+ 
+ <lightning:layout>
+ <lightning:layoutitem size="11">
+ <div class="slds-p-around--none slds-p-right_large">   
+     <div class="slds-page-header"  style="cursor: pointer;" onclick="{!c.recentActivity}">
+      <section class="slds-clearfix">
+        <div class="slds-float--left ">
+            <div class="slds-p-top_xx-small"></div>
+            <lightning:icon class="slds-show" aura:id="recentact" iconName="utility:add" size="x-small" alternativeText="Indicates add"/>
+            <lightning:icon class="slds-hide" aura:id="recentact" iconName="utility:dash" size="x-small" alternativeText="Indicates dash"/>
+        </div>
+        <div class="slds-m-left--large fontheadingsize"><b>Recent Activity</b></div>
+      </section>
+    </div>
+      
+    <div class="slds-hide slds-p-around--medium" aura:id="recentact">
+      <c:Apttus_PCD_Recent_Activity taskid="{!v.taskid}"/>
+    </div>
+</div>
+  </lightning:layoutitem>
+  </lightning:layout>
+    
+</aura:component>

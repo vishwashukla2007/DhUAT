@@ -1,0 +1,25 @@
+<!-- Visualforce page to dynamicaly make visible of Action field for Sales users 
+Date - 12/09/2018
+Controller - ActionfieldController
+-->
+<apex:page standardController="Client_Information__c" lightningStylesheets="true" extensions="ActionfieldController" showHeader="false" >
+ <style>
+        body {
+              width="40%";
+              height:80px;
+              border: 0px !important;
+              color: rgb(62, 62, 60);
+              font-size: .75rem;
+              padding-left: -10px;
+              margin-left: -10px;
+              font-family: 'Salesforce Sans',Arial,sans-serif;
+             }  
+ </style>  
+ <apex:outputPanel rendered="{!displayAction}">
+ <div class="test-id__field-label-container slds-form-element__label">
+ <!-- <span class="test-id__field-label"  > Action </span> -->
+ <p> Action </p>
+ <apex:outputField value="{!Client_Information__c.Submit_Approvals__c}"/>
+ </div>
+ </apex:outputPanel>
+</apex:page>

@@ -1,0 +1,39 @@
+<aura:component controller="PCD_Rebate_MultipleLOB" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+<aura:attribute name="fafid" type="String"/>
+<aura:attribute name="lobid" type="String"/>
+<aura:attribute name="lobdesc" type="String"/>
+<aura:attribute name="checked" type="Boolean" default="false"/>
+<aura:attribute name="rebateguarantee" type="Rebate_Guarantees__c"/>
+<aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+<aura:attribute name="norecord" type="Boolean" default="true"/>
+<aura:attribute name="rgpricinglist" type="Rebate_Guarantees__c"/>
+<aura:registerEvent name="appEvent" type="c:Apttus_Grid_Add_Additional_Rebate_Event"/>
+<lightning:card  class="container">
+
+<div class="slds-p-bottom_medium"></div>  
+<lightning:layout class="width">
+<aura:if isTrue="{!v.norecord}">  
+<table style="table-layout: unset !important;" class="slds-table slds-table_bordered inner">
+<thead>
+<tr class="slds-text-heading_label slds-line-height_reset">
+<th scope="col"><div  class="slds-truncate" title="" style="width: 35px;"><lightning:input class="checkbox" type="checkbox" name="checkbox" label="" onchange="{!c.onSelectAll}"/> </div></th>
+<th scope="col" ><div class="slds-truncate" title="Year" style="width: 35px;">Year</div></th>
+<th scope="col" ><div class="slds-truncate" title="LOB" style="width: 35px;">LOB</div></th>
+<th scope="col"><div  class="slds-truncate" title="Basis" style="width: 50px;">Basis</div></th>
+<th scope="col"><div  class="slds-truncate" title="Plan Design" style="width: 110px;">Plan Design</div></th>
+<th scope="col"><div  class="slds-truncate" title="GSTP" style="width: 40px;"></div>GSTP</th>
+<th scope="col"><div  class="slds-truncate" title="Non-Specialty Formulary" style="width: 200px;">Non-Specialty Formulary</div></th>
+<th scope="col"><div  class="slds-truncate" title="Specialty Formulary" style="width: 200px;">Specialty Formulary</div></th>
+</tr>
+</thead>
+<tbody>
+<aura:iteration items="{!v.rgpricinglist}" var="item" indexVar="index">
+    <c:Apttus_Grid_Add_Additional_Rebate_Child_Data Id="{!item.Id}" checked="{!v.checked}" year="{!item.Year__c}" lob="{!item.LOB2__c}" basis="{!item.Basis__c}" plandesign="{!item.Plan_Design__c}" gstp="{!item.GSTP__c}" nonspecialty="{!item.Non_Specialty_Formulary_2__c}" specialty="{!item.Specialty_Formulary__c}"
+                                                    modnonspecialty="{!v.rebateguarantee.Modeled_Non_Specialty_Formulary_Name__c}" modspecialty="{!v.rebateguarantee.Modeled_Specialty_Formulary_Name__c}"/>
+</aura:iteration> 
+</tbody>
+</table> 
+</aura:if>
+</lightning:layout>    
+</lightning:card>
+</aura:component>

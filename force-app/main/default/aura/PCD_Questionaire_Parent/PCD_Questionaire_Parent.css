@@ -1,0 +1,23 @@
+.THIS .custom-box {
+    text-align: left;
+    background-color: #f4f6f9;
+    border: 1px solid #d8dde6;
+    padding: 8px;
+    width: 100%;
+}
+.THIS.c-container {
+    border: 1px solid #d8dde6;
+    width: 80%;
+}
+.THIS .text-label--small {
+    font-size: 0.55rem;
+    line-height: 0.5;
+    font-weight: 100;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+.THIS {
+  background-color: white;
+  
+   zoom: 100%;
+}

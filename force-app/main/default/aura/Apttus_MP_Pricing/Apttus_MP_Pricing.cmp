@@ -1,0 +1,272 @@
+<aura:component controller="Apttus_MP_PricingController">
+ <aura:attribute name="isAccess" type="boolean"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="mailOperationsId" type="String" />    
+
+    <aura:attribute name="mailPricing" type="Mail_Pricing__c" />
+    <aura:attribute name="readOnly" type="Boolean" default="true" />
+    <aura:attribute name="mpEdit" type="Boolean" default="false" />
+    <aura:attribute name="mpParams" type="String" default="" />
+    <aura:attribute name="vfHost" type="String"/>
+    <aura:attribute name="isDeleteAlertOpen" type="Boolean" default="false" />
+
+ <div id="exView" style="width:100%">      
+   <!-- <lightning:card title="" class="slds-card__header" > -->
+   <lightning:layout   class="text-label--verysmall">
+
+            <lightning:layoutItem padding="horizontal-small" flexibility="grow" class="">
+                <div class="slds-align_absolute-center link_style slds-form-element__control slds-form-element" style="font-weight: 600;width: max-content; padding-top: 19px;" >
+                 
+                   <aura:unescapedHtml value="{!v.mailPricing.Link__c}"/>
+                </div>
+            </lightning:layoutItem> 
+       
+            <lightning:layoutItem padding="horizontal-medium" class="selectlist" flexibility="grow" size="1">
+            <!--<form class="slds-form slds-form_horizontal">-->
+            <lightning:select disabled="{!v.readOnly}" class="selectlist" name="year" label="Year" required="false" >
+        		<option value="{!v.mailPricing.Year__c}" text="{!v.mailPricing.Year__c}"></option>
+    		</lightning:select>
+            </lightning:layoutItem> 
+       
+        	<lightning:layoutItem padding="horizontal-medium" flexibility="grow" size="1">
+            <lightning:select disabled="{!v.readOnly}" name="lob" label="LOB" required="false" >
+				<option value="{!v.mailPricing.LOB__c}" text="{!v.mailPricing.LOB__c}"></option>
+    		</lightning:select>
+            </lightning:layoutItem>
+         <lightning:layoutItem padding="horizontal-small" flexibility="grow" size="3"> </lightning:layoutItem>
+       
+       
+       
+       <div class="right-aligns">
+           <aura:if isTrue="{!v.isAccess}">
+               <lightning:button aura:id="clickEdit" value="clickEdit" label="Edit Mail Pricing" 
+                                 variant="brand"
+                                 class="slds-button"
+                                 onclick="{!c.clickEdit}"/> 
+               
+               <!--  <lightning:button label="Delete Mail Pricing"
+                              iconName="utility:delete"
+                              iconPosition="right"
+                              variant="destructive"
+                              onclick="{!c.deletepricing}">
+            </lightning:button>-->
+           </aura:if>
+       </div>
+       
+    </lightning:layout>
+ 
+    <aura:if isTrue="{!v.mpEdit}">
+        <div class="demo-only" style="height: 90%;width:90%;"> 
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="height: 100%;width:100%;max-width: 100%;">
+                <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                <span class="slds-assistive-text">Close</span>
+                </button>
+                <!--
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New MailPricing</h2>
+                -->
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                    <iframe aura:id="vfFrame" src="{! 'https://' +v.vfHost + '/apex/MailPricingEditNewPage?' +v.mpParams}" height="100%" width="100%"/>
+                </div>
+                <footer class="slds-modal__footer">
+                   
+                </footer>
+            </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
+    </aura:if>    
+    
+		<div class="slds-grid slds-wrap slds-grid--pull-padded">
+  	     <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--6-of-12 slds-large-size--6-of-12">
+  	     
+             <header class="slds-card__header slds-grid" data-aura-rendered-by="181:409;a" style="padding-left:15px">
+                 <div class="slds-media slds-media_center slds-has-flexi-truncate" data-aura-rendered-by="182:409;a">
+                     <div class="slds-media__body slds-truncate" data-aura-rendered-by="183:409;a">
+                         <h2 data-aura-rendered-by="184:409;a">
+                             <span class="slds-text-heading_small" data-aura-rendered-by="185:409;a" style=" ">
+                                 <b data-aura-rendered-by="186:409;a">Brand Pricing</b>
+                             </span>
+                         </h2>
+                     </div>
+                 </div>
+             </header>
+             
+             <div class="slds-grid slds-wrap ">
+                 <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+                     <lightning:select disabled="{!v.readOnly}" name="brandbasis" label="Brand Basis" required="false">
+                         <option value="{!v.mailPricing.Brand_Basis__c}" text="{!v.mailPricing.Brand_Basis__c}"></option>
+                     </lightning:select>
+                 </div>
+                 
+                 <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--2-of-12 slds-large-size--2-of-12">
+                     <lightning:input disabled="{!v.readOnly}" type="number" label="Brand Rate" name="brandrate" 
+                                      required="false" value="{!v.mailPricing.Brand_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                     
+                 </div>
+                 
+                 <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--6-of-12">
+                     <lightning:input disabled="{!v.readOnly}" type="number" label="Preferred Brand Rate"  name="preferedbrandrate" 
+                                      value="{!v.mailPricing.Preferred_Brand_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                 </div>
+                 
+                 
+             </div>
+
+             
+             
+             <div class="slds-grid slds-wrap ">
+                 <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--6-of-12 slds-large-size--4-of-12">
+                     <lightning:input disabled="{!v.readOnly}" type="number" label="Brand Disp.Fee"  name="branddispensingfee" 
+                                     formatter="currency"  step="0.01" value="{!v.mailPricing.Brand_Dispensing_Fee__c}"/>
+                 </div>
+                 
+                 
+                 <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--2-of-12 slds-large-size--2-of-12">
+                    
+                 </div>
+                 
+                 <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--3-of-12 slds-large-size--3-of-12">
+                     <lightning:input disabled="{!v.readOnly}" type="number" label="Non-Preferred Brand Rate"  name="nonpreferedbrandrate"
+                                      value="{!v.mailPricing.Non_Preferred_Brand_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                 </div>
+                 
+                 <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--3-of-12 slds-large-size--3-of-12">
+                     <lightning:select disabled="{!v.readOnly}" name="rebateplan" label="Rebate Plan Design" required="false">
+                         <option value="{!v.ntpricing.Rebate_Plan_Design__c}" text="{!v.mailPricing.Rebate_Plan_Design__c}"></option>
+                     </lightning:select>
+                 </div>
+                 
+                 
+                 
+             </div>     
+            </div>
+            <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--5-of-12 slds-large-size--5-of-12">
+                <header class="slds-card__header slds-grid" data-aura-rendered-by="181:409;a" style="padding-left:15px">
+                    <div class="slds-media slds-media_center slds-has-flexi-truncate" data-aura-rendered-by="182:409;a">
+                        <div class="slds-media__body slds-truncate" data-aura-rendered-by="183:409;a">
+                            <h2 data-aura-rendered-by="184:409;a">
+                                <span class="slds-text-heading_small" data-aura-rendered-by="185:409;a" style=" ">
+                                    <b data-aura-rendered-by="186:409;a">Generic Pricing</b>
+                                </span>
+                            </h2>
+                        </div>
+                    </div>
+                </header>
+                <div class="slds-grid slds-wrap ">
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+                        <lightning:select disabled="{!v.readOnly}" name="genericbasic" label="Generic Basis" required="false">
+                            <option value="{!v.mailPricing.Generic_Basis__c}" text="{!v.mailPricing.Generic_Basis__c}"></option>
+                        </lightning:select>
+                    </div>
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+                        
+                        <lightning:input disabled="{!v.readOnly}" type="number" label="Generic Rate" name="genericrate" 
+                                         value="{!v.mailPricing.Generic_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                    </div>
+                    
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+                        <lightning:input disabled="{!v.readOnly}" type="number" label="Non-MAC Generic Rate" name="nonmacgenericrate" 
+                                         value="{!v.mailPricing.Non_MAC_Generic_Rate__c}" formatter="percent-fixed" step="0.01"/>
+                    </div>
+                    
+                    
+                </div>    
+                
+                <div class="slds-grid slds-wrap ">
+                    
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+                        <lightning:input disabled="{!v.readOnly}" type="number" label="Generic Disp.Fee" 
+                                         class="slds-grid–vertical-align-end" name="gendispensingfee" formatter="currency"  step="0.01" value="{!v.mailPricing.Generic_Dispensing_Fee__c}"/>
+                        
+                    </div>
+                    
+                    
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+                        <lightning:select disabled="{!v.readOnly}" name="macmodeled" label="MAC Modeled" required="false">
+                            <option value="{!v.mailPricing.MAC_Modeled__c}" text="{!v.mailPricing.MAC_Modeled__c}"></option>
+                        </lightning:select>
+                        
+                    </div>
+                    
+                   
+                    
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+                        <div style="margin-top: 10%;">
+                            <lightning:input disabled="{!v.readOnly}" type="checkbox" label="SSGs into Brands?" name="ssgintobrands" checked="{!v.mailPricing.SSGs_into_Brands__c}" />  
+                       </div>
+                    </div>
+                </div> 
+                
+                <div class="slds-grid slds-wrap ">
+                    <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+                       <!-- <lightning:select disabled="{!v.readOnly}" name="exclusionperiod" label="SSG Exclusivity Period" required="false">
+                            <option value="{!v.mailPricing.Exclusivity_Period__c}" text="{!v.mailPricing.SSG_Exclusivity_Period__c}"></option>
+                        </lightning:select>-->
+                    </div>
+                </div>
+                
+            </div>
+            <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-12 slds-large-size--1-of-12"></div>
+     </div>
+     <div class="slds-grid slds-wrap slds-grid--pull-padded">
+         <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--12-of-12 slds-large-size--12-of-12">
+             <span>
+                 <lightning:card title="" class="text-label--small"> 
+                     <c:Apttus_Mail_Guarantees_Parent isAccess="{!v.isAccess}" mpId="{!v.mailPricing.Id}" />
+                 </lightning:card>
+             </span>
+         </div>
+     </div>
+     
+     
+     <div class="slds-grid slds-wrap ">
+         
+         <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+             <lightning:select disabled="{!v.readOnly}" name="exclusionlist" label=" SSG Exclusion List" required="false">
+                 <option value="{!v.mailPricing.Exclusion_List__c}" text="{!v.mailPricing.SSG_Exclusion_List__c}"></option>
+             </lightning:select>
+         </div>
+         
+         
+         <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12">
+             <lightning:select disabled="{!v.readOnly}" name="exclusionperiod" label="SSG Exclusivity Period" required="false">
+                 <option value="{!v.mailPricing.Exclusivity_Period__c}" text="{!v.mailPricing.SSG_Exclusivity_Period__c}"></option>
+             </lightning:select>
+         </div>
+         
+         
+         
+         <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--4-of-12 slds-large-size--4-of-12"></div>
+     </div>
+     
+        <!-- =================-->
+    <aura:if isTrue="{!v.isDeleteAlertOpen}">
+        <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+            <div class="slds-modal__container" style="Width: 31%;">
+                <div class="slds-modal__header">
+                    <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                        X
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="header99" class="slds-text-heading--medium">Delete Mail Pricing Record</h2>
+                </div>
+                <div class="slds-modal__content slds-p-around--medium">
+                    <center><p>
+                        Are you sure you want to delete the selected record(s).
+                        </p>
+                    </center>
+                </div>
+                <div class="slds-modal__footer">
+                    <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                    <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteRecord}">Delete</lightning:button>                    
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open"></div>        
+    </aura:if>
+ <!-- </lightning:card> -->
+</div> 
+</aura:component>

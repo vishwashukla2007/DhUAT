@@ -1,0 +1,4 @@
+<design:component >
+    <design:attribute name="accountId" label="Account Id" />
+    <design:attribute name="objectType" label="Object Type" />
+</design:component>

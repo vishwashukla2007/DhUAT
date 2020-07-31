@@ -1,0 +1,884 @@
+<apex:page lightningStylesheets="true" standardController="Network_Pricing__c" id="pg" extensions="NetworkPricingExt">
+<script>
+    
+     function setFocusOnLoad() {
+     document.getElementById('{!$Component.pg.frm.PB.pbsNI.year}').focus();
+        }   
+</script>
+<apex:pageMessages id="apexPageMsgList" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<!---***Changes for W-000255 Start***-->
+<style>
+        body {font-family: Arial, Helvetica, sans-serif;}
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 50%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+
+        /* Add Animation */
+        @-webkit-keyframes animatetop {
+            from {top:-300px; opacity:0} 
+            to {top:0; opacity:1}
+        }
+
+        @keyframes animatetop {
+            from {top:-300px; opacity:0}
+            to {top:0; opacity:1}
+        }
+
+        .modal-header {
+            padding: 0px;
+            height: 29px;
+            color: #ff0000;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            border-top-right-radius: .25rem;
+            border-top-left-radius: .25rem;
+            border-bottom: 2px solid rgb(221, 219, 218);
+            text-align: center;
+        }
+
+        .modal-body {
+            padding: 10px 16px;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            color: #3c3d3e;
+        }
+
+        .modal-footer {
+            padding: 5px;
+            padding-right: 4px;
+            text-align: right;   
+            color: #000000;
+            border-top: 2px solid rgb(221, 219, 218);
+            background-color: rgb(243, 242, 242);
+            border-bottom-left-radius: .25rem;
+            border-bottom-right-radius: .25rem;
+        }
+
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 1px 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 2px 2px;
+            -webkit-transition-duration: 0.4s; /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius : 20px;
+        }
+        .button2 {
+            background-color: rgba(0, 68, 135, 1.0); 
+            color: white; 
+            border: 2px solid rgba(0, 68, 135, 1.0);
+            border-radius: 5px;
+            width: 80px;
+            height: 28px;
+        }
+
+        .button2:hover {
+            background-color: #002080;
+            color: white;
+        }
+        .button5 {
+            background-color: #555555;
+            color: white;
+            border: 2px solid #555555;
+            border-radius: 5px;
+            width: 80px;
+            height: 28px;
+        }
+
+        .button5:hover {
+            background-color: #262626;
+            color: white;
+        }
+
+    </style>
+
+<apex:outputPanel id="popupPanel">
+        <script>
+        
+        function SaveDailog(){
+                var v=validateData();
+                if(v==true){
+                var i=document.getElementById('{!$Component.pg.frm.PB.pbsNI.NetworkName}').selectedIndex;
+                        var npname=document.getElementById('{!$Component.pg.frm.PB.pbsNI.NetworkName}').options[i].text;
+                        var message = 'A Mail Pricing record needs to be created when Network Name starts with characters \'MC\'.';
+                        if(npname.startsWith("MC") && {!NoMailPriceatFAF}){
+                            document.getElementById("paragraphId").innerHTML = message;
+                            var modal = document.getElementById('myModal16');
+                            modal.style.display = "block";
+                        }
+                        else{
+                        saveMethod();
+                        }
+               }
+               else{
+                   return false;
+               }
+        } 
+        
+        function popupContinue(id){
+                var modal = document.getElementById(id);
+                modal.style.display = "none";
+                saveMethod();
+        }
+        
+        </script>
+        </apex:outputPanel>
+        
+ <!-- The Modal -->
+        <div id="myModal16" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+                <p >
+                    <ul id="paragraphId" ></ul>                         
+                </p>                
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button2" type="button" onclick="popupContinue('myModal16')">OK</button>
+            </div>
+          </div>
+
+        </div>
+        
+
+
+
+<!---***Changes for W-000255 End***-->
+<script>
+<!--function added by sonal sharma as per US-30559-->
+function changeToPassThrou(val){
+var clientvar= '{!clientVar}';
+    if(val == 'Pass-Through'){
+        document.getElementById('{!$Component.pg.frm.PB.pbBG.GenericBasis}').value='Pass-Through';
+     }
+    else{
+        if(clientvar== 'MAC Modeled'){
+            document.getElementById('{!$Component.pg.frm.PB.pbBG.GenericBasis}').value='MAC Modeled & Non-MAC';
+        }else if(clientvar=='Flat Generic'){
+            document.getElementById('{!$Component.pg.frm.PB.pbBG.GenericBasis}').value='Flat Generic Discount';
+        }
+    }
+    var genericBaseValue=document.getElementById('{!$Component.pg.frm.PB.pbBG.GenericBasis}').value;
+    BrandGenericBasis(genericBaseValue);
+    
+}
+<!--END-function added by sonal sharma as per US-30559-->
+function callMirrorAF() {
+    var valu = jQuery(".NetworkName").val();
+    var fafId = jQuery(".FAFID").val();
+    var year = jQuery(".Year").val();
+    var lob = jQuery(".LOB").val();
+    var call = false;
+    
+        
+    if(jQuery(".MirrorBrand").prop('checked')) {
+        jQuery(".MirrorBrand").prop('checked', false);
+        jQuery(".MirrorBrand").trigger("change");
+    }
+    if(jQuery(".MirrorGeneric").prop('checked')) {
+        jQuery(".MirrorGeneric").prop('checked', false);
+        jQuery(".MirrorGeneric").trigger("change");        
+    }   
+    if (valu == 'MC(84-90)CP' || valu == 'MC(84-90)CVS'){
+        call= true;        
+    }else{
+        jQuery(".MirrorBrand").attr("disabled", "disabled");
+        jQuery(".MirrorGeneric").attr("disabled", "disabled");
+    }   
+    if(year!='' && lob!='' && call) { 
+        enableMirrorYearLOB(fafId, year, lob);
+    }else{
+    jQuery(".MirrorBrand").prop('checked', false);
+    jQuery(".MirrorBrand").attr("disabled", "disabled");
+    jQuery(".MirrorGeneric").prop('checked', false);
+    jQuery(".MirrorGeneric").attr("disabled", "disabled");
+    } 
+    
+}
+function showrequired(fieldclass){
+    jQuery("."+fieldclass).attr("disabled", false);
+    var field = jQuery("."+fieldclass);
+    if(field.is('select') && fieldclass=='Mac'){
+        field = jQuery("."+fieldclass).parent('span');
+    }
+    field.wrap("<div class=\"requiredInput\"></div>");
+    jQuery("<div class=\"requiredBlock\"></div>").insertBefore(field);
+}
+function showrequiredonfield(fieldclass){
+    //hiderequired(fieldclass);
+    elserequired(fieldclass);
+    showrequired(fieldclass);
+    
+}
+
+function showrequiredonload(fieldclass){
+    showrequired(fieldclass);
+}
+
+function hiderequired(fieldclass){
+    var check = jQuery("."+fieldclass).attr("type"); 
+    if(check!='checkbox') {
+        jQuery("."+fieldclass).val('').attr("disabled", "disabled"); 
+    } else {
+        jQuery("."+fieldclass).attr("disabled", "disabled");
+    } 
+    jQuery("."+fieldclass).closest('td').find('div.requiredInput').children('div:first').remove();
+    jQuery("."+fieldclass).closest('td').find('div.requiredInput').contents().unwrap();
+    jQuery("."+fieldclass).removeClass('error');
+    jQuery("."+fieldclass).parent().find('.errorMsg').remove();
+}
+function elserequired(fieldclass){    
+    jQuery("."+fieldclass).attr("disabled", false);
+    jQuery("."+fieldclass).closest('td').find('div.requiredInput').children('div:first').remove();
+    jQuery("."+fieldclass).closest('td').find('div.requiredInput').contents().unwrap();
+    jQuery("."+fieldclass).removeClass('error');
+    jQuery("."+fieldclass).parent().find('.errorMsg').remove();
+}        
+function changeField() {
+    var val = jQuery(".BrandBasis2").val();
+    //added by Sonal Sharma as part of US50768 AC2
+    showrequiredonfield('BrandBasis2');
+    if(val == 'Standard Brand Discount'){   
+        showrequiredonfield('BrandRate')
+        hiderequired('PBrandRate')       
+        hiderequired('NPBrandRate')
+        showrequiredonfield('BrandFee')
+        hiderequired('RebatePlan')
+    }else if(val == 'Baked-Across All Brands'||val =='Baked-RTMD at NDC 11'||val =='Baked-OED'){
+        showrequiredonfield('BrandRate')
+        hiderequired('PBrandRate')       
+        hiderequired('NPBrandRate')
+        showrequiredonfield('BrandFee')
+        showrequiredonfield('RebatePlan')
+    }else if(val == 'Baked-Preferred & Non-Preferred'){         
+        hiderequired('BrandRate')
+        showrequiredonfield('PBrandRate')       
+        showrequiredonfield('NPBrandRate')
+        showrequiredonfield('BrandFee')
+        showrequiredonfield('RebatePlan')
+     }else if(val == 'Pass-Through'){
+        elserequired('BrandRate')
+        elserequired('PBrandRate')       
+        elserequired('NPBrandRate')
+        elserequired('BrandFee')
+        hiderequired('RebatePlan')
+      }else {
+        elserequired('BrandRate')
+        elserequired('PBrandRate')       
+        elserequired('NPBrandRate')
+        showrequiredonfield('BrandFee')
+        elserequired('RebatePlan')
+      }
+    Field3();
+}
+function changeField1(valu){
+    elserequired('NetworkAdjud')
+     if(valu == 'MC(84-90)CP' || valu == 'MC(84-90)CVS'){      
+        //elserequired('NetworkAdjud')
+        if({!fafClientSubtype}){
+            showrequiredonfield('Maintenance')
+        }
+        else{
+            elserequired('Maintenance')  
+        }
+     } else if (valu != 'MC(84-90)CP' || valu != 'MC(84-90)CVS'){
+        /*jQuery(".NetworkAdjud").prop("checked", false);
+        hiderequired('MemberAdjud')
+        hiderequired('ClientAdjud')
+        hiderequired('NetworkAdjud')
+        */
+        hiderequired('Maintenance')
+     } else{  
+     }
+     if(valu == 'Custom' || valu == 'Custom Secondary'|| valu == 'Custom - PSM'){
+         elserequired('CustomNetName')
+         showrequiredonfield('CustomNetName')
+     }
+     else { hiderequired('CustomNetName') }
+     
+
+}
+ function Field3(){
+     var value=jQuery(".BrandBasis2").val();
+     var val=jQuery(".GenericBasis1").val();
+     if(val == 'Flat Generic Discount'){       
+        hiderequired('NonMac')
+        hiderequired('Mac')
+        if(value!='Pass-Through'){ 
+        showrequiredonfield('GenericRate')
+        showrequiredonfield('GenericFee')
+        }
+        else{
+            
+            elserequired('GenericRate')
+            elserequired('GenericFee')
+            
+        }
+     }else if(val == 'MAC Modeled & Non-MAC'){
+        hiderequired('GenericRate')
+        elserequired('Mac')
+        if(value!='Pass-Through'){
+        showrequiredonfield('NonMac')
+        showrequiredonfield('GenericFee')        
+        }
+        else{
+            elserequired('NonMac')
+            elserequired('GenericFee')
+        }
+     }else if(val == 'Pass-Through'){
+        elserequired('GenericRate')
+        elserequired('NonMac')
+        elserequired('GenericFee')
+        
+     }else{
+        hiderequired('NonMac')
+        hiderequired('Mac')
+        hiderequired('GenericRate')
+        hiderequired('GenericFee')
+     }
+}
+function Field4(val){
+     var MGeneric=jQuery(".MirrorGeneric").prop('checked'); 
+     var MBrand=jQuery(".MirrorBrand").prop('checked');
+     
+     if(val && !MGeneric && !MBrand ){       
+        showrequiredonfield('MemberAdjud')       
+        showrequiredonfield('ClientAdjud')
+     }
+     else{
+        hiderequired('MemberAdjud')
+        hiderequired('ClientAdjud') 
+     }
+}
+function Field1(val){
+     var MGeneric=jQuery(".MirrorGeneric").prop('checked'); 
+     
+     if(!val && !MGeneric ){
+         jQuery(".NetworkAdjud").prop('checked', false);
+         elserequired('NetworkAdjud')
+      }
+      
+     if(val){ 
+        jQuery(".NetworkAdjud").prop('checked', true);
+        hiderequired('NetworkAdjud')    
+        hiderequired('BrandBasis2')
+        hiderequired('BrandRate')
+        hiderequired('PBrandRate')       
+        hiderequired('NPBrandRate')
+        hiderequired('BrandFee')
+        hiderequired('RebatePlan') 
+        hiderequired('ClientAdjud')
+        hiderequired('MemberAdjud')
+              
+     }else{
+        showrequiredonfield('BrandBasis2')
+        elserequired('BrandRate')
+        elserequired('PBrandRate')       
+        elserequired('NPBrandRate')
+        showrequiredonfield('BrandFee')
+        elserequired('RebatePlan')
+     }
+}
+
+
+function validateData() {
+
+    document.getElementById('{!$Component.apexPageMsgList}').style.display = 'none';
+    var counter=0;
+    jQuery("#pgMsgList").empty();
+    var errMsg = '';
+    var otherErrMsg = 'You must enter a value';
+    var yearErrMsg = 'Validation Error: Value is required.';
+    jQuery("div.requiredInput").find("input:text, select").each(function() {
+        if(jQuery(this).val() == '') {
+            counter++;
+            jQuery(this).addClass('error'); 
+            jQuery(this).parent().find('.errorMsg').remove();
+            var label = jQuery(this).attr('data-label');
+            var className = jQuery(this).attr('class');
+            if(className.includes('Year')) {
+                errMsg =  yearErrMsg;
+            } else {
+                errMsg =  otherErrMsg;
+                jQuery(this).parent().append('<div class="errorMsg"><strong>Error:</strong> '+errMsg+'</div>');
+            }
+            jQuery("#pgMsgList").append('<li style="padding-top:5px">'+label+': '+errMsg+' </li>');
+        } else {
+            jQuery(this).removeClass('error');
+            jQuery(this).parent().find('.errorMsg').remove();
+        }
+    });    
+    
+    if(counter) {
+        jQuery("#pageMessages").show();
+        return false;
+    } else {
+        jQuery("#pageMessages").hide();
+        jQuery("form").find("input:text, select").each(function() {
+            if(jQuery(this).attr('disabled')) {
+               if(jQuery(this).attr('class')!='GenericBasis1') {
+                    jQuery(this).val('').attr('disabled', false); 
+                }
+            } 
+        });      
+        return true;
+    }
+    return false; 
+}
+
+function Field2(val){
+     var genericBasis = '{!genericBasis}';
+     var NetworkOpId = '{!Network_Pricing__c.FAF_Network_Ops__c}';
+     var Generic = jQuery('.GenericBasis1').val(); 
+     var MBrand=jQuery(".MirrorBrand").prop('checked'); 
+     if(!val && !MBrand ){
+         jQuery(".NetworkAdjud").prop('checked', false); 
+         elserequired('NetworkAdjud')
+      } 
+     if(val){ 
+        jQuery(".NetworkAdjud").prop('checked', true);
+        hiderequired('NetworkAdjud')
+        jQuery('.GenericBasis1').val('');    
+        hiderequired('GenericBasis')
+        hiderequired('NonMac')
+        hiderequired('Mac')       
+        hiderequired('GenericRate')
+        hiderequired('GenericFee')  
+        hiderequired('ClientAdjud')
+        hiderequired('MemberAdjud')     
+     }else if(!val && Generic == 'Flat Generic Discount'){
+        jQuery('.GenericBasis1').val(genericBasis);
+        showrequiredonfield('GenericBasis')
+        hiderequired('NonMac')
+        hiderequired('Mac')       
+        showrequiredonfield('GenericRate')
+        showrequiredonfield('GenericFee')
+     }else if(!val && Generic == 'MAC Modeled & Non-MAC'){
+        jQuery('.GenericBasis1').val(genericBasis);
+        showrequiredonfield('GenericBasis')
+        showrequiredonfield('NonMac')      
+        hiderequired('GenericRate')
+        showrequiredonfield('GenericFee')
+     }else{
+     jQuery('.GenericBasis1').val(genericBasis);
+     }
+     jQuery('.GenericBasis1').trigger('change');       
+}
+jQuery(document).ready(function() {
+    var value = jQuery(".BrandBasis2").val();
+    showrequiredonload('Year');
+    hiderequired('CustomNetName');
+    showrequiredonload('BrandBasis2');
+    if(value !='Pass-Through'){
+        showrequiredonload('BrandFee');
+    }
+    var test ='{!Network_Pricing__c.Custom_Network_Description__c}'
+    var valnam= jQuery(".NetworkName").val();
+    var valnetnam =jQuery(".CustomNetName").val(test); 
+    var valu = jQuery(".GenericBasis1").val();
+    var va = jQuery(".NetworkName").val();
+    var v = jQuery(".NetworkAdjud").attr('checked');
+    var gen = jQuery('.MirrorGeneric').attr('checked')
+    var genericBasis = '{!Network_Pricing__c.Generic_Basis__c}';
+    
+    enableDisableCheckbox();
+
+    if(jQuery('.MirrorBrand').attr('checked')){       
+        hiderequired('BrandBasis2')
+        hiderequired('BrandRate')
+        hiderequired('PBrandRate')       
+        hiderequired('NPBrandRate')
+        hiderequired('BrandFee')
+        hiderequired('RebatePlan')           
+     }else{
+        showrequiredonload('BrandBasis2')
+        elserequired('BrandRate')
+        elserequired('PBrandRate')       
+        elserequired('NPBrandRate')
+        if(value !='Pass-Through'){
+        showrequiredonload('BrandFee')
+        }
+        elserequired('RebatePlan')
+        if(value =='Pass-Through'){
+        hiderequired('RebatePlan')
+        }
+     } 
+      
+    if( valnam == 'Custom' ||  valnam =='Custom Secondary'||  valnam =='Custom - PSM'){
+        elserequired('CustomNetName')
+        showrequiredonfield('CustomNetName')
+    } 
+    if(valu == 'Flat Generic Discount'){ 
+        hiderequired('NonMac')
+        hiderequired('Mac') 
+        if(value !='Pass-Through'){
+        showrequiredonload('GenericRate')
+        showrequiredonload('GenericFee')
+        }
+     }else if(valu == 'MAC Modeled & Non-MAC'){
+        hiderequired('GenericRate')
+        if(value !='Pass-Through'){
+        showrequiredonload('NonMac')
+        showrequiredonload('GenericFee')
+        }
+     }else if(valu == 'Pass-Through'){
+        elserequired('GenericRate')
+        elserequired('NonMac')
+        elserequired('GenericFee')
+     }else{
+        hiderequired('NonMac')
+        hiderequired('Mac')
+        hiderequired('GenericRate')
+        hiderequired('GenericFee')
+     }
+     if(gen){   
+        jQuery('.GenericBasis1').val('');    
+        hiderequired('GenericBasis')
+        hiderequired('NonMac')
+        hiderequired('Mac')       
+        hiderequired('GenericRate')
+        hiderequired('GenericFee')       
+     }else if(!gen && valu == 'Flat Generic Discount'){
+        jQuery('.GenericBasis1').val(genericBasis);
+        showrequiredonload('GenericBasis')
+        hiderequired('NonMac')
+        hiderequired('Mac')
+        if(value !='Pass-Through'){       
+        showrequiredonload('GenericRate')
+        showrequiredonload('GenericFee')
+        }
+     }else if(!gen && valu == 'MAC Modeled & Non-MAC'){
+        jQuery('.GenericBasis1').val(genericBasis);
+        showrequiredonload('GenericBasis')
+        hiderequired('GenericRate')
+        if(value !='Pass-Through'){
+        showrequiredonload('NonMac')
+        showrequiredonload('GenericFee')
+        }
+     }else if(!gen && valu == 'Pass-Through'){
+        jQuery('.GenericBasis1').val(genericBasis);
+        elserequired('GenericRate')
+        elserequired('NonMac')
+        elserequired('GenericFee')
+     }else{
+     jQuery('.GenericBasis1').val(genericBasis);
+     } 
+     
+    if(value == 'Standard Brand Discount'){     
+        showrequiredonload('BrandRate')
+        hiderequired('PBrandRate')       
+        hiderequired('NPBrandRate')
+        showrequiredonload('BrandFee')
+        hiderequired('RebatePlan')
+    }else if(value == 'Baked-Across All Brands'||value =='Baked-RTMD at NDC 11'||value =='Baked-OED'){
+        showrequiredonload('BrandRate')
+        hiderequired('PBrandRate')       
+        hiderequired('NPBrandRate')
+        showrequiredonload('BrandFee')
+        showrequiredonload('RebatePlan')
+    }else if(value == 'Baked-Preferred & Non-Preferred'){         
+        hiderequired('BrandRate')
+        showrequiredonload('PBrandRate')       
+        showrequiredonload('NPBrandRate')
+        showrequiredonload('BrandFee')
+        showrequiredonload('RebatePlan')
+    }else {
+        if(!jQuery('.MirrorBrand').attr('checked')) {
+            elserequired('BrandRate')
+            elserequired('PBrandRate')       
+            elserequired('NPBrandRate')
+            if(value !='Pass-Through'){
+            showrequiredonload('BrandFee')
+            }
+            elserequired('RebatePlan')
+            if(value =='Pass-Through'){
+            hiderequired('RebatePlan')
+            }
+          }
+    }
+    <!---changes by sonal sharma for US43744--->
+    if(va!=''){
+        elserequired('NetworkAdjud')
+    }else{
+        hiderequired('NetworkAdjud')
+    }
+     if(va == 'MC(84-90)CP' || va == 'MC(84-90)CVS'){      
+        //elserequired('NetworkAdjud')
+        if({!fafClientSubtype}){
+            showrequiredonload('Maintenance')
+        }
+        else{
+            elserequired('Maintenance') 
+        }     
+     } else {
+        //hiderequired('MemberAdjud')
+        //hiderequired('ClientAdjud')
+        //hiderequired('NetworkAdjud')
+        hiderequired('Maintenance')
+     }
+     
+     var MGeneric=jQuery(".MirrorGeneric").prop('checked'); 
+    var MBrand=jQuery(".MirrorBrand").prop('checked');
+    
+     if(v && !MGeneric && !MBrand){      
+        showrequiredonload('MemberAdjud')       
+        showrequiredonload('ClientAdjud')
+     }
+     else if(MGeneric ||  MBrand){ 
+          jQuery(".NetworkAdjud").prop('checked', true);
+          hiderequired('NetworkAdjud')
+          hiderequired('MemberAdjud')
+          hiderequired('ClientAdjud')
+     }
+     else{
+        hiderequired('MemberAdjud')
+        hiderequired('ClientAdjud') 
+     } 
+     
+     
+});
+
+function callchange(fieldclass) {
+    jQuery('.'+fieldclass).trigger('change');
+}  
+
+
+function enableDisableCheckbox() {
+    var dataCheck = jQuery('.MirrorBrand').attr('data-check');
+    var disabled = (dataCheck=='true');
+    jQuery('.MirrorBrand').attr('disabled', disabled);
+    jQuery('.MirrorGeneric').attr('disabled', disabled);
+}
+
+var isClicked = false;
+ function checkDoubleSubmit(obj){
+  if(validateData()){  
+        if (isClicked) {    
+            return false;
+        }else { 
+            isClicked = true; obj.className = 'btnDisabled';//only shows the button as disabled.
+            return true;  
+   }
+   }else{
+   return false;
+   }
+}
+setTimeout(function(){ setFocusOnLoad(); }, 100); 
+
+ 
+</script>
+<style>
+input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill {
+    background-color: none !important;
+    background-image: none !important;
+    color:none !important;
+}
+</style>
+
+<span id="pageMessages" style="display:none">
+    <span>
+        <div class="message errorM3" role="alert">
+            <table border="0" cellpadding="0" cellspacing="0" class="messageTable" style="padding:0px;margin:0px;">
+                <tbody>
+                    <tr valign="top">
+                        <td>
+                            <img alt="ERROR" class="msgIcon" src="/s.gif" title="ERROR" />
+                        </td>
+                        <td class="messageCell">
+                            <div class="messageText">
+                                <span style="color:#cc0000">
+                                    <h4>Errors</h4>
+                                </span>
+                                <br/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <span>
+                                <ul id="pgMsgList" style="padding-left:10px;padding-top:0px;margin:0px"></ul>
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </span>
+</span> 
+<apex:form id="frm">
+ <!------adding status---->
+  <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+   <!-------- end------------>
+    <apex:actionFunction name="saveMethod" action="{!save}" reRender="apexPageMsgList,frm" oncomplete="window.scrollTo(0, 0);" immediate="false"  status="status"/> 
+    <apex:actionFunction immediate="true" name="enableMirrorYearLOB" action="{!enableMirrorYearLOB}" rerender="MirrorB,MirrorG" oncomplete="enableDisableCheckbox();">
+      <apex:param name="fafId" assignTo="{!fafId}" value=""/>
+      <apex:param name="year" assignTo="{!year}" value=""/>
+      <apex:param name="lob" assignTo="{!lob}" value=""/>
+    </apex:actionFunction> 
+    <!--added by sonal sharma-->
+    <apex:actionFunction immediate="true" name="BrandGenericBasis" action="{!BrandGenericBasis}" rerender="pbBG" oncomplete="changeField();">
+      <apex:param name="genericBaseValue" assignTo="{!genericBasis}" value=""/>
+    </apex:actionFunction>
+    <!--end of actionfunction added by sonal sharma-->
+
+      <apex:actionFunction name="save" action="{!save}" reRender="apexPageMsgList,frm" oncomplete="sendToParent(true);" >
+      </apex:actionFunction> 
+       <apex:actionFunction name="cancel" action="{!cancel}"  reRender="redirect" oncomplete="sendToParent(false);" />     
+    <apex:pageBlock title="Network Pricing Edit" mode="edit" id="PB">
+      <apex:pageBlockButtons >
+          <apex:commandButton value="Save" onclick="SaveDailog();" rerender="pg" /> 
+         <!--<apex:commandButton action="{!save}" value="Save" onclick="return checkDoubleSubmit(this);return SaveDailog();"/>--> 
+         <!--<apex:commandButton action="{!save}" value="Save" onclick="return SaveDailog();" reRender="" oncomplete="" /> -->
+        <!--<apex:outputLink styleClass="btn" rendered="{!redirect}" value="javascript:void(0);" onclick="this.onclick=function(){return false;};callSave();return false;">Save</apex:outputLink>-->
+        <apex:outputLink styleClass="btn" rendered="{!redirect}" value="javascript:void(0);" onclick="callCancel();return false;">Cancel</apex:outputLink>
+        <!--<apex:commandButton  action="{!save}" value="Save" onclick="return checkDoubleSubmit(this);return validateData();"/>-->
+
+      <apex:commandButton rendered="{! If(!redirect ,true,false) }" action="{!Cancel}" value="Cancel" immediate="true"/>
+      </apex:pageBlockButtons>  
+      <div class="pbError" id="errorDiv_ep" style="display:none;">Error: Invalid Data. <br/>Review all the required fields below to correct your data.</div>
+      <apex:pageBlockSection title="Network Pricing Detail" columns="2" id="pbsNP">        
+      <apex:outputField styleClass="FAFID" value="{!Network_Pricing__c.FAF_ID__c}"/>
+      <apex:outputField styleClass="NetworkOps" value="{!Network_Pricing__c.FAF_Network_Ops__c}"/>
+      </apex:pageBlockSection>
+      <apex:pageBlockSection title="Network Information" columns="2" id="pbsNI">  
+      <apex:inputField required="true" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Retail_Network_Ordinal__c.Label}" id="ordinal" styleClass="Ordinal" value="{!Network_Pricing__c.Retail_Network_Ordinal__c}" />
+      <apex:inputField styleClass="Maintenance" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Maintenance_Choice__c.Label}"  value="{!Network_Pricing__c.Maintenance_Choice__c}"/>
+      <apex:selectList styleClass="Year" id="year" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Year__c.Label}" size="1" onchange="callMirrorAF();" value="{!Network_Pricing__c.Year__c}">
+           <apex:selectOptions value="{!yearOptions}"/>
+      </apex:selectList>
+      <apex:inputCheckbox id="NetworkAdjud" styleClass="NetworkAdjud" value="{!Network_Pricing__c.Network_Adjudication_Logic_Deviation__c}"  onchange="Field4(this.checked);" />
+      <apex:inputField required="true" styleClass="LOB" html-data-label="{!$ObjectType.Network_Pricing__c.fields.LOB__c.Label}"  value="{!Network_Pricing__c.LOB__c}" onchange="callMirrorAF();"/>
+      <apex:inputField styleClass="ClientAdjud" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Client_Adjudication_Logic_Deviation__c.Label}"  value="{!Network_Pricing__c.Client_Adjudication_Logic_Deviation__c}"/>
+      <apex:inputField required="true" id="NetworkName"  html-data-label="{!$ObjectType.Network_Pricing__c.fields.Network_Name__c.Label}"
+      styleClass="NetworkName" value="{!Network_Pricing__c.Network_Name__c}"
+      onchange="callMirrorAF();changeField1(this.value);"/> 
+      <apex:inputField id="MemberAdjud" styleClass="MemberAdjud" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Member_Adjudication_Logic_Deviation__c.Label}"  value="{!Network_Pricing__c.Member_Adjudication_Logic_Deviation__c}"/>
+      <apex:inputText id="CustomNetName" styleClass="CustomNetName" 
+      html-data-label="{!$ObjectType.Network_Pricing__c.fields.Custom_Network_Description__c.Label}" 
+      value="{!Network_Pricing__c.Custom_Network_Description__c}"/>        
+      <apex:inputField required="true" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Managed_Network_Type__c.Label}"  styleClass="MNetworkType" value="{!Network_Pricing__c.Managed_Network_Type__c}"/>    
+      <apex:inputField required="true" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Network_Type__c.Label}"  styleClass="NetworkType" value="{!Network_Pricing__c.Network_Type__c}"/>
+      </apex:pageBlockSection>
+      <apex:pageBlockSection title="Brand & Generic Pricing" columns="2" id="pbBG">
+        <apex:inputField id="brandBasisId" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Brand_Basis__c.Label}"  styleClass="BrandBasis2" value="{!Network_Pricing__c.Brand_Basis__c}" onchange="changeToPassThrou(this.value);"/>
+        <apex:inputField id="GenericBasis" html-disabled="true" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Generic_Basis__c.Label}"  styleClass="GenericBasis1" value="{!Network_Pricing__c.Generic_Basis__c}" onchange="Field3();"/>
+        <apex:inputField id="BrandRate" styleClass="BrandRate" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Brand_Rate__c.Label}"   value="{!Network_Pricing__c.Brand_Rate__c}"/>
+        <apex:inputField styleClass="GenericRate" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Generic_Rate__c.Label}"  value="{!Network_Pricing__c.Generic_Rate__c}"/>
+        <apex:inputField styleClass="PBrandRate" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Preferred_Brand_Rate__c.Label}"  value="{!Network_Pricing__c.Preferred_Brand_Rate__c}"/>
+        <apex:inputField styleClass="Mac" html-data-label="{!$ObjectType.Network_Pricing__c.fields.MAC_Modeled__c.Label}"  value="{!Network_Pricing__c.MAC_Modeled__c}"/>
+        <apex:inputField styleClass="NPBrandRate" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Non_Preferred_Brand_Rate__c.Label}"  value="{!Network_Pricing__c.Non_Preferred_Brand_Rate__c}"/>
+        <apex:inputField styleClass="NonMac" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Non_MAC_Generic_Rate__c.Label}"   value="{!Network_Pricing__c.Non_MAC_Generic_Rate__c}" />
+        <apex:inputField html-data-label="{!$ObjectType.Network_Pricing__c.fields.Brand_Dispensing_Fee__c.Label}"  styleClass="BrandFee" value="{!Network_Pricing__c.Brand_Dispensing_Fee__c}"/>
+        <apex:inputField html-data-label="{!$ObjectType.Network_Pricing__c.fields.Generic_Dispensing_Fee__c.Label}" styleClass="GenericFee" value="{!Network_Pricing__c.Generic_Dispensing_Fee__c}"/>
+        <apex:inputField styleClass="RebatePlan" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Rebate_Plan_Design__c.Label}"  value="{!Network_Pricing__c.Rebate_Plan_Design__c}"/>
+      </apex:pageBlockSection>      
+      <apex:pageBlockSection title="Maintenance Choice Mirroring" columns="2" id="pbsMC">
+        <apex:inputfield id="MirrorB" html-data-check="{!!mirrorPricingFieldEnabled}" styleClass="MirrorBrand" value="{!Network_Pricing__c.Mirror_Mail_Brand_Pricing__c}" onchange="Field1(this.checked);"/>
+        <apex:inputfield id="MirrorG" html-data-check="{!!mirrorPricingFieldEnabled}" styleClass="MirrorGeneric" value="{!Network_Pricing__c.Mirror_Mail_Generic_Pricing__c}" onchange="Field2(this.checked);"/>
+      </apex:pageBlockSection>
+      <apex:pageBlockSection title="Guarantee Information" columns="2" id="pbsGI">
+        <apex:inputField id="SSGEL" html-data-label="{!$ObjectType.Network_Pricing__c.fields.SSG_Exclusion_List__c.Label}"  required="{!NOT(enablessglistfield)}" styleClass="ExclusionList" value="{!Network_Pricing__c.SSG_Exclusion_List__c}"/>
+        <!----PT US282 - Update Exclude Specialty to required field, modified by Sneha Inturi--->
+        <apex:inputField styleClass="ExcludeSpecialty" html-data-label="{!$ObjectType.Network_Pricing__c.fields.Exclude_Specialty__c.Label}" value="{!Network_Pricing__c.Exclude_Specialty__c}" required="true"/>
+        <apex:inputField id="SSGEP" html-data-label="{!$ObjectType.Network_Pricing__c.fields.SSG_Exclusivity_Period__c.Label}"  required="{!NOT(enablessglistfield)}" styleClass="ExclusivityPeriod" value="{!Network_Pricing__c.SSG_Exclusivity_Period__c}"/>
+        <apex:inputCheckbox disabled="{!!enablessgintofield}" styleClass="SSGsBrands" value="{!Network_Pricing__c.SSGs_into_Brands__c}"/>
+        <apex:inputHidden id="redirect" value="{!redirect}"/>
+      </apex:pageBlockSection>
+      
+  <apex:outputpanel id="scriptId">
+  <!--       Workaround to work HelpText in Lightning Component -->
+      <script>
+        function workaround() { 
+        if ((window.sfdcPage) && (sfdcPage.executeOnloadQueue)) 
+        { 
+        sfdcPage.executeOnloadQueue(); 
+            } 
+        } 
+        window.addEventListener('load', workaround); 
+        
+         if( {!enablessglistfield} )
+            {
+                document.getElementById('{!$Component.PB.pbsGI.SSGEL}').value = '';
+                document.getElementById('{!$Component.PB.pbsGI.SSGEP}').value = '';
+            }  
+            document.getElementById('{!$Component.PB.pbsGI.SSGEL}').disabled = {!enablessglistfield};
+            document.getElementById('{!$Component.PB.pbsGI.SSGEP}').disabled = {!enablessglistfield}; 
+            
+        function sendToParent(save) {  
+             var lexOrigin = 'https://{!$Label.EV_URL}';
+            var lightning = {!redirect};
+            var msg = (save==true)?document.getElementById('{!$Component.apexPageMsgList}').textContent:'';
+            
+            if(lightning && msg=='') {
+                var message = 'success';
+                parent.postMessage(message, lexOrigin);
+                                    }
+                                   }
+        function callSave() {
+         if(validateData()) {
+                save();
+            }
+        }
+        function callCancel() {
+            cancel();
+        } 
+ 
+             
+      </script> 
+  </apex:outputpanel>    
+  </apex:pageBlock>
+   
+  </apex:form>
+  </apex:page>

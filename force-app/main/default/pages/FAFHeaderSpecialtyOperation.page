@@ -1,0 +1,3 @@
+<apex:page standardController="Specialty_Operations__c" lightningStylesheets="true">
+    <c:FAFHeaderVC fafRecordId="{!Specialty_Operations__c.FAF_ID__c}"></c:FAFHeaderVC>
+</apex:page>

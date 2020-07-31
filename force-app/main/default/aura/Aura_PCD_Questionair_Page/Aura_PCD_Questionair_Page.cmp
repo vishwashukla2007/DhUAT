@@ -1,0 +1,438 @@
+<aura:component 
+                implements="force:hasRecordId,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome" controller="CreatePCDQuestionAnswerRecord" >
+  
+    <aura:attribute name="record" type="String"/>
+     <aura:attribute name="LineItemrecord" type="String"/>
+    
+    
+
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" description="Call doInit function on component load to get picklist values"/>
+    <aura:attribute name="displayedSection" type="String" default="" />
+    <aura:attribute name="GenreList" type="List" default="[]" description="Tier Option Picklist Value"/>
+    <aura:attribute name="selectedGenreList" type="List" default="[]" description="Selected Tier Option"/>
+    
+    <aura:attribute name="spinner" type="boolean" default="FALSE"/>
+	
+	<aura:attribute name="OfferCategory" type="String" default=""/>
+	<aura:attribute name="LOB" type="String" default=""/>
+	<aura:attribute name="Med_D_HIF" type="String" default=""/>
+    <aura:attribute name="Med_D_IHS" type="String" default=""/>
+	<aura:attribute name="Med_D_LTC" type="String" default=""/>
+	<aura:attribute name="Med_D_TER" type="String" default=""/>
+	
+	
+	
+    <aura:attribute name="NetWorkTypeDiabled1" type="boolean" default="FALSE"/>
+	<aura:attribute name="NetWorkTypeDiabled2" type="boolean" default="FALSE"/>
+    <aura:attribute name="NetWorkTypeDiabled3" type="boolean" default="FALSE"/>    
+	<aura:attribute name="NetWorkTypeDiabled4" type="boolean" default="FALSE"/>
+    <aura:attribute name="NetWorkTypeDiabled5" type="boolean" default="FALSE"/>
+	
+	<aura:attribute name="NetWorkTypeValue" type="String" default=""/>
+	
+	
+	
+	<aura:attribute name="Question1Div" type="String" default="display:none" />
+	<aura:attribute name="QuestionMEDHIFDiv1" type="String" default="display:none" />
+	<aura:attribute name="QuestionMEDIHFDiv" type="String" default="display:none" />
+	<aura:attribute name="QuestionMEDLTCDiv" type="String" default="display:none" />
+	<aura:attribute name="QuestionMEDTERDiv" type="String" default="display:none" />
+    
+    <aura:attribute name="DisplayNetworkQuestion" type="String" default="display:none"/>
+	<aura:attribute name="RadioHIF1" type="boolean" default="false"/>
+	<aura:attribute name="RadioIHF" type="boolean" default="false"/>
+	<aura:attribute name="RadioLTC" type="boolean" default="false"/>
+	<aura:attribute name="RadioTER" type="boolean" default="false"/>
+
+	<aura:attribute name="NetwortType1" type="String" default="display:none"/>
+    <aura:attribute name="NetwortType2" type="String" default="display:none"/>
+    <aura:attribute name="NetwortType3" type="String" default="display:none"/>
+    <aura:attribute name="NetwortType4" type="String" default="display:none"/>
+    <aura:attribute name="NetwortType5" type="String" default="display:none"/>
+	
+	<aura:attribute name="networkPick" type="boolean" default="false"/>
+    <aura:attribute name="networkPick1" type="boolean" default="false"/>
+    <aura:attribute name="networkPick2" type="boolean" default="false"/>
+    <aura:attribute name="networkPick3" type="boolean" default="false"/>
+    <aura:attribute name="networkPick4" type="boolean" default="false"/>
+    
+    
+    <aura:attribute name="CustomText" type="String" default="display:none"/>
+	<aura:attribute name="CustomText1" type="String" default="display:none"/>
+	<aura:attribute name="CustomText2" type="String" default="display:none"/>
+	<aura:attribute name="CustomText3" type="String" default="display:none"/>
+    <aura:attribute name="CustomText4" type="String" default="display:none"/>
+	
+	<aura:attribute name="RequireCustomNetwork" type="boolean" default="false"/>
+	<aura:attribute name="RequireCustomNetwork1" type="boolean" default="false"/>
+	<aura:attribute name="RequireCustomNetwork2" type="boolean" default="false"/>
+	<aura:attribute name="RequireCustomNetwork3" type="boolean" default="false"/>
+	<aura:attribute name="RequireCustomNetwork4" type="boolean" default="false"/>
+    
+    <aura:attribute name="Slds1" type="String" default="display:none" />
+    <aura:attribute name="Slds2" type="String" default="display:none" />
+    <aura:attribute name="Slds3" type="String" default="display:none" />
+    <aura:attribute name="Slds4" type="String" default="display:none" />
+    
+    <aura:attribute name="SldsSpec1" type="String" default="slds-hide" />
+    <aura:attribute name="SldsSpec2" type="String" default="slds-hide" />
+    <aura:attribute name="SldsSpec3" type="String" default="slds-hide" />
+    
+    
+    <aura:attribute name="SldsNONSpec1" type="String" default="slds-hide" />
+    <aura:attribute name="SldsNONSpec2" type="String" default="slds-hide" />
+    
+    
+    <aura:attribute name="industryMap" type="Map"/>
+    <aura:attribute name="industryMap1" type="Map"/>
+    <aura:attribute name="industryMap2" type="Map"/>
+    <aura:attribute name="industryMap3" type="Map"/>
+    <aura:attribute name="industryMap4" type="Map"/>
+    <aura:attribute name="industryMap5" type="Map"/>
+	
+    
+    <aura:attribute name="displayedSection_c1" type="String" default="" />
+    <aura:attribute name="displayedSection_d1" type="String" default="" />
+    <aura:attribute name="displayedSection_e1" type="String" default="" />
+    <aura:attribute name="selectedLookUpRecord" type="String" default=""  />
+	
+	<aura:attribute name="customNetwork" type="String" default="" />
+	<aura:attribute name="customNetwork1" type="String" default="" />
+	<aura:attribute name="customNetwork2" type="String" default="" />
+	<aura:attribute name="customNetwork3" type="String" default="" />
+	<aura:attribute name="customNetwork4" type="String" default="" />
+   
+	
+	
+    <aura:handler name="change" value="{!v.selectedLookUpRecord}" action="{!c.checkCustomNetwork}"/>
+	<aura:handler name="change" value="{!v.selectedLookUpRecord1}" action="{!c.checkCustomNetwork1}"/>
+	<aura:handler name="change" value="{!v.selectedLookUpRecord2}" action="{!c.checkCustomNetwork2}"/>
+	<aura:handler name="change" value="{!v.selectedLookUpRecord3}" action="{!c.checkCustomNetwork3}"/>
+	<aura:handler name="change" value="{!v.selectedLookUpRecord4}" action="{!c.checkCustomNetwork4}"/>
+	
+	
+    <aura:attribute name="selectedLookUpRecord1" type="String" default="" />
+    <aura:attribute name="selectedLookUpRecord2" type="String" default="" /> 
+    <aura:attribute name="selectedLookUpRecord3" type="String" default="" />
+    <aura:attribute name="selectedLookUpRecord4" type="String" default="" />
+    
+    
+    <aura:attribute name="selectedLookUpRecordSpec" type="String" default="" />
+    <aura:attribute name="selectedLookUpRecord1Spec" type="String" default="" />
+    <aura:attribute name="selectedLookUpRecord2Spec" type="String" default="" />
+    
+    
+    <aura:attribute name="selectedLookUpRecord1Non" type="String" default="" />
+    <aura:attribute name="selectedLookUpRecord2Non" type="String" default="" />
+    <aura:attribute name="selectedLookUpRecord3Non" type="String" default="" />
+    
+    <aura:attribute name="AgrrementLineItem" type="String" default="" />
+    <aura:attribute name="AgreementID" type="String" default="" />
+     <aura:attribute name="FAFID" type="String" default="" />
+    
+    
+    <aura:attribute name="AddRowBoolean" type="boolean" default="false"/>
+    <aura:attribute name="AddRowBoolean1" type="boolean" default="false"/>
+    <aura:attribute name="AddRowBoolean2" type="boolean" default="false"/>
+    
+    
+    <aura:attribute name="counter" default="0" type="integer"/>
+    <aura:attribute name="counter1" default="0" type="integer"/>
+    <aura:attribute name="counter2" default="0" type="integer"/>
+    
+    <aura:attribute name="Radio1" type="boolean" default="false"/>
+    
+    <aura:attribute name="Radiob1" type="boolean" default="false"/>
+    <aura:attribute name="Radioc1" type="boolean" default="false"/>
+    <aura:attribute name="Radiof1" type="boolean" default="false"/>
+    <aura:attribute name="Radioa1" type="boolean" default="false"/>
+    <aura:attribute name="PCD" type="PCD_Question_Answer__c" default="{'sobjectType': 'PCD_Question_Answer__c',
+                                                                      'Are_there_Any_Changes__c':'',
+                                                                      'Additional_Speciality_Option__c':'',
+                                                                      'Network_Name_Optional1_LK__c':'',
+                                                                      'Optional_Network_Name2_LK__c':'',
+                                                                      'Optional_Network_Name3_LK__c':'',
+                                                                      'Optional_Network_Name4_LK__c':'',
+                                                                      'Optional_Network_Name5_LK__c':'',
+                                                                      'Non_Speciality_Formulary1_option_LK__c':'',
+                                                                      'Non_Specialty_Formulary_option2_LK__c':'',
+                                                                      'Non_Specialty_Formulary_option3_LK__c':'',
+                                                                      'Specialty_Formulary_option1_LK__c':'',
+                                                                      'Specialty_Formulary_option2_LK__c':'',
+                                                                      'Specialty_Formulary_option3_LK__c':'',
+                                                                      'Do_you_want_to_provide_Network_name__c':'',
+                                                                      'Include_Optional_Network_Option_to_T_T__c':'',
+                                                                      'Speciality_Option__c':'',
+                                                                      'Formulary_Type_Rebates__c':'',
+                                                                      'Network_Type1__c':'',
+                                                                      'Network_Type2__c':'',
+                                                                      'Network_Type3__c':'',
+                                                                      'Network_Type4__c':'',
+                                                                      'Network_Type5__c':'',
+                                                                      'PCD_FAF__c':'',
+                                                                      'Include_Additional_Programs_grid_in_PC__c':'',
+                                                                      'Agreement__c':'',
+                                                                      'Agreement_Line_Item__c':'',
+                                                                      'Custom_Network_Description1__c':'',
+                                                                      'Custom_Network_Description2__c':'',
+                                                                      'Custom_Network_Description3__c':'',
+                                                                      'Custom_Network_Description4__c':'',
+                                                                      'Custom_Network_Description5__c':'',
+                                                                      'Med_D_HIF__c':'',
+                                                                      'Med_D_LTC__c':'',
+                                                                      'Med_D_IHS__c':'',
+                                                                      'Med_D_TER__c':'',
+                                                                      'Additional_Tier_Options__c':''
+                                                                      }"/>
+    <!--<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>-->
+    <!--<force:outputField aura:id="accountLookupOutput" value="{!v.PCD.Network_Name_Optional1_LK__c}" class="slds-hide"></force:outputField>-->
+   
+    <lightning:card iconName="custom:custom85" title="Questionnaire">
+        
+        <div class="slds-p-around_medium" style="padding: 1rem;">
+            <!--loading spinner start-->
+            <aura:if isTrue="{!v.spinner}">
+                <div aura:id="spinnerId" class="slds-spinner_container">
+                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                        <span class="slds-assistive-text">Loading...</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            </aura:if>
+            <!-- Loading spinner end-->   
+            <lightning:button variant="brand" label="Submit" class="slds-float_right slds-clearfix" onclick="{!c.create}" ></lightning:button>
+			<div style="{!v.Question1Div}">
+				<label><b>Are there any changes to the client previous term and condition? </b></label> <br/> <br/>
+				<span class="slds-checkbox">
+					<ui:inputRadio aura:id="r0" name="others1" label="" value="true"  text="NO" change="{!c.hide0}"/>No&nbsp;&nbsp;
+					<ui:inputRadio aura:id="r1" name="others1" label="" value="" text="YES" change="{!c.show0}"/>Yes
+					<br/> <br/>
+				</span>
+			</div>
+			<div style="{!v.QuestionMEDHIFDiv1}">
+				<label><b>No 'Med D HIF' tertiary network is found. Do you want to use the standard pricing for 'Med D HIF' tertiary network? Note: For non standard pricing, please input the 'Med D HIF' Network Pricing within the internal PCD.</b></label> <br/> <br/>
+				<span class="slds-checkbox">
+					<ui:inputRadio aura:id="h0" name="othersh1" label="" value="true"  text="NO" change="{!c.hideHIF1}"/>No&nbsp;&nbsp;
+					<ui:inputRadio aura:id="h1" name="othersh1" label="" value="" text="YES" change="{!c.showHIF1}"/>Yes
+					<br/> <br/>
+				</span>
+			</div>
+		    <div style="{!v.QuestionMEDIHFDiv}">
+				<label><b>No 'Med D IHS' tertiary network is found. Do you want to use the standard pricing for 'Med D IHS' tertiary network? Note: For non standard pricing, please input the 'Med D IHS' Network Pricing within the internal PCD.</b></label> <br/> <br/>
+				<span class="slds-checkbox">
+					<ui:inputRadio aura:id="h2" name="othersh2" label="" value="true"  text="NO" change="{!c.hideIHF}"/>No&nbsp;&nbsp;
+					<ui:inputRadio aura:id="h3" name="othersh2" label="" value="" text="YES" change="{!c.showIHF}"/>Yes
+					<br/> <br/>
+				</span>
+			</div>
+			<div style="{!v.QuestionMEDLTCDiv}">
+				<label><b>No 'Med D LTC' tertiary network is found. Do you want to use the standard pricing for 'Med D LTC tertiary network? Note: For non standard pricing, please input the 'Med D LTC' Network Pricing within the internal review PCD.</b></label> <br/> <br/>
+				<span class="slds-checkbox">
+					<ui:inputRadio aura:id="h4" name="othersh3" label="" value="true"  text="NO" change="{!c.hideLTC}"/>No&nbsp;&nbsp;
+					<ui:inputRadio aura:id="h5" name="othersh3" label="" value="" text="YES" change="{!c.showLTC}"/>Yes
+					<br/> <br/>
+				</span>
+			</div>
+			<div style="{!v.QuestionMEDTERDiv}">
+				<label><b>No 'Med D TER' tertiary network is found. Do you want to use the standard pricing for 'Med D TER' tertiary network? Note: For non standard pricing, please input the 'Med D TER' Network Pricing within the internal review PCD.</b></label> <br/> <br/>
+				<span class="slds-checkbox">
+					<ui:inputRadio aura:id="h6" name="othersh4" label="" value="true"  text="NO" change="{!c.hideTER}"/>No&nbsp;&nbsp;
+					<ui:inputRadio aura:id="h7" name="othersh4" label="" value="" text="YES" change="{!c.showTER}"/>Yes
+					<br/> <br/>
+				</span>
+			</div>
+            <div style="{!v.DisplayNetworkQuestion}">
+            <h3><b>NETWORK PRICING:Additional Retail Networks?</b></h3><br/>
+            <span class="slds-checkbox">
+                <ui:inputRadio aura:id="a1" text="NO" name="others2" label="" value="true" change="{!c.hide}"/>No&nbsp;&nbsp;
+                <ui:inputRadio aura:id="a2"  text="YES" name="others2" label="" value="" change="{!c.show}"/>Yes
+            </span>
+            </div>
+            
+            
+            <div class="{!if(v.displayedSection == 'true','slds-show','slds-hide')}" id="mainDiv">
+                <div class="slds-size_1-of-3">
+                    <div class="slds-float_right slds-p-bottom_small">
+                        Add<lightning:buttonIcon iconName="utility:new"  size="medium" variant="bare" alternativeText="Add" onclick="{!c.addRow}" disabled="{!v.AddRowBoolean}"/>
+                        Remove<lightning:buttonIcon iconName="utility:delete"  size="medium" variant="bare" alternativeText="Remove" onclick="{!c.RemoveRow}" />
+                    </div><br/>
+					<!--Optional Network 1-->
+                    <div>
+                        <c:customLookup objectAPIName="Network_Name__c" IconName="custom:custom85" selectedRecord="{!v.selectedLookUpRecord}" label="Optional Network Name 1"/>
+                        <br/>
+                        <div style="{!v.NetwortType1}">
+                        <lightning:select aura:id="industryPicklist5" value="{!v.PCD.Network_Type1__c}" onchange="{!c.onPicklistChange5}" name="industryPicklist5" label="Network Type:"  required="{!v.networkPick}" disabled="{!v.NetWorkTypeDiabled1}">
+                            <option value="" text="--None--" />
+                            <aura:iteration items="{!v.industryMap5}" var="ind5" indexVar="key">
+                                <option text="{!ind5.value}" value="{!ind5.key}" selected="{!ind5==v.NetWorkTypeValue}" />
+                            </aura:iteration>
+                        </lightning:select>
+                        </div>
+                        <br/>
+                        <div style="{!v.CustomText}">
+                          <lightning:input name="input" value="{!v.customNetwork}" label= "Custom Network Description"   required="{!v.RequireCustomNetwork}"/>
+                        </div>
+                    </div>
+                    <!--Optional Network 2-->
+                    <div style="{!v.Slds1}">		 
+                        <c:customLookup objectAPIName="Network_Name__c" IconName="custom:custom85" selectedRecord="{!v.selectedLookUpRecord1}" label="Optional Network Name 2"  />
+                        <br/>
+                        <div style="{!v.NetwortType2}">
+                            <lightning:select aura:id="industryPicklist1" value="{!v.PCD.Network_Type2__c}" onchange="{!c.onPicklistChange1}" name="industryPicklist1" label="Network Type:" required="{!v.networkPick1}" disabled="{!v.NetWorkTypeDiabled2}" >
+                                <option value="" text="--None--" />
+                                <aura:iteration items="{!v.industryMap1}" var="ind1" indexVar="key">
+                                    <option text="{!ind1.value}" value="{!ind1.key}" selected="{!ind1==v.NetWorkTypeValue}" />
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+						<br/>
+                        <div style="{!v.CustomText1}">
+						 <lightning:input name="input1" value="{!v.customNetwork1}" label= "Custom Network Description"   required="{!v.RequireCustomNetwork1}"/>
+                        </div>
+                    </div>
+					<!--Optional Network 3-->
+                    <div style="{!v.Slds2}">		 
+                        <c:customLookup objectAPIName="Network_Name__c" IconName="custom:custom85" selectedRecord="{!v.selectedLookUpRecord2}" label="Optional Network Name 3" />
+                        <br/>
+                        <div style="{!v.NetwortType3}">
+                            <lightning:select aura:id="industryPicklist2" value="{!v.PCD.Network_Type3__c}" onchange="{!c.onPicklistChange2}" name="industryPicklist2" label="Network Type:" required="{!v.networkPick2}" disabled="{!v.NetWorkTypeDiabled3}">
+                                <option value="" text="--None--" />
+                                <aura:iteration items="{!v.industryMap2}" var="ind2" indexVar="key">
+                                    <option text="{!ind2.value}" value="{!ind2.key}" selected="{!ind2==v.NetWorkTypeValue}" />
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+						<br/>
+                        <div style="{!v.CustomText2}">
+						 <lightning:input name="input2" value="{!v.customNetwork2}"  label= "Custom Network Description"   required="{!v.RequireCustomNetwork2}"/>
+                        </div>
+                    </div>
+                   <!--Optional Network 4-->
+                    <div style="{!v.Slds3}">		 
+                        <c:customLookup objectAPIName="Network_Name__c" IconName="custom:custom85" selectedRecord="{!v.selectedLookUpRecord3}" label="Optional Network Name 4" />
+                        <br/>
+                        <div style="{!v.NetwortType4}">
+                            <lightning:select aura:id="industryPicklist3" value="{!v.PCD.Network_Type4__c}" onchange="{!c.onPicklistChange3}" name="industryPicklist3" label="Network Type:" required="{!v.networkPick3}" disabled="{!v.NetWorkTypeDiabled4}">
+                                <option value="" text="--None--" />
+                                <aura:iteration items="{!v.industryMap3}" var="ind3" indexVar="key">
+                                    <option text="{!ind3.value}" value="{!ind3.key}" selected="{!ind3==v.NetWorkTypeValue}"/>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+						<br/>
+						<div style="{!v.CustomText3}">
+						 <lightning:input name="input3" value="{!v.customNetwork3}"  label= "Custom Network Description"  required="{!v.RequireCustomNetwork3}"/>
+						</div>
+					</div>
+                   <!--Optional Network 5-->
+                    <div style="{!v.Slds4}">		 
+                        <c:customLookup objectAPIName="Network_Name__c" IconName="custom:custom85" selectedRecord="{!v.selectedLookUpRecord4}" label="Optional Network Name 5" />
+                        <br/>
+                        <div style="{!v.NetwortType5}">
+                            <lightning:select aura:id="industryPicklist4" value="{!v.PCD.Network_Type5__c}" onchange="{!c.onPicklistChange4}" name="industryPicklist4" label="Network Type:" required="{!v.networkPick4}" disabled="{!v.NetWorkTypeDiabled5}">
+                                <option value="" text="--None--" />
+                                <aura:iteration items="{!v.industryMap4}" var="ind4" indexVar="key">
+                                    <option text="{!ind4.value}" value="{!ind4.key}" selected="{!ind4==v.NetWorkTypeValue}"/>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+						<br/>
+						<div style="{!v.CustomText4}">
+						<lightning:input name="input4" value="{!v.customNetwork4}"  label= "Custom Network Description"   required="{!v.RequireCustomNetwork4}"/>
+						</div>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <label><b>Alternative Network Type?</b></label><br/> <br/>
+            <ui:inputRadio aura:id="b1" name="others3" label="" value="true" change="{!c.hide4}" />No&nbsp;&nbsp;
+            <ui:inputRadio aura:id="b2" name="others3"  label="" value="" change="{!c.show4}"/>Yes
+            <br/> 
+            <h3><b>SPECIALTY PRICING : Additional Specialty arrangement?</b></h3><br/>
+            <ui:inputRadio aura:id="c1" name="others4" label="" value="true" change="{!c.hide1}"/>No&nbsp;&nbsp;
+            <ui:inputRadio aura:id="c2" name="others4"   label="" value="" change="{!c.show1}"/>Yes
+            <br/>
+            <div class="{!if(v.displayedSection_c1== 'true','slds-show','slds-hide')}" id="mainDiv2">
+                
+                <div class="slds-size_1-of-3"  >
+                    <lightning:select aura:id="industryPicklist" value="{!v.PCD.Additional_Speciality_Option__c}" onchange="{!c.onPicklistChange}" name="industryPicklist" label="Specialty option:" >
+                        <option value="" text="--None--" />
+                        <aura:iteration items="{!v.industryMap}" var="ind" indexVar="key">
+                            <option text="{!ind.value}" value="{!ind.key}" selected="{!ind.key==v.PCD.Additional_Speciality_Option__c}" />
+                        </aura:iteration>
+                    </lightning:select>
+                </div>
+            </div>
+            <br/>
+            <h3><b>REBATE GUARANTEE:Additional Formulary options?</b></h3><br/>
+            <ui:inputRadio aura:id="d1" name="others5" label="" value="true" change="{!c.hide2}"/>No&nbsp;&nbsp;
+            <ui:inputRadio aura:id="d2" name="others5"   label="" value="" change="{!c.show2}"/>Yes
+            <br/>
+            <div class="{!if(v.displayedSection_d1== 'true','slds-show','slds-hide')}"  id="mainDiv3">
+                
+                <div class="slds-size_1-of-3">
+                    <div class="slds-float_right slds-p-bottom_small">
+                        Add Row<lightning:buttonIcon iconName="utility:add"  size="small" variant="bare" alternativeText="Add" onclick="{!c.addRow1}" disabled="{!v.AddRowBoolean1}"/>
+                        
+                    </div><br/>
+                    
+                    <c:customLookup objectAPIName="Formulary_Option__c	" IconName="custom:Non_Specialty_Formulary_Option__c" selectedRecord="{!v.selectedLookUpRecordSpec}" label="Specialty Formulary Option 1"/>
+                    
+                    <span class="{!v.SldsSpec1}">		 
+                        <c:customLookup objectAPIName="Formulary_Option__c	" IconName="custom:Non_Specialty_Formulary_Option__c" selectedRecord="{!v.selectedLookUpRecord1Spec}" label="Specialty Formulary Option 2" />
+                        
+                    </span> 
+                    <span class="{!v.SldsSpec2}">		 
+                        <c:customLookup objectAPIName="Formulary_Option__c	" IconName="custom:Non_Specialty_Formulary_Option__c" selectedRecord="{!v.selectedLookUpRecord2Spec}" label="Specialty Formulary Option 3" />
+                        
+                    </span>
+                    <br/><br/>
+                </div>
+                <div  class="slds-size_1-of-3" >
+                    <div class="slds-float_right slds-p-bottom_small">
+                        Add Row<lightning:buttonIcon iconName="utility:add"  size="medium" variant="bare" alternativeText="Add" onclick="{!c.addRow2}" disabled="{!v.AddRowBoolean2}"/>
+                        
+                    </div><br/>
+                    
+                    <c:customLookup objectAPIName="Non_Specialty_Formulary_Option__c" IconName="custom:Non_Specialty_Formulary_Option__c" selectedRecord="{!v.selectedLookUpRecord1Non}" label="Non-Specialty Formulary Option 1	" />
+                    
+                    <span class="{!v.SldsNONSpec1}">		 
+                        <c:customLookup objectAPIName="Non_Specialty_Formulary_Option__c" IconName="custom:Non_Specialty_Formulary_Option__c" selectedRecord="{!v.selectedLookUpRecord2Non}" label="Non-Specialty Formulary Option 2" />
+                    </span>
+                    <span class="{!v.SldsNONSpec2}">		 
+                        <c:customLookup objectAPIName="Non_Specialty_Formulary_Option__c" IconName="custom:Non_Specialty_Formulary_Option__c" selectedRecord="{!v.selectedLookUpRecord3Non}" label="Non-Specialty Formulary Option 3" />
+                    </span>
+                </div>
+                
+            </div>
+            <br/>
+            <h3><b>REBATE GUARANTEE : Additional Tier options?</b></h3><br/>
+            <ui:inputRadio aura:id="e1" name="others6" label="" value="true" change="{!c.hide3}"/>No&nbsp;&nbsp;
+            <ui:inputRadio aura:id="e2" name="others6"   label="" value="" change="{!c.show3}"/>Yes
+            <br/><br/>
+            <div class="{!if(v.displayedSection_e1== 'true','slds-show','slds-hide')}" id="mainDiv4">
+                <!-- <label>Tier Option(s):</label><br/>
+           <force:inputField  aura:id="accLookup" value="{!v.PCD.Tier_Option_s__c}"/>-->
+                <lightning:dualListbox aura:id="selectGenre"
+                                       name="Tier Option(s):"
+                                       label="Tier Option(s)"
+                                       sourceLabel="Available"
+                                       selectedLabel="Choosen"
+                                       options="{!v.GenreList }"
+                                       value="{!v.selectedGenreList}"
+                                       onchange="{!c.handleGenreChange}"
+                                       size="4"/>
+                
+            </div>
+            <br/>
+            <label><b>CLINICAL SOLUTIONS : Include 'Additional Programs' grid in PCD?</b>	</label>
+            <br/>
+            <ui:inputRadio aura:id="f1" name="others7" label="" value="true" change="{!c.hide5}"/>No&nbsp;&nbsp;
+            <ui:inputRadio aura:id="f2" name="others7"   label="" value="" change="{!c.show5}"/>Yes
+            <br/>
+        </div>
+    </lightning:card>
+    
+    
+</aura:component>

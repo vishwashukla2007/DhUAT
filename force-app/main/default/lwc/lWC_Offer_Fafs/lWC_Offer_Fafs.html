@@ -1,0 +1,24 @@
+<template>
+    <lightning-card title="FAFs" style="height:20rem;width:10rem" icon-name="custom:custom85">
+        <div class="slds-scrollable_y" style="width:22rem;height:20rem">
+            <template if:true={PCD}>
+                <template for:each={PCDFAF} for:item="wrapper">
+                <div class="slds-box slds-box_small" key={wrapper.Id} style="width:20rem">
+                    <lightning-formatted-url value={wrapper.PCD_FAF_Link__c} tooltip="Go to FAF detail Page" label={wrapper.Name} target="_blank" ></lightning-formatted-url></br>
+                        <div class="slds-box slds-box_xx-small">
+                            <b>Status:</b>&nbsp;{wrapper.FAF_Status__c}</br>
+                            <b>Market Segment:</b>&nbsp;{wrapper.Segment__c}</br>
+                            <b>LOB:</b>&nbsp;{wrapper.LOB_IDS__c}</br>
+                            <b>Client Subtype:</b>&nbsp;{wrapper.Client_Subtype__c}</br>
+                        </div>
+                </div>
+                </template>
+            </template>
+            <template if:true={errorMessage}>
+             <center> <b>{errorMessage}</b></center> 
+            </template>
+        
+        </div>
+        </lightning-card>
+    
+    </template>

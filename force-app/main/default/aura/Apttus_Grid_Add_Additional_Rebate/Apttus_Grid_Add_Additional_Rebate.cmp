@@ -1,0 +1,138 @@
+<aura:component controller="PCD_Rebate_MultipleLOB" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+<aura:attribute name="fafid" type="String"/>
+<aura:attribute name="queryfafid" type="String"/>
+<aura:attribute name="rebate" type="List"/>
+<aura:attribute name="selectedcount" type="Double"/>
+<aura:attribute name="selectedtabid" type="String"/>
+<aura:attribute name="selectedlob" type="String"/>
+<aura:attribute name="selectedlobid" type="String"/>
+<aura:attribute name="selectedlobid1" type="String"/>
+<aura:attribute name="selectedlobid2" type="String"/>
+<aura:attribute name="selectedlobid3" type="String"/>
+<aura:attribute name="selectedlobid4" type="String"/>
+<aura:attribute name="selectedlobid5" type="String"/>
+<aura:attribute name="selectedlobid6" type="String"/>
+<aura:attribute name="additionalaliid" type="String"/>
+<aura:attribute name="additionalaliid1" type="String"/>
+<aura:attribute name="additionalaliid2" type="String"/>
+<aura:attribute name="additionalaliid3" type="String"/>
+<aura:attribute name="additionalaliid4" type="String"/>
+<aura:attribute name="additionalaliid5" type="String"/>
+<aura:attribute name="additionalaliid6" type="String"/>
+<aura:attribute name="rgpricinglist" type="Rebate_Guarantees__c"/>
+<aura:attribute name="selectedfafid1" type="String"/>
+<aura:attribute name="selectedlob1" type="String"/>
+<aura:attribute name="selectedfafid2" type="String"/>
+<aura:attribute name="selectedlob2" type="String"/>
+<aura:attribute name="selectedfafid3" type="String"/>
+<aura:attribute name="selectedlob3" type="String"/>
+<aura:attribute name="selectedfafid4" type="String"/>
+<aura:attribute name="selectedlob4" type="String"/>
+<aura:attribute name="selectedfafid5" type="String"/>
+<aura:attribute name="selectedlob5" type="String"/>
+<aura:attribute name="selectedfafid6" type="String"/>
+<aura:attribute name="selectedlob6" type="String"/>
+<aura:attribute name="ali" type="String"/>
+<aura:attribute name="lstmultplelob" type="PCD_Multiple_LOB__c" />      
+<aura:attribute name="lob1visible" type="Boolean" default="false"/>
+<aura:attribute name="lob2visible" type="Boolean" default="false"/>
+<aura:attribute name="lob3visible" type="Boolean" default="false"/>
+<aura:attribute name="lob4visible" type="Boolean" default="false"/>
+<aura:attribute name="lob5visible" type="Boolean" default="false"/>
+<aura:attribute name="lob6visible" type="Boolean" default="false"/>
+<aura:attribute name="norecord" type="Boolean" default="false"/>
+<aura:attribute name="addlobcount" type="Boolean" default="false"/>
+<aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+<aura:attribute name="mlobcreation" type="List"/>
+<aura:attribute name="mlobcreationdefault" type="List"/>
+<aura:attribute name="loboptiondefault" type="List"/>
+<aura:attribute name="loboption" type="List"/>
+<aura:attribute name="options" type="String[]" default="[
+    {'label': 'LOB 1', 'value': 'LOB1'},
+    {'label': 'LOB 2', 'value': 'LOB2'},
+    {'label': 'LOB 3', 'value': 'LOB3'},
+    {'label': 'LOB 4', 'value': 'LOB4'},     
+    {'label': 'LOB 5', 'value': 'LOB5'},                                                   
+    {'label': 'LOB 6', 'value': 'LOB6'}                                                 
+    ]"/>    
+<aura:attribute name="selectedItems" type="String[]" />
+<aura:attribute name="dropdownLength" type="Integer" default="4" />
+<!-- <aura:registerEvent name="selectChange" type="c:SelectChange" /> -->
+<aura:method name="reInit" action="{!c.init}" description="Allows the lookup to be reinitalized">
+</aura:method>
+<aura:attribute name="dropdownOver" type="Boolean" default="false" />
+<aura:handler event="c:Apttus_Grid_Add_MLOB_Count_Event" action="{!c.handleCountEvent}"/>
+<aura:handler event="c:Apttus_Grid_Add_MLOB_Notify_Event" action="{!c.handleRebateEvent}"/>
+<aura:registerEvent name="saveChange" type="c:Apttus_Grid_Add_MLOB_Save_Event" />
+ <lightning:layout>
+     <lightning:layoutitem size="9">
+     <lightning:tabset  selectedTabId="{!v.selectedtabid}">
+        <aura:if isTrue="{!v.lob1visible}">
+        <lightning:tab class="tab" label="LOB 1" id="1" onactive="{!c.onChange }">
+        </lightning:tab>
+        </aura:if>
+        <aura:if isTrue="{!v.lob2visible}">
+        <lightning:tab class="tab" label="LOB 2" id="2" onactive="{!c.onChange }">
+        </lightning:tab>
+        </aura:if>
+        <aura:if isTrue="{!v.lob3visible}">
+        <lightning:tab class="tab" label="LOB 3" id="3" onactive="{!c.onChange }">
+        </lightning:tab>
+        </aura:if>
+        <aura:if isTrue="{!v.lob4visible}">
+        <lightning:tab class="tab" label="LOB 4" id="4" onactive="{!c.onChange }">
+        </lightning:tab>
+         </aura:if>
+        <aura:if isTrue="{!v.lob5visible}">
+         <lightning:tab class="tab" label="LOB 5" id="5" onactive="{!c.onChange }">
+        </lightning:tab>
+         </aura:if>
+        <aura:if isTrue="{!v.lob6visible}">
+        <lightning:tab class="tab" label="LOB 6" id="6" onactive="{!c.onChange }">
+        </lightning:tab>
+         </aura:if>
+    </lightning:tabset>
+    </lightning:layoutitem> 
+     <lightning:layoutitem size="4">
+        <div aura:id="main-div" class=" slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click ">
+        <button class="slds-button slds-button--neutral slds-picklist__label" disabled="{!v.addlobcount}" style="width: 250px;" aria-haspopup="true" onclick="{!c.handleClick}" onmouseleave="{!c.handleMouseOutButton}">
+            <span class="slds-truncate" title="Add LOBs">Add LOBs</span>
+            <lightning:icon iconName="utility:down" size="small" class="slds-icon" />
+        </button>
+         <div class="slds-dropdown slds-dropdown--left" style="width: 250px;" onmouseenter="{!c.handleMouseEnter}" onmouseleave="{!c.handleMouseLeave}">
+            <ul class="{!'slds-dropdown__list slds-dropdown--length-' + v.dropdownLength}" style="width: 250px;" role="menu">
+                  <aura:iteration items="{!v.loboption}" var="option">
+                    <li class="{!'slds-dropdown__item ' + (option.selected ? 'slds-is-selected' : '')}" style="width: 250px;" role="presentation" onclick="{!c.handleSelection}" data-value="{!option.label}" data-selected="{!option.selected}">
+                        <a href="javascript:void(0);" role="menuitemcheckbox" aria-checked="true" tabindex="0">
+                            <span class="slds-truncate" style="width: 250px;">
+                                <lightning:icon iconName="utility:check" size="x-small" class="slds-icon slds-icon--selected slds-icon--x-small slds-icon-text-default slds-m-right--x-small" />
+                                {!option.label}
+                            </span>
+                        </a>
+                    </li>
+                </aura:iteration>
+            </ul>
+        </div>   
+       </div>
+     </lightning:layoutitem>
+    </lightning:layout>
+    <div class="slds-p-top_large"></div>  
+   <lightning:layout class="text-label--small" horizontalAlign="left" >
+    <div class="slds-text-heading_small"><b>LOB {!v.selectedtabid} - {!v.selectedlob}</b></div>
+
+   </lightning:layout>
+    <lightning:layout>
+    <aura:if isTrue="{!v.norecord}">
+     <!-- <div class="slds-text-heading_small">No Record found.</div> -->
+      <div style="width: 1600px;">
+      <div class="slds-p-top_large"></div>    
+      <ui:message title="" severity="info" closable="false" > 
+             No records found.
+      </ui:message>
+      </div>
+    </aura:if>
+    </lightning:layout>
+    <aura:iteration items="{!v.rgpricinglist}" var="item" indexVar="index">
+      <c:Apttus_Grid_Add_Additional_Rebate_Child lobid="{!v.selectedtabid}" lobdesc="{!v.selectedlob}" rebateguarantee="{!item}" fafid="{!v.queryfafid}" /> 
+    </aura:iteration> 
+</aura:component>

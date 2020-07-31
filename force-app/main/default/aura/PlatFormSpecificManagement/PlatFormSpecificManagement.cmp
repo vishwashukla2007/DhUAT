@@ -1,0 +1,406 @@
+<!--Purpose : PlatformSpecificManagement is Parent component of Lightning Grid requirement of Platform specifics.
+It displays, Platform Specifics Grid fields and also holds Child component - PlatformSpecificItem which renders
+individual row Data. Component has Buttons - New , Delete , Edit , Save, New via CAG Search.
+New via CAG Search open SDG Component and modal window to display CAG Data.
+PlatformSpecificManagement component is in use to manage Platform Specifics information
+
+Child Component - PlatformSpecificItem
+Server Controller - PlatformSpecificManagement apex class to fetch records from server side
+Date: 10/01/2018
+
+06/04/2020 - Soumendu Chowdhury - Change in Platform Specific Table to Freeze Header and Column
+-->
+<aura:component controller="PlatformSpecificManagement" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:isUrlAddressable" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="recordId" type="Id"/>
+    <aura:attribute name="AccountId" type="String" />
+    <aura:attribute name="isSales" type="String" />
+    <aura:attribute name="TotalPages" type="integer" default="0"/>
+    <aura:attribute name="itemscount" type="Integer" />
+    <aura:attribute name="counter" type="Integer" default="0"/>
+    <aura:attribute name="currentPage" type="Integer" default="1" />
+    <aura:attribute name="isSubType" type="String" />
+    <aura:attribute name="PageCounter" type="Integer" default="0"/>
+    <aura:attribute name="NavigatePage" type="integer" description="using for store page Number"/>
+    <aura:attribute name="isSaveError" type="Boolean" />
+    <aura:attribute name="isFocus" type="Boolean"  default="true"/>
+    <aura:attribute name="ProfileName" type="String" />
+    <aura:attribute name="options" type="List" access="PRIVATE"/>
+    <aura:attribute name="selectedPageNo" type="Integer" default="1"/>
+    <aura:attribute name="showEditBtn" type="Boolean" default="true"/>
+    <aura:attribute name="showNewBtn" type="Boolean" default="true"/>
+    <aura:attribute name="isEditMode" type="Boolean" default="false"/>
+    <aura:attribute name="isPopUp" type="Boolean" default="false"/>
+    <aura:attribute name="disabled" type="Boolean" default="false"/>
+    <!-- Buttons Visibility Checking Attributes -->
+    <aura:attribute name="isCreateable" type="Boolean" default="true"/>
+    <aura:attribute name="isEditable" type="Boolean" default="true"/>
+    <aura:attribute name="isNew" type="Boolean" default="true"/>
+    <aura:attribute name="isOpsUser" type="Boolean" default="false"/>
+    <aura:attribute name="isPrintUser" type="Boolean" default="false"/>
+    <aura:attribute name="isDeletable" type="Boolean" default="true"/>
+    <aura:attribute name="isCAGCreateable" type="Boolean" default="true"/>
+     <aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}"/>
+    <!-- Buttons Visibility Checking Attributes End -->
+    <aura:handler  event="c:Required_Field" action="{!c.RequiredHighlight}"/>
+    <aura:handler  event="c:Required_Highlight" action="{!c.NotifySuccess}"/>
+    <aura:handler  event="c:Level_Duplicate_Validation" action="{!c.DuplicateCheck}"/>
+    <aura:handler  event="c:LOB_Required" action="{!c.LobRequired}"/>
+    <aura:handler  event="c:Load_PlatformSpecific" action="{!c.LoadPlatformSpecific}"/>
+    <aura:registerEvent name="saveValues" type="c:Level_Save_ChangeValue"/>
+    <aura:registerEvent name="SalesBtnEvent" type="c:ButtonVisibleSales"/>
+    <aura:registerEvent name="NewAction" type="c:PlaformSpecificNewAction_Event"/>
+    <aura:registerEvent name="OnFocus" type="c:PlatformSpecific_OnFocus_Event"/>
+    <aura:registerEvent name="OffFocus" type="c:PlatformSpecific_OFFFocus_Event"/>
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.reInit}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:attribute name="clientInfo" type="Client_Information__c" default=""/>
+    <aura:attribute name="data" type="platformSpecificManagement.PlatformSpecificData"/>
+   <!-- CAG Component event to get CAG selection information in PlatformManagement component  --> 
+    <aura:handler name="CAGComponentEvent" event="c:CAG_Search_Event" action="{!c.eventSearch}" />
+    <aura:attribute name="isInvalidPlatformSpecific" type="Boolean" default="false" description="used to controle the save operation when invalid platform specific items found"/>
+   
+	<!--added by sonal sharma for sort functionality-->
+	<aura:attribute name="arrowDirection" type="string" default="arrowup" description="Use for change arrow sign direction on header based on click"/>
+    <aura:attribute name="isAsc" type="boolean" default="true" description="boolean flag for pass sorting condition to apex class"/> 
+    <aura:attribute name="selectedTabsoft" type="string" default="firstName" description="Use for show/hide arraow sign on header based on conditions"/>
+    <aura:attribute name="hideArrow" type="String" default=""/>
+	<!--added by sonal sharma for US 28-->
+    <aura:attribute name="reset" type="String" default=""/>
+	<aura:attribute name='ifSort' type='Boolean' default='false'/>
+	<aura:attribute name='ifSortlevel1' type='Boolean' default='false'/>
+	<aura:attribute name='ifSortlevel2' type='Boolean' default='false'/>
+	<aura:attribute name='ifSortlevel3' type='Boolean' default='false'/>
+	<aura:attribute name='ifSearchKey' type='Boolean' default='false'/>																
+	<aura:attribute name="key" type="String" />
+	<aura:attribute name='total' type='integer'/>
+    
+	<aura:attribute name="comboOptions" type="List" default="[]" />
+    <aura:attribute name="isdisable" type="boolean" default="true"/>
+	<!--level id for which cag is searched-->
+    <aura:attribute name="levelkey" type="String"/>
+	<!--end of attribute added by sonal sharma for US 28-->
+    <!-- table to display platform specific information  -->
+    <!--added by sonal sharma-->
+    <div style="padding-bottom: 10px;">
+    <c:PlatformSpecificOnClientInfo total="{!v.total}"/>
+    </div>
+    
+	<!--Added for GFRI button-->    
+    <aura:attribute name="checkboxGFRI" type="boolean" default="true"/>
+    <aura:handler name="change" value="{!v.checkboxGFRI}" action="{!c.onchangeOnRecordSelection}"/>
+    <aura:attribute name="isGfriUserRole" type="Boolean" default="false"/>
+    <!--/Added for GFRI button--> 
+	
+    <div class="slds-grid slds-wrap ">
+		<div class="slds-col slds-size_2-of-3" align="left" style=" padding-top: 5px;">		
+			<aura:if isTrue="{!v.isCreateable}"> <!--newly added !-->
+				<aura:if isTrue="{! !v.showNewBtn}">         
+					<aura:set attribute="else">
+						<button type="button" class="slds-button slds-button_brand" onclick="{!c.handleNewBtn}">New </button>
+					</aura:set>
+				</aura:if>
+			</aura:if>
+			
+			<aura:if isTrue="{!v.isEditable}"> <!--newly added !-->
+				<aura:if isTrue="{! !v.showEditBtn}">         
+					
+					<aura:set attribute="else">
+						<button type="button" class="slds-button slds-button_brand" onclick="{!c.handleEditBtn}">Edit</button>
+					</aura:set>  
+				</aura:if>
+			</aura:if>
+			
+			<aura:if isTrue="{!or(v.isCreateable, v.isEditable)}">  <!--newly added !-->       
+				<button type="button" class="slds-button slds-button_brand" disabled= "{!v.disabled}" onclick="{!c.handleSaveBtn}">Save</button>
+			</aura:if>
+			
+			<aura:if isTrue="{!v.isDeletable}"> <!--newly added !--> 
+				<aura:if isTrue="{! ! and(v.showEditBtn, v.showNewBtn)}">         
+					<aura:set attribute="else">
+						<button type="button" class="slds-button slds-button_brand" onclick="{!c.handleDelete}">Delete</button>
+					</aura:set>  
+				</aura:if>
+			</aura:if>
+			
+				<aura:if isTrue="{! ! and(v.showEditBtn, v.showNewBtn)}">
+					<button type="button" class="slds-button slds-button_brand" onclick="{!c.handleCancle}">Cancel</button>
+				</aura:if>
+			
+			<aura:if isTrue="{!v.isCreateable}"> <!--newly added !-->
+				<aura:if isTrue="{! !v.showNewBtn}">         
+					<aura:set attribute="else">
+						<button type="button" class="slds-button slds-button_brand" onclick="{!c.cagSearch}">New Via CAG Search</button>
+					</aura:set>
+				</aura:if>
+			</aura:if>
+			
+			<aura:if isTrue="{!v.isCreateable}"> <!--newly added !-->
+				<aura:if isTrue="{! !v.showNewBtn}">         
+					<aura:set attribute="else">
+						<button type="button" class="slds-button slds-button_brand" onclick="{!c.loadplatform}">Load Platform Specifics </button>
+					</aura:set>
+				</aura:if>
+			</aura:if>
+			
+			<aura:if isTrue="{!v.isGfriUserRole}"> <!--GFRI button added !-->
+			<lightning:button variant="brand" 
+                             label="Create GFRI"
+                             title="Create GFRI"
+                             aura:id="creategfri" 
+                             disabled ="true"
+                             class="slds-button slds-button_brand"
+                             onclick="{!c.createGfriBtn}" />
+            </aura:if>
+			
+		   <aura:if isTrue="{!v.isPrintUser}">  
+				
+						<button type="button" class="slds-button slds-button_brand" onclick="{!c.printplatform}">Print Platform Specifics </button>
+					
+			</aura:if>  
+				  
+			   <!-- Report Redirection !-->
+			<aura:if isTrue="{!v.isOpsUser}">         
+						<button type="button" class="slds-button slds-button_brand" onclick="{!c.exportplatform}">Export Platform Specifics</button> 
+			</aura:if>      
+		</div>
+		<!--added by sonal sharma-->
+        
+		<div class="slds-col slds-size_1-of-3" align="right" style=" padding-top: 5px;"> 
+            <div class="slds-grid slds-wrap">
+                 <div class="slds-col slds-size_1-of-3" align="left">
+                    <lightning:combobox name="progress" 
+                                        label="Status"
+                                        placeholder="Select CAG" 
+                                        options="{! v.comboOptions }" 
+                                        variant="label-hidden"
+                                        onchange="{!c.handleChange }"/>
+        		</div>
+                <div class="slds-col slds-size_2-of-3">
+                    <lightning:input type="text" name="searchKey" label="Enter" value="{!v.reset}" variant="label-hidden" aura:id="searchKey"
+                                     onchange="{!c.searchKeyChange}" placeholder="Search CAG" disabled="{!v.isdisable}" />
+                </div>
+            </div>
+        </div>
+	</div>
+    <!-- 06/04/2020 - Soumendu Chowdhury - Change in Platform Specific Table to Freeze Header and Column -->
+      <div class="outer"> 
+       <body>
+       <div class="outer-container">
+        <div class="inner-container">
+            <ui:scrollerWrapper class="table-header"  aura:Id="headerdiv">
+            <div class="table-headerinner">
+            <table id="headertable" width="100%" height="50px" cellpadding="0" cellspacing="0">
+            <thead >  
+                <aura:if isTrue="{!v.isFocus}">              
+                 <tr >
+                    <th scope="col" ><div aura:id="checkbox" class="checkboxedit"><ui:inputcheckbox aura:id ="massCheckbox1" change="{!c.selectAllUnticked}"/> </div> </th>
+                    <th scope="col" ><div aura:id="link" class="linkedit">Link</div></th>
+                    <th scope="col" ><div aura:id="platform" class="platformedit" title="Platform">Platform</div></th>
+                    <th scope="col" ><div aura:id="lob" class="lobedit" title="LOB">LOB</div></th>
+                    <th scope="col"><div aura:id="instruction" class="instructionedit" title="Instruction">Instruction</div></th>
+					<th aura:id="level1id" class="slds-is-sortable  slds-text-title_bold  level1idedit " scope="col" onclick="{!c.sortlevel1}">
+						<a href="javascript:void(0);" class="color_grey slds-th__action slds-text-link--reset">
+							<span class="" title="Level 1 ID">Level 1 ID</span>
+                            <span aura:id="hideIcon1">
+                            <aura:if isTrue="{! and(v.arrowDirection == 'arrowdown', v.selectedTabsoft == 'Level_1_ID__c' ) }"><lightning:icon  iconName="utility:arrowdown" size="xx-small"/></aura:if>  
+							<aura:if isTrue="{! and(v.arrowDirection != 'arrowdown', v.selectedTabsoft == 'Level_1_ID__c') }"><lightning:icon iconName="utility:arrowup" size="xx-small"/></aura:if> 
+                            </span>
+						</a>
+					</th>
+                    <th scope="col"><div aura:id="level1name" class="level1nameedit" title="Level 1 ID">Level 1 Name</div></th>
+                    <th aura:Id="level2id" class="slds-is-sortable slds-text-title_bold slds-is-relative level2idedit" scope="col" onclick="{!c.sortlevel2}">
+						<a href="javascript:void(0);" class="color_grey slds-th__action slds-text-link--reset">
+							<span class="slds-assistive-text">Sort</span>
+							<span class="" title="Level 2 ID">Level 2 ID</span>  
+                            <span aura:id="hideIcon2">
+							<aura:if isTrue="{! and(v.arrowDirection == 'arrowdown', v.selectedTabsoft == 'Level_2_ID__c') }"><lightning:icon iconName="utility:arrowdown" size="xx-small"/></aura:if>  
+							<aura:if isTrue="{! and(v.arrowDirection != 'arrowdown', v.selectedTabsoft == 'Level_2_ID__c') }"> <lightning:icon iconName="utility:arrowup" size="xx-small"/> </aura:if>                        
+							</span>
+                       </a>
+					</th>
+                    <th aura:Id="level3id" class="slds-is-sortable slds-text-title_bold level3idedit" scope="col" onclick="{!c.sortlevel3}">
+						<a href="javascript:void(0);" class="color_grey slds-th__action slds-text-link--reset">
+							<span class="slds-assistive-text ">Sort</span>
+							<span class="" title="Level 3 ID">Level 3 ID</span>  
+                            <span aura:id="hideIcon3">
+							<aura:if isTrue="{! and(v.arrowDirection == 'arrowdown', v.selectedTabsoft == 'Level_3_ID__c') }"><lightning:icon iconName="utility:arrowdown" size="xx-small"/></aura:if>  
+							<aura:if isTrue="{! and(v.arrowDirection != 'arrowdown', v.selectedTabsoft == 'Level_3_ID__c') }"> <lightning:icon iconName="utility:arrowup" size="xx-small"/> </aura:if>                        
+                            </span>
+                        </a>
+                    </th>
+                    <th scope="col"><div aura:Id="effectivedate" class="headerWordWrap effectivedateedit" title="Effective Date">Effective Date</div></th>
+                    
+                    <th scope="col"><div aura:Id="editdetails" class="headerWordWrap  editdetailsedit" title=""></div></th>
+                    <th scope="col" class="termedwidth"><div aura:Id="termed" class="headerWordWrap  termededit" title="Termed?">Termed?</div></th>
+                    <th scope="col"><div aura:Id="termeddate" class="headerWordWrap  termeddateedit" title="Termed Date">Termed Date</div></th>
+                    <th scope="col" class="specialtypharmacyedit"><div class="headerWordWrap  specialtypharmacyedit" title="Specialty Pharmacy Benefit &amp; Price List">Specialty Pharmacy Benefit &amp; Price List</div></th>
+                   <!-- <th scope="col"><div class="headerWordWrap" title="Specialty Price List">Specialty Price List</div></th> -->
+                    <th scope="col" class="nonspecialtyenddatewidth"><div class="headerWordWrap  differentgstpedit" title="Different GSTP Formulary Effective Dates">Different GSTP&amp;Formulary Effective Dates</div></th>
+                    <th scope="col" class="nonspecialtyenddatewidth"><div class="headerWordWrap  nonspecialtyformalryedit" title="Non-Specialty Formulary Choice">Non-Specialty Formulary Choice</div></th>
+                    <th scope="col" class="nonspecialtyenddatewidth"><div class="headerWordWrap  nonspecialtyformularyeffdateedit" title="Non-Specialty Formulary Effective Date">Non-Specialty Formulary Effective Date</div></th>
+                    <th scope="col" class="changewidth"><div class="headerWordWrap  nonspecialtyenddateedit" title="Non-Specialty Formulary End Date">Non-Specialty Formulary End Date</div></th>
+                    <th scope="col" class="nonspecialtyenddatewidth"><div class="headerWordWrap  gstpchoiceedit" title="GSTP Choice">GSTP Choice</div></th>
+                    <th scope="col" class="changewidth"><div class="headerWordWrap  gstpeffdateedit" title="GSTP Effective Date">GSTP Effective Date</div></th>
+                    <th scope="col" class="nonspecialtyenddatewidth"><div class="headerWordWrap  gstpenddateedit" title="GSTP End Date">GSTP End Date</div></th>
+                    <th scope="col" class="nonspecialtyenddatewidth"><div class="headerWordWrap  specialtyformulachoiceedit" title="Specialty Formulary Choice">Specialty Formulary Choice</div></th>
+                    <th scope="col"><div class="headerWordWrap  specialtyformulaeffdateedit" title="Specialty Formulary Effective Date">Specialty Formulary Effective Date</div></th>
+                    <th scope="col"><div class="headerWordWrap  specialtyenddateedit" title="Specialty Formulary End Date">Specialty Formulary End Date</div></th>
+                </tr>     
+                    
+                    
+                <aura:set attribute="else">
+                <tr >
+                    <th scope="col" ><div aura:id="checkbox" class="checkbox slds-cell-fixed"><ui:inputcheckbox aura:id ="massCheckbox2" change="{!c.selectAllUnticked}"/> </div> </th>
+                    <th scope="col" ><div aura:id="link" class="link slds-cell-fixed">Link</div></th>
+                    <th scope="col" ><div aura:id="platform" class="platform slds-cell-fixed" title="Platform">Platform</div></th>
+                    <th scope="col" ><div aura:id="lob" class="lob slds-cell-fixed" title="LOB">LOB</div></th>
+                    <th scope="col"><div aura:id="instruction" class="instruction slds-cell-fixed" title="Instruction">Instruction</div></th>
+					<th aura:id="level1id" class="slds-is-sortable  slds-text-title_bold  level1id slds-cell-fixed" scope="col" onclick="{!c.sortlevel1}">
+						<a href="javascript:void(0);" class="color_grey slds-th__action slds-text-link--reset">
+							<span class="" title="Level 1 ID">Level 1 ID</span>
+                            <span aura:id="hideIcon1">
+                            <aura:if isTrue="{! and(v.arrowDirection == 'arrowdown', v.selectedTabsoft == 'Level_1_ID__c' ) }"><lightning:icon  iconName="utility:arrowdown" size="xx-small"/></aura:if>  
+							<aura:if isTrue="{! and(v.arrowDirection != 'arrowdown', v.selectedTabsoft == 'Level_1_ID__c') }"><lightning:icon iconName="utility:arrowup" size="xx-small"/></aura:if> 
+                            </span>
+						</a>
+					</th>
+                    <th scope="col"><div aura:id="level1name" class=" level1name slds-cell-fixed" title="Level 1 ID">Level 1 Name</div></th>
+                    <th aura:Id="level2id" class="slds-is-sortable slds-text-title_bold slds-is-relative level2id" scope="col" onclick="{!c.sortlevel2}">
+						<a href="javascript:void(0);" class="color_grey slds-th__action slds-text-link--reset">
+							<span class="slds-assistive-text">Sort</span>
+							<span class="" title="Level 2 ID">Level 2 ID</span>  
+                            <span aura:id="hideIcon2">
+							<aura:if isTrue="{! and(v.arrowDirection == 'arrowdown', v.selectedTabsoft == 'Level_2_ID__c') }"><lightning:icon iconName="utility:arrowdown" size="xx-small"/></aura:if>  
+							<aura:if isTrue="{! and(v.arrowDirection != 'arrowdown', v.selectedTabsoft == 'Level_2_ID__c') }"> <lightning:icon iconName="utility:arrowup" size="xx-small"/> </aura:if>                        
+							</span>
+                       </a>
+					</th>
+                    <th aura:Id="level3id" class="slds-is-sortable slds-text-title_bold slds-is-relative level3id" scope="col" onclick="{!c.sortlevel3}">
+						<a href="javascript:void(0);" class="color_grey slds-th__action slds-text-link--reset">
+							<span class="slds-assistive-text ">Sort</span>
+							<span class="" title="Level 3 ID">Level 3 ID</span>  
+                            <span aura:id="hideIcon3">
+							<aura:if isTrue="{! and(v.arrowDirection == 'arrowdown', v.selectedTabsoft == 'Level_3_ID__c') }"><lightning:icon iconName="utility:arrowdown" size="xx-small"/></aura:if>  
+							<aura:if isTrue="{! and(v.arrowDirection != 'arrowdown', v.selectedTabsoft == 'Level_3_ID__c') }"> <lightning:icon iconName="utility:arrowup" size="xx-small"/> </aura:if>                        
+                            </span>
+                        </a>
+                    </th>
+                    <th scope="col"><div aura:Id="effectivedate" class="headerWordWrap slds-is-relative effectivedate" title="Effective Date">Effective Date</div></th>
+                    
+                    <th scope="col"><div aura:Id="editdetails" class="headerWordWrap slds-is-relative effectivedate" title=""></div></th>
+                    <th scope="col"><div aura:Id="termed" class="headerWordWrap slds-is-relative termed" title="Termed?">Termed?</div></th>
+                    <th scope="col"><div aura:Id="termeddate" class="headerWordWrap slds-is-relative termeddate" title="Termed Date">Termed Date</div></th>
+                    <th scope="col"><div class="headerWordWrap slds-is-relative specialtypharmacy" title="Specialty Pharmacy Benefit &amp; Price List">Specialty Pharmacy Benefit &amp; Price List</div></th>
+                   <!-- <th scope="col"><div class="headerWordWrap" title="Specialty Price List">Specialty Price List</div></th> -->
+                    <th scope="col"><div class="headerWordWrap slds-is-relative differentgstp" title="Different GSTP Formulary Effective Dates">Different GSTP&amp;Formulary Effective Dates</div></th>
+                    <th scope="col"><div class="headerWordWrap slds-is-relative nonspecialtyformalry" title="Non-Specialty Formulary Choice">Non-Specialty Formulary Choice</div></th>
+                    <th scope="col"><div class="headerWordWrap slds-is-relative nonspecialtyformularyeffdate" title="Non-Specialty Formulary Effective Date">Non-Specialty Formulary Effective Date</div></th>
+                    <th scope="col"><div class="headerWordWrap slds-is-relative nonspecialtyenddate" title="Non-Specialty Formulary End Date">Non-Specialty Formulary End Date</div></th>
+                    <th scope="col"><div class="headerWordWrap slds-is-relative gstpchoice" title="GSTP Choice">GSTP Choice</div></th>
+                    <th scope="col"><div class="headerWordWrap slds-is-relative gstpeffdate" title="GSTP Effective Date">GSTP Effective Date</div></th>
+                    <th scope="col"><div class="headerWordWrap slds-is-relative gstpenddate" title="GSTP End Date">GSTP End Date</div></th>
+                    <th scope="col"><div class="headerWordWrap slds-is-relative specialtyformulachoice" title="Specialty Formulary Choice">Specialty Formulary Choice</div></th>
+                    <th scope="col"><div class="headerWordWrap slds-is-relative specialtyformulaeffdate" title="Specialty Formulary Effective Date">Specialty Formulary Effective Date</div></th>
+                    <th scope="col"><div class="headerWordWrap slds-is-relative specialtyenddate" title="Specialty Formulary End Date">Specialty Formulary End Date</div></th>
+                </tr> 
+                 </aura:set>
+                </aura:if>
+            </thead>
+            </table>
+            </div>
+            </ui:scrollerWrapper>
+                      
+            <div class="table-body wrapper" id="bodyid" tabindex="0" onblur="{!c.offfocus}" onscroll="{!c.scrollhz}"> <!--{!c.scrollhz}document.getElementById('headerdiv').scrollLeft = this.scrollLeft;"onscroll="{!c.scrollhz}"> -->
+            <div class="table-bodyinner">
+            <table id="bodytable" width="100%" cellpadding="0" cellspacing="0" class="slds-table_bordered inner">
+            <tbody>
+               <!-- Start Change to verify Freeze Column -->
+               <!--  End Change to verify Freeze Column -->
+                <!-- Use the Apex model and controller to fetch server side data -->
+                <aura:iteration items="{!v.data.platformSpecifics}" var="p" indexVar="index">
+                    <!--passing index vlaue to child component by Ajay --> 
+                    <aura:if isTrue="{!and(p.platformSpecific!=undefined, p.platformSpecific.Id==null)}">
+                        <c:PlatFormSpecificItem checkboxGFRI = "{!v.checkboxGFRI}" aura:id="compB" pItem="{!p}" FAFID = "{!v.clientInfo.FAF_ID__c}" isEditMode="{!v.isEditMode}" isNew="{!v.isNew}" isEditable="{!v.isEditable}" AccountId = "{!v.AccountId}" indexPlatValue="{!index}" sfSectionRequired="{!v.data.sfSectionRequired}" gstpSectionRequired="{!v.data.gstpSectionRequired}" nsfSectionRequired="{!v.data.nsfSectionRequired}"/>
+                     </aura:if>
+                </aura:iteration> 
+                
+                <!-- Use the Apex model and controller to fetch server side data -->
+                <aura:iteration items="{!v.data.platformSpecifics}" var="p" indexVar="index">
+                    <aura:if isTrue="{!p.platformSpecific.Id!=null}">
+                        <c:PlatFormSpecificItem checkboxGFRI = "{!v.checkboxGFRI}" aura:id="compB" pItem="{!p}" FAFID = "{!v.clientInfo.FAF_ID__c}" isEditMode="{!v.isEditMode}" isEditable="{!v.isEditable}" AccountId = "{!v.AccountId}" indexPlatValue="{!index}" sfSectionRequired="{!v.data.sfSectionRequired}" gstpSectionRequired="{!v.data.gstpSectionRequired}" nsfSectionRequired="{!v.data.nsfSectionRequired}"/>
+                    </aura:if>
+                </aura:iteration> 
+            </tbody>
+        </table>
+         </div>
+         </div>
+        </div>
+           
+         <div class="slds-form_inline slds-p-around_xx-small" style="background-color:white !important;">
+    	<lightning:select aura:id="pageNo" name="pageNo" label="Page"  variant="brand" onchange="{!c.loadPageData}"> 
+            <aura:iteration items="{!v.options}" var="option">
+            	<option text="{!option}" value="{!option}" />
+        	</aura:iteration>
+        </lightning:select>
+                <div class="slds-float_right">
+                    
+                    <a href="javascript:void(0)" class="slds-button" disabled="{!v.currentPage==1}" onclick="{!c.loadPageDataPrev}" label="Previous">
+             Previous
+                    </a>
+                    <a href="javascript:void(0)" class="slds-button" disabled="{!v.currentPage>=v.TotalPages}" onclick="{!c.loadPageDataNext}">
+            Next 
+                    </a>               
+        </div> 
+        </div>         
+        </div>          
+     </body>
+        <aura:if isTrue='{!v.isPopUp}'>
+            <div class="demo-only" style="height: 640px;z-index: 20000;">
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+                    <div class="slds-modal__container" style="width: 99%;">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.hideSearch}">
+                                X
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">CAG Search</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <c:sdg Title='CAG Search' SVGName='standard:account' SDGConfiguration='CustomObject:CAG_Search_UM' HideOnError='true' Export='false' isDelete='false'  ClintinfofafId="{!v.clientInfo.FAF_ID__c}" ClintinfoId="{!v.clientInfo.Id}" DefaultPageSize="20" recordId="{!v.recordId}" extraFilterFromCag="Filter"/> 
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <button class="slds-button slds-button_neutral"  onclick="{!c.hideSearch}">Cancel</button>
+
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div> 
+            </div>
+            </aura:if>
+            <div class="slds-hide" aura:id="multideletedialogs"  style="z-index: 20000;">
+            <div aria-hidden="false" role="dialog" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">Confirmation</h2>
+                          
+                    </div>
+                    <div class="slds-modal__content">
+                        <div class="slds-p-around_medium">
+                            Are you sure you want to delete the selected record(s).
+                            
+                        </div>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <div class="slds-x-small-buttons_horizontal">
+                            <button class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                            <button class="slds-button slds-button_neutral slds-button_brand" onclick="{!c.handleDeleteBtn}">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop_open"></div> 
+       </div> 
+       </div> 
+</aura:component>

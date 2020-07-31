@@ -1,0 +1,106 @@
+<!--
+ * Name      :NewFeeServicePage.vfp
+ * Controller: Fee_Service_Controller
+-->
+<apex:page standardController="Fee_Services__c" extensions="NewFeeServicePage_Cntrlr" lightningStylesheets="true">
+
+    <apex:outputpanel layout="block" styleclass="customPopup" > 
+   
+        
+        
+    
+        <script>
+        function showToast() {
+            var insrtd = '{!isInsrtd}';
+            var valderr = '{!validErr}';
+            alert('insrtd----->'+insrtd);
+            alert('valderr---->'+valderr);
+            if(insrtd){
+                sforce.one.showToast({
+                    "title": "Success!",
+                    "message": "Fee Services created successfully.",
+                    "type": "success"
+                });
+            }
+            
+            if(!insrtd){
+                sforce.one.showToast({
+                    "title": "Error!",
+                    "message": "FAF can only contain one Fee Services record.",
+                    "type": "error"
+                });
+            }
+            
+        }
+        
+    </script>
+        
+    <apex:form >
+        <apex:actionFunction name="doSave" rerender="outPanelId" action="{!saveFeeService}" oncomplete="showToast('{!isInsrtd}'); "/>
+        <div class="slds-size_2-of-6">
+            <apex:messages />
+            <apex:pageBlock title="Fee Service Edit" >
+                <!--<p>{! if( $CurrentPage.parameters.Id != null,  fs.Name, 'New Fee Service') }</p>-->
+                <apex:pageBlockButtons location="both"> 
+                    <apex:commandButton value="Save" action="{!saveFeeService}"  />
+                    <apex:commandButton value="Cancel" action="{!Cancel}"/>
+                </apex:pageBlockButtons>
+                
+                <apex:pageBlockSection title="Fee Service Details" columns="2" collapsible="False">
+                    
+                    <apex:pageBlockSectionItem rendered="{! fafName != ''}">
+                        <apex:outputLabel value="FAF ID" for="faf1"/>
+                        <!--<apex:OutputText value="" id="faf1"  ><a href="{!fs.FAF_ID__c}">{!fafName}</a></apex:OutputText>-->
+                        <apex:outputField value="{!fs.FAF_ID__c}"/>
+                    </apex:pageBlockSectionItem>
+
+                     <apex:pageBlockSectionItem rendered="{! fafName == ''}">
+                        <apex:outputLabel value="FAF" for="faf2"/>
+                        <apex:InputField value="{!fs.Faf_ID__c }" id="faf2" Style="width:30px" />
+                    </apex:pageBlockSectionItem>
+                   
+                    <apex:pageBlockSectionItem rendered="{!rdsShow == true}">
+                        <apex:outputLabel for="retr_drug" value="Retiree Drug Subsidy (RDS)"/>
+                        <apex:inputField style="margin-top:3px;" id="retr_drug" value="{!fs.Retiree_Drug_Subsidy__c}"/>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection title="Additional Information" collapsible="False">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputText value="Additional Fee Service Information"/>
+                        <apex:inputField value="{!fs.Additional_Fee_Service_Information__c}"/>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+                
+            </apex:pageBlock>
+        </div>    
+        
+    </apex:form>
+    <style type="text/css">
+        .customPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: ;
+        /*z-index: 9999;*/
+        /*left: 40%;*/
+          padding:5px;
+          
+        /*position: absolute;*/
+            width: 100%;
+        /*margin-left: -250px;*/
+            top:30px;
+        }
+        .popupBackground{
+            background-color:#fafafa;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+    </style>
+    </apex:outputpanel>
+
+</apex:page>

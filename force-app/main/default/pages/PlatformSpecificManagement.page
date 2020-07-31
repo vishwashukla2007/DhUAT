@@ -1,0 +1,203 @@
+<apex:page standardController="Platform_Specifics__c" extensions="PlatformSpecificManagement" lightningStylesheets="TRUE">
+<style>
+
+.headerWordWrap{
+    white-space:normal !important;
+}
+
+.outer {
+  display: flex !important; /* displays flex-items (children) inline */
+  overflow-x: auto !important;
+} 
+
+
+
+.inner {
+  flex: 0 0 25% !important; /* doesn't grow nor shrink, initial width set to 25% of the parent's */
+  height: 1em !important; /* just for demo */
+}
+</style>
+    
+
+    <apex:pageMessages ></apex:pageMessages>
+    <apex:form >
+        <div class="outer">
+        <apex:pageBlock id="pb" title="PlatForm Specifics">
+        
+            <apex:commandButton value="+New" action="{!doAddNew}" id="addNewBtn" rendered="{!AND((isEditEnabled == false))}" reRender="pb"/>
+            <apex:commandButton value="Edit" action="{!doEdit}" id="editButton" rendered="{!AND((isEditEnabled==false), (isNewEnabled == false))}" reRender="pb"/>
+            
+            <apex:actionStatus id="saveStatus">
+                <apex:facet name="start">
+                    <img src="/img/loading.gif" />
+                </apex:facet>
+                <apex:facet name="stop">
+                    <apex:commandButton value="Save" action="{!doSave}" id="saveButton" status="saveStatus" reRender="pb"/>
+                </apex:facet>
+            </apex:actionStatus>
+            <apex:actionStatus id="delStatus">
+                <apex:facet name="start">
+                    <img src="/img/loading.gif" />
+                </apex:facet>
+                <apex:facet name="stop">
+                    <apex:commandButton value="Delete" action="{!doDelete}" id="deleteButton" status="delStatus" reRender="pb"/>
+                </apex:facet>
+            </apex:actionStatus>
+            <apex:actionStatus id="cancelStatus">
+                <apex:facet name="start">
+                    <img src="/img/loading.gif" />
+                </apex:facet>
+                <apex:facet name="stop">
+                    <apex:commandButton value="Cancel" action="{!doCancel}" id="cancelButton" status="cancelStatus" reRender="pb"/>
+                </apex:facet>
+            </apex:actionStatus>
+            
+            <apex:pageBlockSection columns="1" id="pbs">
+                
+                
+                <apex:pageBlockTable styleClass="inner" value="{!ActivePlatFormSpecifics}" var="pItem">
+                    <apex:column headerValue="">
+                        <apex:outputPanel rendered="{!pItem.platformSpecific.Id!=null}">
+                            <apex:inputCheckbox value="{!pItem.isSelected}"/>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!pItem.platformSpecific.Id==null}">                            
+                            <apex:actionStatus id="removeStatus">
+                                <apex:facet name="start">
+                                    <img src="/img/loading.gif" />
+                                </apex:facet>
+                                <apex:facet name="stop">
+                                    <apex:commandLink value="Remove" status="removeStatus" action="{!pItem.removeItem}" reRender="pb"/>
+                                </apex:facet>
+                            </apex:actionStatus>
+                        </apex:outputPanel>
+                    </apex:column>
+                    <apex:column headerValue="Platform">
+                        <apex:outputPanel rendered="{!AND((pItem.platformSpecific.Id!=null), (isEditEnabled == false))}">
+                            <apex:outputField value="{!pItem.platformSpecific.Platform__c}"/>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!OR((pItem.platformSpecific.Id==null), (isEditEnabled == true))}">
+                            <apex:inputField value="{!pItem.platformSpecific.Platform__c}"/>
+                        </apex:outputPanel>
+                    </apex:column>
+                    <apex:column headerValue="LOB">
+                        <apex:outputPanel rendered="{!AND((pItem.platformSpecific.Id!=null), (isEditEnabled == false))}">
+                            <apex:outputField value="{!pItem.platformSpecific.LOB__c}"/>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!OR((pItem.platformSpecific.Id==null), (isEditEnabled == true))}">
+                            <apex:inputField value="{!pItem.platformSpecific.LOB__c}"/>
+                        </apex:outputPanel>
+                    </apex:column>
+                    <apex:column headerValue="Instruction">
+                        <apex:outputPanel rendered="{!AND((pItem.platformSpecific.Id!=null), (isEditEnabled == false))}">
+                            <apex:outputField value="{!pItem.platformSpecific.Instruction__c}"/>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!OR((pItem.platformSpecific.Id==null), (isEditEnabled == true))}">
+                            <apex:inputField value="{!pItem.platformSpecific.Instruction__c}"/>
+                        </apex:outputPanel>
+                    </apex:column>
+                    <apex:column headerValue="Level 1 ID">
+                        <apex:outputPanel rendered="{!AND((pItem.platformSpecific.Id!=null), (isEditEnabled == false))}">
+                            <apex:outputField value="{!pItem.platformSpecific.Level_1_Record_ID__c}"/>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!OR((pItem.platformSpecific.Id==null), (isEditEnabled == true))}">
+                            <apex:inputField value="{!pItem.platformSpecific.Level_1_Record_ID__c}"/>
+                        </apex:outputPanel>                           
+                    </apex:column>
+                    <apex:column headerValue="Level 2 ID">
+                        <apex:outputPanel rendered="{!AND((pItem.platformSpecific.Id!=null), (isEditEnabled == false))}">
+                            <apex:outputField value="{!pItem.platformSpecific.Level_2_record_ID__c}"/>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!OR((pItem.platformSpecific.Id==null), (isEditEnabled == true))}">
+                            <apex:inputField value="{!pItem.platformSpecific.Level_2_record_ID__c}"/>
+                        </apex:outputPanel>   
+                       
+                    </apex:column>
+                    <apex:column headerValue="Level 3 ID">
+                        <apex:outputPanel rendered="{!AND((pItem.platformSpecific.Id!=null), (isEditEnabled == false))}">
+                            <apex:outputField value="{!pItem.platformSpecific.Level_3_record_ID__c}"/>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!OR((pItem.platformSpecific.Id==null), (isEditEnabled == true))}">
+                            <apex:inputField value="{!pItem.platformSpecific.Level_3_record_ID__c}"/>
+                        </apex:outputPanel>   
+                       
+                    </apex:column>
+                    <apex:column headerValue="Effective Date">
+                        <apex:outputPanel rendered="{!AND((pItem.platformSpecific.Id!=null), (isEditEnabled == false))}">
+                            <apex:outputField value="{!pItem.platformSpecific.EffectiveDate__c}"/>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!OR((pItem.platformSpecific.Id==null), (isEditEnabled == true))}">
+                            <apex:inputField value="{!pItem.platformSpecific.EffectiveDate__c}"/>
+                        </apex:outputPanel>
+                    </apex:column>
+                    <apex:column headerValue="">
+                        <apex:outputPanel rendered="{!pItem.platformSpecific.Id!=null}">
+                            <apex:outputLink value="/apex/EditPlatformSpecific?id={!pItem.platformSpecific.Id}&retURL=/apex/PlatformSpecificManagement?ClientInfoId={!clientInfoId}" style="">Edit Details</apex:outputLink>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!pItem.platformSpecific.Id ==null}">
+                            <apex:commandButton value="Cancel"  id="CancelButton" reRender="pb"/>
+                        </apex:outputPanel>
+                    </apex:column>
+                    <apex:column headerValue="Termed?" headerClass="headerWordWrap">
+                        <apex:outputField value="{!pItem.platformSpecific.Termed__c}" />                      
+                    </apex:column>
+                    <apex:column headerValue="Termed Date">
+                        <apex:outputText value="{0,date,MM/dd/yy}"> 
+                            <apex:param value="{!pItem.platformSpecific.Termed_Date__c}"/>
+                        </apex:outputText>
+                    </apex:column>
+                    <apex:column headerValue="Specialty Pharmacy Benefit" headerClass="headerWordWrap">
+                        <apex:outputField value="{!pItem.platformSpecific.Specialty_Pharmacy_Benefit__c}"/>
+                    </apex:column>
+                    <apex:column headerValue="Specialty Price List" headerClass="headerWordWrap">
+                        <apex:outputField value="{!pItem.platformSpecific.Specialty_Price_List__c}"/>
+                    </apex:column>
+                    <apex:column headerValue="Different GSTP&Formulary Effective Dates" headerClass="headerWordWrap">
+                        <apex:outputField value="{!pItem.platformSpecific.DifferentGSTPFormularyEffectiveDates__c}"/>
+                    </apex:column>
+                    <apex:column headerValue="Non-Specialty Formulary Choice" headerClass="headerWordWrap">
+                        <apex:outputText value="{!pItem.platformSpecific.Non_Specialty_Formulary_Choice__c}"/>
+                    </apex:column>
+                    <apex:column headerValue="Non-Specialty Formulary Effective Date" headerClass="headerWordWrap">
+                        <apex:outputText value="{0,date,MM/dd/yy}"> 
+                            <apex:param value="{!pItem.platformSpecific.NonSpecialtyFormularyEffectiveDate__c}"/>
+                        </apex:outputText>
+                    </apex:column>
+                    <apex:column headerValue="Non-Specialty Formulary End Date" headerClass="headerWordWrap">
+                        <apex:outputText value="{0,date,MM/dd/yy}"> 
+                            <apex:param value="{!pItem.platformSpecific.NonSpecialtyFormularyRebateEndDate__c}"/>
+                        </apex:outputText>
+                    </apex:column>
+                    <apex:column headerValue="GSTP Choice" headerClass="headerWordWrap">
+                        <apex:outputText value="{!pItem.platformSpecific.GSTP_Choice__c}"/>
+                    </apex:column>
+                    <apex:column headerValue="GSTP Effective Date" headerClass="headerWordWrap">
+                        <apex:outputText value="{0,date,MM/dd/yy}"> 
+                            <apex:param value="{!pItem.platformSpecific.GSTPEffectiveDate__c}"/>
+                        </apex:outputText>
+                    </apex:column>
+                    <apex:column headerValue="GSTP End Date" headerClass="headerWordWrap">
+                        <apex:outputText value="{0,date,MM/dd/yy}"> 
+                            <apex:param value="{!pItem.platformSpecific.GSTPEndDate__c}"/>
+                        </apex:outputText>
+                    </apex:column>
+                    <apex:column headerValue="Specialty Formulary Choice" headerClass="headerWordWrap">
+                        <apex:outputText value="{!pItem.platformSpecific.Specialty_Formulary_Choice__c}"/>
+                    </apex:column>
+                    <apex:column headerValue="Specialty Formulary Effective Date" headerClass="headerWordWrap">
+                        <apex:outputText value="{0,date,MM/dd/yy}"> 
+                            <apex:param value="{!pItem.platformSpecific.SpecialtyFormularyEffectiveDate__c}"/>
+                        </apex:outputText>
+                    </apex:column>
+                    <apex:column headerValue="Specialty Formulary End Date" headerClass="headerWordWrap">
+                        <apex:outputText value="{0,date,MM/dd/yy}"> 
+                            <apex:param value="{!pItem.platformSpecific.SpecialtyFormularyEndDate__c}"/>
+                        </apex:outputText>
+                    </apex:column>
+                    <apex:inlineEditSupport event="ondblClick" showOnEdit="saveButton" hideOnEdit="editButton,addNewBtn" />
+                </apex:pageBlockTable>
+                
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        </div>
+    </apex:form>
+</apex:page>

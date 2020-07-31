@@ -1,0 +1,171 @@
+<aura:component controller="Apttus_GridObjectdata" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <aura:attribute name="objects" type="Network_Pricing__c"/>	
+    <aura:attribute name="yearoptions" type="List"/>
+    <aura:attribute name="brandbasis" type="Object"/>
+    <aura:attribute name="genericbasis" type="Object"/>
+    <aura:attribute name="disabled" type="Boolean" Default="false"/>
+    <aura:attribute name="berdisabled" type="Boolean" Default="false"/>
+    <aura:attribute name="gerdisabled" type="Boolean" Default="false"/>
+    <aura:attribute name="merdisabled" type="Boolean" Default="false"/>
+    <aura:attribute name="neddisabled" type="Boolean" Default="false"/>
+    <aura:attribute name="ssgdisabled" type="Boolean" Default="false"/>
+    <aura:attribute name="brdisabled" type="Boolean" Default="false"/>
+    <aura:attribute name="flatdisabled" type="Boolean" Default="false"/>
+    <aura:attribute name="nonmacdisabled" type="Boolean" Default="false"/>
+    <aura:attribute name="brandrequired" type="Boolean" Default="false"/>
+    <aura:attribute name="prefrequired" type="Boolean" Default="false"/>
+    <aura:attribute name="flatrequired" type="Boolean" Default="false"/>
+    <aura:attribute name="nonmacrequired" type="Boolean" Default="false"/>
+    <aura:attribute name="duplicaterow" type="Integer" default="0"/>
+    <aura:attribute name="activerownum" type="Integer"/>
+    <aura:attribute name="networkname" type="String" default="" />
+    <aura:attribute name="networktype" type="String" default="" />
+    <aura:attribute name="lob" type="String" default="" />
+    <aura:attribute name="desc" type="String" default="" />
+    <aura:attribute name="isDeleteAlertOpen" type="Boolean" default="false" />
+    <aura:attribute name="yearcount" type="Integer"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Save_Event" action="{!c.handleSave}"/>
+    <aura:handler event="c:Apttus_Grid_Copy_Event" action="{!c.handleupdate}"/>
+    <aura:registerEvent name="savenotifyEvent" type="c:Apttus_Grid_NT_Notify_Save_Event"/>
+    <aura:registerEvent name="errornotifyEvent" type="c:Apttus_Grid_NT_Notify_Error_Event"/>
+    <aura:registerEvent name="cancelnotifyEvent" type="c:Apttus_Grid_Cancel_Parent_Event"/>
+    <aura:registerEvent name="refreshnotifyEvent" type="c:Apttus_Grid_Refresh_Parent_Event"/>
+    <aura:registerEvent name="inactiveEvent" type="c:Apttus_Grid_Inactive_Parent_Event"/>
+    <aura:registerEvent name="savenotEvent" type="c:Apttus_Grid_Close_New_Event"/>
+    <aura:registerEvent name="deleteVerify" type="c:Apttus_Delete_Verify_Event"/>
+    <ltng:require styles="{!$Resource.multilinetoastmessage}" />
+    <lightning:layout>
+        <aura:if isTrue="{!v.isDeleteAlertOpen}">
+            <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                <div class="slds-modal__container" style="Width: 31%;">
+                    <div class="slds-modal__header">
+                        <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                            X
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="header99" class="slds-text-heading--medium">Delete Network Pricing Record</h2>
+                    </div>
+                    <div class="slds-modal__content slds-p-around--medium">
+                        <center><p>
+                            Are you sure you want to delete the record.
+                            </p> 
+                        </center>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                        <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete11</lightning:button>                    
+                    </div>
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open"></div>        
+        </aura:if>
+    </lightning:layout>
+    <tr aura:id="tablerow" class="highlight" >
+        <td>
+            <div>
+                <div class="slds-p-top_x-small">delete</div>
+                <lightning:icon iconName="utility:delete" size="small"  onclick="{!c.handledelete}" alternativeText="Delete" />
+            </div>      
+        </td>
+        <td>
+            <div>
+                <lightning:select aura:id="input1"  name="input1"  required = "true" disabled= "false" onchange="{!c.handleChange}">
+                    <option value="{!v.objects.Year__c}" text="{!v.objects.Year__c}"></option>
+                    <aura:iteration items="{!v.yearoptions}" var="opt">
+                        <option value="{!opt.value}">{!opt.value}</option>
+                    </aura:iteration>
+                </lightning:select>              
+            </div>      
+        </td>
+        <td>
+            <div>
+                <lightning:input   aura:id="input111" disabled="true" name="input11" value="{!v.objects.Plan_Year__c}" />                         
+            </div>      
+        </td>
+        <td>
+            <div>
+                <lightning:select aura:id="input131"  name="input131"  required="true" disabled= "false" onchange="{!c.handleChange}">
+                    <aura:iteration items="{!v.brandbasis}" var="opt">
+                        <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+                    </aura:iteration>
+                    <option value="{!v.objects.Brand_Basis__c}" text="{!v.objects.Brand_Basis__c}"></option>
+                </lightning:select>
+            </div>      
+        </td>
+        <td>
+            <div>
+                <lightning:input type="text" aura:id="input2" required="{!v.brandrequired}" disabled="{!v.brdisabled}" name="input2" value="{!v.objects.Brand_Rate__c}" onchange="{!c.handleChange}"/>                         
+            </div>      
+        </td>
+        
+        
+        <td>
+            <div>
+                <lightning:select aura:id="input411"  name="input411"  disabled= "true" onchange="{!c.handleChange}">
+                    <aura:iteration items="{!v.genericbasis}" var="opt">
+                        <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+                    </aura:iteration>
+                    <option value="{!v.objects.Generic_Basis__c}" text="{!v.objects.Generic_Basis__c}"></option>
+                </lightning:select>
+            </div>      
+        </td>
+        <td>
+            <div>
+                <lightning:input type="text" aura:id="input11" name="input11" required="{!v.nonmacrequired}"  disabled="{!v.nonmacdisabled}" value="{!v.objects.Non_MAC_Generic_Rate__c}" onchange="{!c.handleChange}"/>                         
+            </div>      
+        </td>
+        <td>
+            <div>
+                <lightning:input type="text" aura:id="input7" name="input7" disabled="{!v.gerdisabled}" value="{!v.objects.GER_Guarantee_Rate__c}" onchange="{!c.handleChange}"/>                         
+            </div>      
+        </td>
+        <td>
+            <div>
+                <lightning:input type="text" aura:id="input12" name="input12" required="true" value="{!v.objects.Brand_Dispensing_Fee__c}" onchange="{!c.handleChange}"/>                         
+            </div>      
+        </td>
+        <td>
+            <div>
+                <lightning:input type="text" aura:id="input13" name="input13" required="true" value="{!v.objects.Generic_Dispensing_Fee__c}" onchange="{!c.handleChange}"/>                         
+            </div>      
+        </td>
+        <td>
+            <div>
+                <lightning:input type="text" aura:id="input10" name="input10" disabled="{!v.ssgdisabled}" value="{!v.objects.SSG_Guarantee_Rate__c}" onchange="{!c.handleChange}"/>                         
+            </div>      
+        </td>
+        <td>
+            <div>
+                <lightning:input type="text" aura:id="input5" name="input5" required="{!v.flatrequired}"  disabled="{!v.flatdisabled}" value="{!v.objects.Generic_Rate__c}" onchange="{!c.handleChange}"/>                         
+            </div>      
+        </td>
+        
+        <td>
+            <div>
+                <lightning:input type="text" aura:id="input6" name="input6" disabled="{!v.berdisabled}" value="{!v.objects.BER_Guarantee_Rate__c}" onchange="{!c.handleChange}"/>                         
+            </div>      
+        </td>
+        
+        <td>
+            <div>
+                <lightning:input type="text" aura:id="input8" name="input8" disabled="{!v.merdisabled}" value="{!v.objects.MER_Guarantee_Rate__c}" onchange="{!c.handleChange}"/>                         
+            </div>      
+        </td>
+        <td>
+            <div>
+                <lightning:input type="text" aura:id="input3"  required="{!v.prefrequired}" disabled="{!v.disabled}" name="input3" value="{!v.objects.Preferred_Brand_Rate__c}" onchange="{!c.handleChange}"/>                         
+            </div>      
+        </td>
+        <td>
+            <div>
+                <lightning:input type="text" aura:id="input4" required="{!v.prefrequired}" disabled="{!v.disabled}" name="input4" value="{!v.objects.Non_Preferred_Brand_Rate__c}" onchange="{!c.handleChange}"/>                         
+            </div>      
+        </td>
+        <td>
+            <div>
+                <lightning:input type="text" aura:id="input9" name="input9" disabled="{!v.neddisabled}" value="{!v.objects.NED_Guarantee_Rate__c}" onchange="{!c.handleChange}"/>                         
+            </div>      
+        </td>
+    </tr>
+</aura:component>

@@ -1,0 +1,44 @@
+<apex:page standardController="GDR_Guarantee__c" extensions="GdrGuaranteeNewEditClass" Title="GDR Guarantee Edit" id="pg" lightningStylesheets="true"> 
+    <apex:form id="frm">
+      <script>
+     function setFocusOnLoad(){
+     document.getElementById('{!$Component.pg.frm.PB.PBS1.Gtypeid}').focus();
+     }
+  onload=setFocusOnLoad; 
+  </script> 
+        <apex:pagemessages id="pmsg"></apex:pagemessages>
+        <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+        <apex:pageBlock title="GDR Guarantee Edit" id="PB">
+            <apex:pageBlockSection title="GDR Guarantee Detail" id="PBS1">
+                <apex:outputField value="{!gdrGuaranteeObj.FAF_ID__c}"/>
+                <apex:outputField value="{!gdrGuaranteeObj.Guarantee_Information__c}"/>
+                <apex:inputField value="{!gdrGuaranteeObj.Guarantee_Type__c}" id="Gtypeid" required="true"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="GDR Guarantee Information" id="PBS2">
+               <apex:inputField value="{!gdrGuaranteeObj.Year_1__c}"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!gdrGuaranteeObj.Year_2__c}"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!gdrGuaranteeObj.Year_3__c}"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!gdrGuaranteeObj.Penalty_Amount__c }" required="{!guarPayoutBool}"/>
+            </apex:pageBlockSection>        
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!saveUpdateGdrGuaranteeObj}" title="Save" value="Save" reRender="pmsg, PB" oncomplete="window.scrollTo(0, 0);" status="status"/>
+                <apex:commandButton action="{!Cancel}" title="Cancel" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>    
+</apex:page>

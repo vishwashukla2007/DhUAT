@@ -1,0 +1,570 @@
+<apex:page standardController="Central_Hub__c" lightningStylesheets="true" title="FAF Edit" 
+extensions="FAFEditPageController" id="thePage">
+    
+ <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        /* The Modal (background) */
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        /* Modal Content */
+        
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 50%;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+        /* Add Animation */
+        
+        @-webkit-keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0
+            }
+            to {
+                top: 0;
+                opacity: 1
+            }
+        }
+        
+        @keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0
+            }
+            to {
+                top: 0;
+                opacity: 1
+            }
+        }
+        
+        .modal-header {
+            padding: 0px;
+            height: 29px;
+            color: #ff0000;
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+            border-top-right-radius: .25rem;
+            border-top-left-radius: .25rem;
+            border-bottom: 2px solid rgb(221, 219, 218);
+            text-align: center;
+        }
+        
+        .modal-body {
+            padding: 10px 16px;
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+            color: #3c3d3e;
+        }
+        
+        .modal-footer {
+            padding: 5px;
+            padding-right: 4px;
+            text-align: right;
+            color: #000000;
+            border-top: 2px solid rgb(221, 219, 218);
+            background-color: rgb(243, 242, 242);
+            border-bottom-left-radius: .25rem;
+            border-bottom-right-radius: .25rem;
+        }
+        
+        .button {
+            background-color: #4CAF50;
+            /* Green */
+            border: none;
+            color: white;
+            padding: 1px 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 2px 2px;
+            -webkit-transition-duration: 0.4s;
+            /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius: 20px;
+        }
+        
+        .button2 {
+            background-color: rgba(0, 68, 135, 1.0);
+            color: white;
+            border: 2px solid rgba(0, 68, 135, 1.0);
+            border-radius: 5px;
+            width: 70px;
+            height: 28px;
+        }
+        
+        .button2:hover {
+            background-color: #002080;
+            color: white;
+        }
+        
+        .button5 {
+            background-color: #555555;
+            color: white;
+            border: 2px solid #555555;
+            border-radius: 5px;
+            width: 62px;
+            height: 33px;
+        }
+        
+        .button5:hover {
+            background-color: #262626;
+            color: white;
+        }
+
+    </style>
+    <style type="text/css">
+.myClass2{
+ background-color: rgba(0, 68, 135, 1.0) !important;
+            color: white !important;
+            border: 2px solid rgba(0, 68, 135, 1.0) !important;
+            border-radius: 5px;
+            width: 80px;
+            height: 32px;
+            text-align: center !important;
+}
+.myClass2:hover{
+     background-color: #262626 !important;
+            color: white !important;
+             text-align: center !important;
+.myClass5{
+ background-color: #555555 !important;
+            color: white !important;
+            border: 2px solid #555555 !important;
+            border-radius: 5px;
+            width: 80px;
+            height: 34px;
+            text-align: center !important;
+}
+.myClass5:hover{
+     background-color: #262626 !important;
+            color: white !important;
+             text-align: center !important;
+}
+
+</style>
+ <c:CustomLookupScriptVC objectName="LOB_Descriptor_support__c"  />   
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"/>
+     <script>
+        var BTSelect;
+        var confirmModel;
+        var modal;
+        var BTValue = '{!Central_Hub__c.Business_Type__c}';
+        var fafId = '{!Central_Hub__c.Id}';
+        
+        <!--*****W-000540 start********** -->
+
+        function DisplayWariningMessages(){
+               var SApproval = document.getElementById('{!$Component.thePage.theForm.pb.pbs3.fafReleaseId}').checked;
+               var fafStatus = document.getElementById('{!$Component.thePage.theForm.pb.pbs2.fafStatusId}').value;
+               if( (fafStatus  == 'Draft' || fafStatus  == 'Sales Review' || fafStatus  == 'Peer Review' || fafStatus  == 'Implemented') && SApproval && ({!BAWarning} || {!ROPWarning})   ){
+                   if({!BAWarning}){
+                    document.getElementById("paragraphId").innerHTML = '{!BAWarningErr}';
+                    $("#confirmModel1").show();
+                   }
+                   if({!ROPWarning}){
+                    document.getElementById("paragraphId").innerHTML = '{!ROPWarningErr}';
+                    $("#confirmModel1").show();
+                 }
+                   
+               }
+               else{
+                   verifyBeforeSave();
+               }
+               
+        }
+        <!--*****W-000540 end********** -->
+        function verifyBeforeSave(){
+            modal = document.getElementById('confirmModel');
+            var businessType = document.getElementById('{!$Component.thePage.theForm.pb.pbs2.businessTypeId}').value;
+            var fafStatus = document.getElementById('{!$Component.thePage.theForm.pb.pbs2.fafStatusId}').value;
+            
+            /*
+            if(fafStatus == 'Implemented'){
+                //alert('fafStatus == Implemented');
+            }*/
+            if((((BTValue == 'New' || BTValue == 'Add On') && businessType == 'Existing') && fafStatus == 'Implemented') || ((businessType == 'New' || businessType == 'Add On') &&  BTValue == 'Existing') && fafStatus == 'Implemented'){
+                FAFEditPageController.calculateRebateEffectiveDate( businessType, fafId,
+                        function(results, event) {
+                            //alert('results' + results);
+                            if(event.type == 'exception'){
+                                //BTSelect = thisObj;
+                                //modal.style.display = 'block';
+                                alert('exception');
+                                console.log("exception");
+                                console.log(event);
+                            }else if(event.status){
+                                //alert(results);
+                                if(results != 'Rebate Effective Date Not Defined'){
+                                    document.getElementById("myOutput").value = results;
+                                    //BTSelect = businessType;
+                                    //modal.style.display = 'block';
+                                    $("#confirmModel").show();
+                                }
+                                else{
+                                    saveMethod();
+                                }
+
+                            }else{
+                                //BTSelect = thisObj;
+                                //modal.style.display = 'block';
+                                console.log(event.message);
+                            }
+                        }
+                );
+                
+            }
+            else{
+                saveMethod();    
+            }
+        }
+       
+
+        function confirmClentSelection(){
+            modal.style.display = 'none';
+            //BTValue = BTSelect.value;
+            saveMethod();
+        }
+        function cancelClentSelection(){
+            modal.style.display = 'none';
+            //BTSelect.value = BTValue;
+           // alert(BTValue);
+         document.getElementById('{!$Component.thePage.theForm.pb.pbs2.businessTypeId}').value = BTValue;            
+        
+        }
+     <!--*****W-000540 start********** -->   
+        function confirmClentSelection1(){
+            $("#confirmModel1").hide();
+            verifyBeforeSave();
+        }
+        function cancelClentSelection1(){
+            $("#confirmModel1").hide();
+        
+        }
+      <!--*****W-000540 end********** -->  
+        function changefafstatus(fafStatus){
+           // alert(fafStatus);
+            var fafApprovlStatus = document.getElementById('{!$Component.thePage.theForm.pb.pbs3.fafReleaseId}').checked;
+           
+            if(fafStatus == 'Implemented'){
+                /*
+                var fafStatusOnCheck = document.getElementById('{!$Component.thePage.theForm.pb.pbs2.fafStatusId}').value;                  
+                //var sss = {!PlatSpecFlag1};
+                //alert(':::PlatSpecFlag1:: '+sss);
+                if({!PlatSpecFlag1} && fafStatusOnCheck == 'Implemented'){
+                    
+                    var modal = document.getElementById('myModal10');
+                    modal.style.display = "block";
+                }
+                */                      
+                changeapprovalcheckbox(fafApprovlStatus);
+            }
+        }
+        function changeapprovalcheckbox(status){
+            var fafStatusOnCheck = document.getElementById('{!$Component.thePage.theForm.pb.pbs2.fafStatusId}').value;
+            //alert(fafStatusOnCheck);
+            //alert(status);        
+            if( status && {!PlatSpecFlag} && fafStatusOnCheck == 'Implemented'){
+                var modal = document.getElementById('myModal9');
+                modal.style.display = "block";
+            }
+        }
+        //myModal9 OK
+        function popupOK(){
+            var modal = document.getElementById('myModal9');
+            modal.style.display = "none";           
+        }
+        //myModal10 OK
+        /*
+        function popupOK1(){
+            var modal = document.getElementById('myModal10');
+            modal.style.display = "none";           
+        } */        
+       /*function redirecttodetail(){
+            var fafId = document.getElementById('{!$Component.thePage.theForm.pb.fafId}').value;
+            console.log(fafId);
+            window.location = '/'+fafId;
+            //sforce.one.navigateToSObject(fafId,'detail' );
+        }*/
+
+        function openPeerReviewedSelectedWaring(PeerReviewedValue){
+                //alert('here');
+            //console.log('test'); 
+            var checkBoxValue = document.getElementById(PeerReviewedValue);
+           
+            var fafStatus = document.getElementById('{!$Component.thePage.theForm.pb.pbs2.fafStatusId}').value;
+            //alert('checkBoxValue');
+                          
+            if(!checkBoxValue.checked && (fafStatus == 'Sales Approved' || fafStatus == 'Implemented')){           
+                var notificationMessageDiv = $("[id$='myModal1']");
+                //console.log('here' + notificationMessageDiv);
+                notificationMessageDiv.show();   
+                //saveMethod();             
+            }
+            else{
+                closePeerReviewedSelectedWaring();
+            }
+        }
+        function closePeerReviewedSelectedWaring(){                     
+            var notificationMessageDiv = $("[id$='myModal1']");
+            notificationMessageDiv.hide();                    
+        }
+        function openApprovedBySalesSelectedWaring(ApprovedBySalesVal){
+                //alert('here');
+            //console.log('test'); 
+            var checkBoxValue = document.getElementById(ApprovedBySalesVal);
+            
+            var fafStatus = document.getElementById('{!$Component.thePage.theForm.pb.pbs2.fafStatusId}').value;
+            //alert('checkBoxValue');
+                        
+            if(!checkBoxValue.checked && (fafStatus == 'Sales Approved' || fafStatus == 'Implemented')){           
+                var notificationMessageDiv = $("[id$='myModal12']");
+                //console.log('here' + notificationMessageDiv);
+                notificationMessageDiv.show();     
+                //saveMethod();
+            }
+            else{
+                closeApprovedBySalesSelectedWaring();
+            }
+        }
+        function closeApprovedBySalesSelectedWaring(){                     
+            var notificationMessageDiv = $("[id$='myModal12']");
+            notificationMessageDiv.hide();                    
+        }       
+    </script>
+    <apex:outputPanel id="privmsg" rendered="{!isPriv }">
+        <apex:form >
+        <apex:pageBlock >
+           <font size="3">{!$Label.Apttus_priv_message}</font>    
+         <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="OK" action="{!cancel}"/>
+         </apex:pageBlockButtons>
+         </apex:pageBlock>
+       </apex:form>
+    </apex:outputPanel>
+    <apex:form id="theForm" rendered="{! !showerrorBool}">
+     <apex:pageMessages />    
+    <div id="myModal1" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><center>WARNING</center></h2>
+                </div>
+            <div class="modal-body">
+                        <p>
+                         <center>
+                          Revoking the Peer Approval will also result in revoking of the Sales Approval and the FAF Status will be updated to Draft. Do you still want to continue?
+                         </center></p>
+                       </div>
+                <div class="modal-footer">
+                        <apex:commandButton styleClass="button myClass2" value="Continue" action="{!PeerReviewedContinue}" oncomplete="closePeerReviewedSelectedWaring()" rerender="thePage"/>
+                        <apex:commandButton styleClass="button myClass5" value="Cancel" action="{!PeerReviewedCancel}" oncomplete="closePeerReviewedSelectedWaring()" rerender="thePage"/>
+                     </div>
+            </div>
+         </div>
+
+       
+        <div id="myModal12" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><center>WARNING</center></h2>
+                </div>
+            <div class="modal-body">
+                        <p>
+                         <center>
+                          Revoking the Sales Approval will result in FAF Status being updated to Draft. Do you still want to continue?
+                         </center>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <apex:commandButton styleClass="button myClass2" value="Continue" action="{!ApprovedBySalesContinue}" oncomplete="closeApprovedBySalesSelectedWaring()" rerender="thePage"/>
+                        <apex:commandButton styleClass="button myClass5" value="Cancel" action="{!ApprovedBySalesCancel}" oncomplete="closeApprovedBySalesSelectedWaring()" rerender="thePage"/>
+                    </div>
+            </div>
+         </div>
+        
+    
+        
+        <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+    
+        <apex:actionFunction name="saveMethod" action="{!save}" reRender="theForm" status="status">
+        </apex:actionFunction> 
+        <apex:outputPanel id="thePageBlock" rendered="{! !isPriv}">
+        <apex:pageBlock title="FAF Edit" id="pb">
+            <apex:pageBlockButtons >
+                <apex:commandButton onclick="DisplayWariningMessages()" title="Save" value="Save" rerender="dummy" />
+                <apex:commandButton immediate="true" action="{!Cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+            <apex:outputField value="{!Central_Hub__c.Id}" rendered="false"></apex:outputField>
+            <apex:pageBlockSection title="Account Information" columns="2" id="pbs1">        
+                <apex:inputField required="true" value="{!Central_Hub__c.Account_Name__c}" />
+                <apex:inputField value="{!Central_Hub__c.Segment__c}" />
+                <apex:inputField required="true" value="{!Central_Hub__c.Opportunity_Name__c}" />
+                <apex:inputField value="{!Central_Hub__c.Master_Agreement__c}" />
+                <apex:inputField value="{!Central_Hub__c.Underwriter__c}" />
+                <apex:inputField value="{!Central_Hub__c.SFS_Agreement__c}" />
+                <apex:outputLabel />
+                <!-- PCD Agreement -->
+                <apex:inputField value="{!Central_Hub__c.Agreement__c}" />
+            </apex:pageBlockSection> 
+            <apex:pageBlockSection title="FAF Header" columns="2" id="pbs2">      
+                <apex:outputField value="{!Central_Hub__c.Name}"/>
+                <apex:inputField value="{!Central_Hub__c.FAF_Type__c}"/>
+                <apex:inputField required="true" value="{!Central_Hub__c.FAF_Status__c}"  onchange="changefafstatus(this.value);" id="fafStatusId"/>
+                <apex:inputField required="true" value="{!Central_Hub__c.Business_Type__c}" id="businessTypeId"/>
+         <apex:inputField required="true" value="{!Central_Hub__c.LOB2__c}"/>
+         <apex:inputField value="{!Central_Hub__c.Reseller_Spread_Pricing__c}"/>
+         <apex:inputField required="true" value="{!Central_Hub__c.LOB_Subtype__c}"/>
+         <apex:inputField required="true" value="{!Central_Hub__c.Salesperson__c}"/>
+         <apex:inputField value="{!Central_Hub__c.LOB_Descriptor__c}" id="lookup_LOB" />
+    </apex:pageBlockSection>
+
+    <apex:pageBlockSection title="Contract Information" columns="2"> 
+      <apex:pageBlockSectionItem />
+        <apex:inputField value="{!Central_Hub__c.FAF_Close_On_Date__c}" />
+    </apex:pageBlockSection>
+    <apex:pageBlockSection title="iUMS Information" columns="2">   
+      <apex:pageBlockSectionItem />
+        <apex:inputField value="{!Central_Hub__c.Manual_Task_ID__c}" />
+      <apex:pageBlockSectionItem />
+       <apex:inputField value="{!Central_Hub__c.Manual_Offer_ID__c}" />
+      <apex:pageBlockSectionItem />
+       <apex:inputField value="{!Central_Hub__c.Manual_LOB_ID__c}" />
+    </apex:pageBlockSection>
+    <apex:pageBlockSection title="Approval Information" columns="2" id="pbs3">
+       <apex:inputField value="{!Central_Hub__c.Peer_Reviewer__c}" />
+       <apex:inputField value="{!Central_Hub__c.Sales_Approver__c}" />
+       <apex:inputField value="{!Central_Hub__c.Peer_Reviewed__c}" onchange="openPeerReviewedSelectedWaring('{!$Component.PeerReviewedValue}');" id="PeerReviewedValue" rendered="{!dispRevoke}" />
+       <apex:inputField value="{!Central_Hub__c.Approved_By_Sales__c}" onchange="openApprovedBySalesSelectedWaring('{!$Component.ApprovedBySalesVal}');" id="ApprovedBySalesVal" rendered="{!dispRevoke}"/>
+       <apex:inputField value="{!Central_Hub__c.Turn_Around_Time__c}"/>
+       <apex:inputField value="{!Central_Hub__c.Initiate_FAF_Release__c}"  onchange="changeapprovalcheckbox(this.checked)" id="fafReleaseId"/>
+     <!--  <apex:inputField value="{!Central_Hub__c.Platform_Specifics_Details__c}" />-->
+     
+    </apex:pageBlockSection>
+    
+    </apex:pageBlock>
+    </apex:outputpanel>
+    <!--popup block -->
+    
+    <div id="confirmModel1" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><center>WARNING</center></h2>
+                </div>
+            <div class="modal-body">
+              <p>
+                 <center><ul id="paragraphId" ></ul></center>
+            </p>
+            </div>
+                <div class="modal-footer">
+                    <button class="button button2" type="button" onclick="confirmClentSelection1()">Continue</button>
+                    <button class="button button5" type="button" onclick="cancelClentSelection1()">Cancel</button>
+                </div>
+            </div>
+         </div>
+    
+    <!-- The Modal 2 -->
+        <div id="confirmModel" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><center>WARNING</center></h2>
+                </div>
+            <div class="modal-body">
+              <p><center>The ‘Business Type’ selection will update the ‘Rebate Effective Date’ to <output id="myOutput" name="x"></output>.
+                         Please confirm if you are okay with the updated ‘Rebate Effective Date’.</center></p>
+            </div>
+                <div class="modal-footer">
+                    <button class="button button2" type="button" onclick="confirmClentSelection()">Continue</button>
+                    <button class="button button5" type="button" onclick="cancelClentSelection()">Cancel</button>
+                </div>
+            </div>
+         </div>
+    <!-- end popup -->
+    
+     <!-- The FAF STATUS modal -->
+        <div id="myModal9" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body" style="text-align: center;">
+              <p>There is no Platform Specifics CAG record (Client Information) defined.</p>
+              
+            </div>
+            
+            <div class="modal-footer" style="text-align: center;">
+              <button class="button button5" type="button" onclick="popupOK()">OK</button>            
+            </div>
+          </div>
+
+        </div>
+     
+      <!--The FAF STATUS modal Pricing effective date-->
+        <div id="myModal10" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body" style="text-align: center;">
+              <p>Platform Specifics Effective Date is before the Pricing Effective Date.</p>
+              
+            </div>
+            
+            <div class="modal-footer" style="text-align: center;">
+              <button class="button button5" type="button" onclick="popupOK1()">OK</button>            
+            </div>
+          </div>
+
+        </div>   
+    </apex:form>
+    <apex:form rendered="{!showerrorBool}">
+        <apex:pageBlock title="FAF">
+            <h1>You can create a new FAF only from an Opportunity</h1>
+            <a href="/006?fcf={!$Label.AllOpportunitiesListView}">Click here to go to the Opportunities List</a>
+            <br/>
+            <br/>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton title="Cancel" action="{!Cancel}" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,27 @@
+.THIS .right-align {
+    text-align: right;
+}
+.THIS .font {
+    font-size: 18pt;
+}
+.THIS .text-label--small {
+    font-size: 0.65rem;
+    line-height: 0.90;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+ .THIS .text-label--small {
+    font-size: 0.60rem;
+    line-height: 0.90;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+ .THIS .text-heading--small {
+    font-size: .50rem;
+    line-height: 1.25;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}

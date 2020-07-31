@@ -1,0 +1,314 @@
+<aura:component implements="force:lightningQuickAction" access="global" controller="Apttus_GridObjectdata">
+    <aura:attribute name="DisplayGen" type="Boolean" default="true"/>
+    <aura:attribute name="DisplaySpinner" type="Boolean" default="false"/>
+     <aura:attribute name="disable" type="Boolean" default="false"/>
+    <aura:attribute name="OpenFile" type="Boolean" default="false"/>
+    <aura:attribute name="displayclause" type="Boolean" default="true"/>
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="escalatingdate" type="Date"/>
+    <aura:attribute name="pricingDate" type="Date"/>
+    <aura:attribute name="duedate" type="Date"/>
+    <aura:attribute name="proposalyear" type="Integer"/>
+    <aura:attribute name="agreementterms" type="String"/>
+    <aura:attribute name="agreement" type="Apttus__APTS_Agreement__c"/>
+    <aura:attribute name="agreementline" type="Apttus__AgreementLineItem__c"/>
+    <aura:attribute name="documentversiondtl" type="Apttus__DocumentVersionDetail__c"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="record" type="String"/>
+    <aura:attribute name="tasksubtype" type="String"/>
+    <aura:attribute name="accountid" type="String"/>
+    <aura:attribute name="url" type="String"/>
+    <aura:attribute name="radioselection" type="String" default="docx"/>
+    <aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}"/>
+    <aura:attribute name="docname" type="String"/>
+    <aura:attribute name="defdocname" type="String"/>
+    <aura:attribute name="defaultcaveats0" type="String" default="{!$Label.c.PCD_Marketcheck_Caveats0}"/>
+    <aura:attribute name="defaultcaveats" type="String" default="{!$Label.c.PCD_Marketcheck_Caveats}"/>
+    <aura:attribute name="defaultcaveats2" type="String" default="{!$Label.c.PCD_Marketcheck_Caveats2}"/>
+    <aura:attribute name="defaultcaveats3" type="String" default="{!$Label.c.PCD_Marketcheck_Caveats3}"/>
+    <aura:attribute name="defaultcaveats4" type="String" default="{!$Label.c.PCD_Marketcheck_Caveats4}"/>
+    <aura:attribute name="defaultcaveats2substr1" type="String"/>
+    <aura:attribute name="defaultcaveats2substr3" type="String"/>
+    <aura:attribute name="defaultcaveats2substr4" type="String"/>
+    <aura:attribute name="caveats" type="String"/>
+    <aura:registerEvent name="errornotifyEvent" type="c:Apttus_Grid_NT_Notify_Error_Event"/>
+    <aura:attribute name="value" type="String" default="true"/>
+    <!-- <div class="slds-box slds-box_small"> --> 
+    <aura:attribute name="headerTitle" type="Aura.Component[]">
+        <h1>
+            <b>Generate Document</b>
+        </h1>
+    </aura:attribute>
+    <lightning:card   title="{!v.headerTitle}">
+         <lightning:layout>
+		 <aura:if isTrue="{!v.OpenFile}">
+                <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                    <div class="slds-modal__container" style="Width: 31%;">
+                        <div class="slds-modal__header">
+                            <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closePCDFile}">
+                                X
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="header99" class="slds-text-heading--medium">PCD File</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            <center><p>
+                                Your document has been successfully generated!
+                                </p> 
+                                <lightning:layout horizontalAlign="center">
+                                 <lightning:layoutItem size="3">
+                                 <div class="slds-p-top_medium"></div>
+                                     <lightning:navigation aura:id="fileopen"/><a class="url" href="{!v.url}">View Document / Edit Caveats</a>
+                                 <!-- <lightning:formattedURL   aura:id="viewdoc"  name="viewdoc" value="{!v.documentversiondtl.Apttus__View__c}"/> -->   
+            					 </lightning:layoutItem>
+                                 </lightning:layout>
+                            </center>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closePCDFile}">Cancel</lightning:button>
+                            <lightning:button class="slds-button slds-button--brand" onclick="{!c.accountPage}">Client HUB Page</lightning:button>                    
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open"></div>        
+            </aura:if>
+ 			</lightning:layout>    
+             
+        <div class="slds-p-around_medium" style="padding: 1rem;">	
+            <div class="slds-box slds-theme_default" >
+            <lightning:layout>
+            <lightning:layoutItem size="2">
+            <div class="slds-p-top_medium"></div>
+            <lightning:layout>
+            <span class="slds-text-heading_small">{!v.tasksubtype}</span>
+            </lightning:layout>
+            <lightning:layout>
+            <span class="slds-text-heading_small"><b>Document Name</b></span>
+            </lightning:layout>
+            </lightning:layoutItem>
+            </lightning:layout> 
+            <lightning:layout>
+            <lightning:layoutItem size="4">
+            <lightning:input type="text" aura:id="docnames" name="inputfilename"  value="{!v.docname}" onchange="{!c.doctype}"/>
+            </lightning:layoutItem>            
+            </lightning:layout> 
+            <div class="slds-p-top_medium"></div>
+            <div class="slds-p-top_large"></div>
+            <aura:if isTrue ="{!v.disable}">
+            <lightning:layout> 
+             <lightning:layoutitem>
+             <div class="slds-p-top_large"></div>
+             <span class="slds-text-heading_small">{!$Label.c.PCD_Previous_term}</span>
+             </lightning:layoutitem>
+             <div class="slds-p-left_large"></div>
+             <lightning:layoutitem>
+             <div class="slds-p-top_large slds-p-left_large"></div>
+             <div class="slds-p-left_large"></div>
+             <ui:inputRadio class="slds-text-heading_small" aura:id="termyes" text="" label="" name="termyes" change="{!c.onselecttermyes}" value="true">      
+             </ui:inputRadio>
+             <span class="slds-text-heading_small slds-p-left_xx-small">Yes</span>
+             </lightning:layoutitem>
+                  <div class="slds-p-left_large"></div>
+             <lightning:layoutitem>
+             <div class="slds-p-top_large slds-p-left_large"></div>
+             <div class="slds-p-left_large"></div>
+             <ui:inputRadio class="slds-text-heading_small" aura:id="termno" text="" label="" name="termno" change="{!c.onselecttermno}" value="false">      
+             </ui:inputRadio> 
+             <span class="slds-text-heading_small slds-p-left_xx-small">No</span>
+             </lightning:layoutitem>
+            </lightning:layout>
+            <aura:if isTrue = "{!v.displayclause}">  
+            <div class="slds-p-top_large"></div>
+            <lightning:layout> 
+             <lightning:layoutitem>
+             <div class="slds-p-top_large"></div>
+             <span class="slds-text-heading_small">{!$Label.c.PCD_Terms_Conditions_Exceptions}</span>
+             </lightning:layoutitem>
+             <div class="slds-p-left_large"></div>
+             <lightning:layoutitem>
+             <div class="slds-p-left_large"></div>
+             <lightning:textarea type="text"  aura:id="terms" label="" value="{!v.agreementterms}">      
+             </lightning:textarea>
+             </lightning:layoutitem>
+             </lightning:layout>
+             </aura:if>       
+             </aura:if>   
+             <lightning:layout>
+             <div class="slds-p-top_large"></div>
+             <span class="slds-text-heading_small"><b>Market Check Caveats</b></span>
+             </lightning:layout>
+             <div class="slds-p-top_medium"></div>
+             <lightning:layout> 
+             <lightning:layoutitem size ="12">
+             <lightning:formattedText value="{!v.defaultcaveats0}"/>
+             </lightning:layoutitem>
+             </lightning:layout>  
+             <lightning:layout> 
+                 <lightning:layoutitem >
+                     <div class="slds-p-top_large"></div>
+                     <lightning:formattedText class="fontsize" value="{!v.defaultcaveats2substr1}"/>
+                 </lightning:layoutitem>
+                 <div class="slds-p-left_medium"></div>
+                 <lightning:layoutitem >
+                     <lightning:input aura:id="yearinput" class="fontsize" type="number" value="{!v.proposalyear}" onchange="{!c.changeinformation}"/>
+                 </lightning:layoutitem>
+                 <div class="slds-p-left_large"></div>
+                 <lightning:layoutitem >
+                    <div class="slds-p-top_large"></div>
+                     <lightning:formattedText class="fontsize" value="{!v.defaultcaveats2substr3}"/>
+                 </lightning:layoutitem>
+                 <div class="slds-p-left_medium"></div>
+                 <lightning:layoutitem >
+                     <lightning:input aura:id="escyearinput" class="fontsize" type="date" value="{!v.pricingDate}" onchange="{!c.changeinformation}"/>
+                 </lightning:layoutitem>
+             </lightning:layout>
+             <lightning:layout> 
+             <lightning:layoutitem size ="12">
+                     <lightning:formattedText class="fontsize" value="{!v.defaultcaveats2substr4}"/>
+             </lightning:layoutitem>
+             </lightning:layout>
+             <lightning:layout> 
+             <lightning:layoutitem >
+             <div class="slds-p-top_large"></div>
+             <lightning:formattedText class="fontsize" value="{!v.defaultcaveats2}"/>
+             </lightning:layoutitem>
+             <div class="slds-p-left_medium"></div>
+             <lightning:layoutitem >
+                     <lightning:input aura:id="duedateinput" class="fontsize" type="date" value="{!v.duedate}" onchange="{!c.changeinformation}"/>
+             </lightning:layoutitem>
+             </lightning:layout>
+             <div class="slds-p-top_large"></div>
+             <lightning:layout> 
+             <lightning:layoutitem  size ="12">
+             <lightning:formattedText class="fontsize" value="{!v.defaultcaveats3}"/>
+             </lightning:layoutitem>
+             </lightning:layout>
+
+             <lightning:layout> 
+             <lightning:layoutitem>
+             <div class="slds-p-top_large"></div>
+             <lightning:formattedText class="fontsize" value="{!v.defaultcaveats4}"/>
+             </lightning:layoutitem>
+             <div class="slds-p-left_medium"></div>
+             <lightning:layoutitem size = "4">
+              <lightning:textarea type="text" aura:id="expinput" class="fontsize border" value="{!v.caveats}" placeholder="Enter Exceptions" onchange="{!c.changeinformation}"/>
+             </lightning:layoutitem>
+            </lightning:layout>
+            <div class="slds-p-top_large"></div>
+            <div class="slds-p-top_large"></div>
+       		 	<aura:if isTrue="{!v.DisplaySpinner}">
+                <lightning:layout>
+            	<!--###### MODAL BOX Start######--> 
+                    <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left">
+					<div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                     <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left">
+                    <div class="slds-modal__container1 slds-border_top slds-border_right slds-border_bottom slds-border_left" style="Width: 31%; height: 30%">
+                    <header class="slds-modal__header">
+                    <h2 id="header99" class="slds-text-heading--medium">PCD File Generation - In Progress</h2>     
+                    </header>
+                    <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left">
+                    <lightning:spinner variant="brand" alternativeText="Saving" size="medium" class="slds-spinner_container"/>
+                    </div>
+                    </div>
+                    </div>
+            		<div class="slds-backdrop_open"></div>
+                	</div>
+            	<!--###### MODAL BOX Part END Here ######-->
+                    </div>
+                </lightning:layout>
+				</aura:if> 
+            <ui:inputRadio aura:id="docx" text="docx" label="" name="doctype" change="{!c.onselectRadiodoc}" value="true">      
+            </ui:inputRadio>    
+            <!--lightning:icon iconName="doctype:word" alternativeText="Docx"  size="large"/-->
+            <img style="width: 54px;height: 48px;" src="{!$Resource.docxIcon}"/>   
+            &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;   
+            &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
+            &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
+            &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
+    
+            <ui:inputRadio aura:id="pdf" text="pdf" label="" name="pdftype" change="{!c.onselectRadiopdf}">      
+                              </ui:inputRadio>
+            <lightning:icon iconName="doctype:pdf" alternativeText="Pdf"  size="large"/>
+             
+                
+            <div>
+              <div class="slds-p-top_small"></div>
+              <span class="slds-text-heading_small">Use for editing caveats and peer review</span>
+                  &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
+                &nbsp; &nbsp;
+              <span class="slds-text-heading_small">Use for external review</span>
+            </div>    
+                      
+            <div class="slds-p-top_large"></div>
+            <div class="slds-p-top_large"></div>
+       <!--   <span class="slds-text-heading_small">Select template from the list below and click Generate</span>       
+             <div class="slds-p-top_small"></div>                   
+        <lightning:layout class="width">
+        <lightning:layoutItem size="10">
+        <div>
+           <table style="table-layout: unset !important;" class="slds-table slds-table_bordered inner">
+            <thead>
+                <tr class="slds-text-heading_label">
+                    <th scope="col"><div class="" title=""></div></th>
+                    <th scope="col"><div class="" title="Name">Name</div></th>
+                    <th scope="col"><div class="" title="Guidance">Guidance</div></th>
+                    <th scope="col"><div class="" title="Category">Category</div></th>
+                    <th scope="col"><div class="" title="SubCategory">SubCategory</div></th>                
+                </tr>
+            </thead>
+            <tbody>  -->
+                <!-- Use the Apex model and controller to fetch server side data -->
+             <!--  <aura:iteration items="{!v.data}" var="p" indexVar="index">
+                        <tr aura:id="tablerow">
+            <td>
+              <div>
+                <div class="slds-p-top_x-small"></div>
+               <ui:inputRadio text="" label="" name="selection" change="{!c.onselectTemplate}" value="true">      
+                              </ui:inputRadio>
+              </div>      
+            </td>
+            <td>
+                        <div>
+                             <lightning:formattedText   aura:id="input2" disabled="true" name="input2" value="{!p.Name}"/>                         
+                        </div>      
+            </td>
+            <td>
+                        <div>
+                             <lightning:formattedText aura:id="input3" disabled="true" name="input3" value="{!p.Apttus__Guidance__c}"/>                         
+                        </div>      
+            </td>
+            <td>
+                        <div>
+                             <lightning:formattedText  aura:id="input4" disabled="true" name="input4" value="{!p.Apttus__Category__c}"/>                         
+                        </div>      
+            </td>
+            <td>
+                        <div>
+                             <lightning:formattedText type="text" aura:id="input5" disabled="true" name="input5" value="{!p.Apttus__Subcategory__c}"/>                         
+                        </div>      
+            </td>
+          </tr>
+               </aura:iteration>
+            </tbody>
+        </table>   
+        </div>
+        </lightning:layoutItem>
+        </lightning:layout>   -->
+        <lightning:layout class="width">
+        <lightning:layoutItem size="2">  
+            <div class="slds-p-top_large"></div>
+            <div class="slds-p-top_large"></div>
+            <lightning:button variant="brand" label="Generate Document" disabled = "false"  title="Create" onclick="{!c.handleGenerate}" />
+            <div class="slds-p-top_large"></div>
+            <div class="slds-p-top_large"></div>
+            <div class="slds-p-top_large"></div>
+            <div class="slds-p-top_large"></div>
+        </lightning:layoutItem>
+        </lightning:layout>        
+        </div>  
+                
+        </div>
+       </lightning:card>    
+    <!--  </div> -->
+    
+</aura:component>

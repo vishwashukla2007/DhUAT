@@ -1,0 +1,14 @@
+.THIS 
+{
+    zoom: 180%;
+}
+.THIS .fontsize
+{
+  font-size: 0.1px;
+  zoom: 100%;
+}
+.THIS .fontcolor
+{
+    color:  rgb(0,161,218);
+    font-size: 7px;
+}

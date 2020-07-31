@@ -1,0 +1,148 @@
+<apex:page standardController="Clinical_Operations__c" id="Pg" title="Clinical Operation Edit" name="Clinical Operation Edit" extensions="ClinicalOperationsNewEditClass" lightningStylesheets="true" >
+      <script>
+       
+         window.onload=function()
+          {
+            document.getElementById('{!$Component.frm.PB.PBS2.ClientSavingsId}').focus();
+            var area3 = document.getElementById('{!$Component.frm.PB.PBS2.clientAmountId}');
+            var area4 = document.getElementById('{!$Component.frm.PB.PBS2.clientPercentageId}');
+            var area5 = document.getElementById('{!$Component.frm.PB.PBS2.clientBasisId}');
+            if('{!clientSavingsTrue}' == 'false') {               
+                area3.disabled= true; 
+                area3.value = area3.value;                             
+                area4.disabled= true;
+                area4.value = area4.value;
+                
+            }
+            
+            if( area5.value == 'Percentage') {                                      
+                        area3.disabled= true;   
+                        area3.value = area3.value;                                 
+                        area4.disabled= false;
+                        area4.value = area4.value;
+                                              
+                }
+                    
+            if(area5.value == 'Flat Dollar') { 
+                          
+                        area3.disabled= false;
+                        area3.value = area3.value; 
+                        
+                        area4.disabled= true;
+                        area4.value = area4.value;
+                                                        
+                 }     
+            
+            
+             
+          };
+          
+       function textareaDep(picklist){
+             checkMandatory(picklist.value);            
+            
+        }
+        
+        function checkPercentage(String){
+                                  
+                checkPercentageFlag(String);            
+            
+        }
+        
+                function makeDisableAndEmpty(){
+                
+                var area3 = document.getElementById('{!$Component.frm.PB.PBS2.clientAmountId}');
+                var area4 = document.getElementById('{!$Component.frm.PB.PBS2.clientPercentageId}');
+                var area5 = document.getElementById('{!$Component.frm.PB.PBS2.clientBasisId}');
+                
+                              
+                    area3.disabled= true;
+                    area3.value = '';            
+                    area4.disabled= true;
+                    area4.value = '';
+              
+                
+                }
+            
+        
+     </script>
+      <apex:form id="frm" rendered="{!NOT(showerrorBool)}">
+      
+        <apex:pagemessages id="pmsg"></apex:pagemessages>
+        <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+        
+        <apex:pageBlock title="Clinical Operations Edit" id="PB">
+            <apex:pageBlockSection title="Clinical Operations Detail" id="PBS1">
+                <apex:outputField value="{!clinicalOpr.FAF_ID__c}" id="PBS1F1"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Clinical Savings Guarantee" id="PBS2">
+                <apex:inputField value="{!clinicalOpr.Client_Savings__c}" id="ClientSavingsId" onchange="textareaDep(this);"/>
+                <apex:inputField value="{!clinicalOpr.CSG_Type__c}" id="clientTypeId" required="{!typeFlag}"/>
+                <apex:outputLabel ></apex:outputLabel>               
+                <apex:inputField value="{!clinicalOpr.CSG_Basis__c}" id="clientBasisId" required="{!basisFlag}" onchange="checkPercentage(this.value);"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalOpr.CSG_Amount__c}" id="clientAmountId" required="{!amountReq}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!clinicalOpr.CSG_Percentage__c}" id="clientPercentageId" required="{!percentageReq}"/>               
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Additional Clinical Operations Information" id="PBS3">
+                <apex:inputField value="{!clinicalOpr.Additional_Clinical_Information__c}" style="width:800px"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!saveUpdateCO}" title="Save" value="Save" onclick="this.onclick=function(){return false;}"/>
+                <apex:commandButton action="{!Cancel}" title="Cancel" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+            <apex:actionFunction name="checkMandatory" action="{!checkMandatory}" reRender="PBS2,scriptpanel1,pmsg" oncomplete="makeDisableAndEmpty();" immediate="true" status="status">
+                    <apex:param name="param1" id="param1" value=""/>                    
+            </apex:actionFunction>
+             <apex:actionFunction name="checkPercentageFlag" action="{!checkPercentageFlag}" reRender="PBS2,scriptpanel2,pmsg" oncomplete="" immediate="true" status="status">
+                    <apex:param name="param2" id="param2" value=""/>                    
+            </apex:actionFunction>
+        </apex:pageBlock>
+         <apex:outputPanel id="scriptpanel1">
+            
+        </apex:outputPanel>
+        <apex:outputPanel id="scriptpanel2">
+            <script>
+                var area4 = document.getElementById('{!$Component.frm.PB.PBS2.clientPercentageId}');
+                var area3 = document.getElementById('{!$Component.frm.PB.PBS2.clientAmountId}');
+                
+                if('{!percentageFlagDisable}' == 'true') {               
+                    area4.disabled= true; 
+                    area4.value = '';  
+                                                  
+                }
+                
+                if('{!amountFlagDisable}' == 'true') {               
+                    area3.disabled= true;   
+                    area3.value = '';
+                                                    
+                }
+                
+            </script>
+        </apex:outputPanel>
+    </apex:form>    
+    <apex:form rendered="{!showerrorBool}">
+        <apex:pageBlock title="Clinical Operation">
+            <h1> A FAF may contain only a single Clinical Operations record </h1>
+            <br/>
+            <br/>
+            <Center>
+            
+                <apex:commandButton title="Cancel" action="{!Cancel}" value="Cancel" immediate="true" />
+         
+            </Center>
+        </apex:pageBlock>
+    </apex:form>  
+</apex:page>

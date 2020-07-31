@@ -1,0 +1,8 @@
+<aura:event type="Component" description="Questionaire Component Event" >
+    <aura:attribute name="qId" type="String"/>
+    <aura:attribute name="qFieldNm" type="String"/>
+    <aura:attribute name="qAns" type="String"/>
+    <aura:attribute name="qdisableFieldNm" type="String"/>
+    <aura:attribute name="qdisable" type="Boolean"/>
+    <aura:attribute name="qisValid" type="Boolean"/>
+</aura:event>

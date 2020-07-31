@@ -1,0 +1,8 @@
+<!--c:appEvent-->
+<aura:event type="APPLICATION">
+    <!-- Add aura:attribute tags to define event shape.
+         One sample attribute here. -->
+    <aura:attribute name="offer" type="String"/>
+    <aura:attribute name="offerid" type="String"/>
+    <aura:attribute name="alertmsg" type="String"/>
+</aura:event>

@@ -1,0 +1,343 @@
+<apex:page standardController="Central_Hub__c" id="pg" extensions="DeepCloneController"  lightningStylesheets="true">
+<!-- Jquery reference files --->
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" />
+ <script>       
+ function PopUpCancel(){                    
+                    //document.getElementById(('{!$Component.pg.frm.PB.PBS6.mchoiceId}')).checked = false;
+                    //var notificationMessageDiv = $("[id$='myModal3']");
+                    //notificationMessageDiv.hide();
+                    var modal = document.getElementById('myPopModal1');
+                    modal.style.display = "none";
+                } 
+ </script>
+    <style>
+        body {font-family: Arial, Helvetica, sans-serif;}
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 50%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+
+        /* Add Animation */
+        @-webkit-keyframes animatetop {
+            from {top:-300px; opacity:0} 
+            to {top:0; opacity:1}
+        }
+
+        @keyframes animatetop {
+            from {top:-300px; opacity:0}
+            to {top:0; opacity:1}
+        }
+
+        .modal-header {
+            padding: 0px;
+            height: 29px;
+            color: #ff0000;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            border-top-right-radius: .25rem;
+            border-top-left-radius: .25rem;
+            border-bottom: 2px solid rgb(221, 219, 218);
+            text-align: center;
+        }
+
+        .modal-body {
+            padding: 10px 16px;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            color: #3c3d3e;
+        }
+
+        .modal-footer {
+            padding: 5px;
+            padding-right: 4px;
+            text-align: right;   
+            color: #000000;
+            border-top: 2px solid rgb(221, 219, 218);
+            background-color: rgb(243, 242, 242);
+            border-bottom-left-radius: .25rem;
+            border-bottom-right-radius: .25rem;
+        }
+
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 1px 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 2px 2px;
+            -webkit-transition-duration: 0.4s; /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius : 20px;
+        }
+        .button2 {
+            background-color: rgba(0, 68, 135, 1.0); 
+            color: white; 
+            border: 2px solid rgba(0, 68, 135, 1.0);
+            border-radius: 5px;
+            width: 80px;
+            height: 28px;
+        }
+
+        .button2:hover {
+            background-color: #002080;
+            color: white;
+        }
+        .button5 {
+            background-color: #555555;
+            color: white;
+            border: 2px solid #555555;
+            border-radius: 5px;
+            width: 80px;
+            height: 28px;
+        }
+
+        .button5:hover {
+            background-color: #262626;
+            color: white;
+        }
+
+    </style>
+ 
+ <style>
+    
+    .lookupIcon{
+    margin-top:-3px;
+}
+.lookupIconOn{
+    margin-top:-3px;
+
+}
+
+</style>  
+
+
+
+     <apex:form id="thefrm" >
+                <apex:actionStatus id="status">
+                    <apex:facet name="start">
+                            <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.25; z-index: 1000; background-color: black;">
+                                &nbsp;
+                            </div>
+                            <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 15% 50%">
+                                <div style="display: inline-block; padding: 2px; background-color: #fff; width: 125px;">
+                                    <img src="/img/loading.gif" style="float: left; margin: 8px;" />
+                                    <span style="display: inline-block; padding: 10px 0px;">Please Wait...</span>
+                                </div>
+                            </div>
+                    </apex:facet> 
+                </apex:actionStatus>
+        
+                
+        <apex:pageBlock id="thepgblk" >
+        <apex:pageMessages id="showmsg"></apex:pageMessages>
+            <apex:pageBlockSection id="thepgsect1" Title="Copied FAF will be used for client with:" columns="1"  collapsible="false" showHeader="true" />
+                <table width="100%" cellspacing="0" title ="test">
+                    <tr width="100%">
+                        <td width ="100%">
+                            <apex:selectRadio value="{!searchCategory}" layout="pageDirection" id="theRadio">
+                                <apex:actionSupport event="onchange" action="{!enablePicklist}" reRender="thepgblk" />
+                                        <apex:selectOption itemValue="YES" itemlabel="Copy FAF to the same Salesforce Account and Opportunity as on the source FAF"/>
+                                        <apex:selectOption itemValue="NO" itemlabel="Copy FAF to a different Salesforce Account and Opportunity compared to the source FAF"/>
+                            </apex:selectRadio>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    
+                </table>
+                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+                <table>
+                    <tr width="100%">
+                        <td width="20%">
+                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Salesforce Account Name&nbsp;&nbsp;&nbsp;
+                        </td>
+                        <td width="20%">
+                            <apex:inputField value="{!fafObjConstructor.Account_Name__c}" id="thAccount"  onchange="AccountPopulate();" rendered="{!DiabledInput}" styleClass="slds-input"/>
+                            <apex:Outputfield value="{!fafextensionobj.Account_Name__c}" id="thAccountout" rendered="{!DiabledBool}" /><br/>
+                        
+                        </td>
+                        <td width="10%">
+                        </td>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <td width="20%">
+                        Salesforce Opportunity Name&nbsp;&nbsp;&nbsp;
+                        </td >
+                        <td width="20%">
+                            <apex:inputfield value="{!fafObjConstructor.Opportunity_Name__c}"  id="theOpp" onchange="opportunityPopulate();" rendered="{!DiabledInput}"/>
+                           <apex:outputfield value="{!fafextensionobj.Opportunity_Name__c}"  id="theOppout"  rendered="{!DiabledBool}"/>
+                        
+                        </td>
+                        
+                        <td width="15%">
+                        </td>
+                       
+                    </tr>
+                    <br/>
+                </table>
+                <br/>
+                <br/>
+                
+           <apex:pageBlockSection id="thepgsect" Title="Select FAF Components to be copied from the source FAF:" columns="9"  collapsible="false" showHeader="true"/>
+               <table width="100%" cellspacing="0" title ="test">
+                    <tr width="100%" >
+                        <td width="20%">
+                            <apex:inputCheckbox label="FAF Instructions" value="{!FAFInstructions}" disabled="{!fafiBool}" />FAF Instructions
+                        </td>
+                        <td width="20%">
+                              <apex:inputCheckbox label="FAF Links" value="{!FAFLinks}" disabled="{!faflinkBool}"/>FAF Links 
+                        </td>
+                        <td width="20%">
+                             <apex:inputCheckbox label="Network Operations" value="{!NetworkOperations}" disabled="{!networkBool}" />Network Operations 
+                        </td>
+                        <td width="20%">
+                             <apex:inputCheckbox label="Mail Operations" value="{!MailOperations}" disabled="{!mailBool}" />Mail Operations
+                        </td>
+                        <td width="20%">
+                             <apex:inputCheckbox label="Specialty Operations" value="{!SpecialtyOperations}" disabled="{!specBool}" />Specialty Operations
+                        </td>
+                    </tr>
+                    <tr width="100%">
+                         <td width="20%">
+                            <apex:inputCheckbox label="Billing Operations" value="{!BillingOperations}" disabled="{!billBool}"  /> Billing Operations
+                        </td>
+                        <td width="20%">
+                            <apex:inputCheckbox label="Rebate Operations" value="{!RebateOperations}" disabled="{!rebatBool}" /> Rebate Operations
+                        </td>
+                         <td width="20%">
+                             <apex:inputCheckbox label="Clinical Operations" value="{!ClinicalOperations}" disabled="{!cilnicalBool}"  />Clinical Operations 
+                        </td>
+                        <td width="20%">
+                            <apex:inputCheckbox label="Guarantee Information" value="{!GuaranteeInformation}" disabled="{!guarBool}"  />Guarantee Information
+                        </td>
+                        <td width="20%">
+                            <apex:inputCheckbox label="" value="{!PlatformSpecifics}" disabled="{!plaformBool}"  />Platform Specifics
+                        </td>
+                    </tr>
+                </table>                   
+                <br/>
+           <apex:outputText value="Please review the fields on the copied FAF, Fields will be defaulted to default values if the field values are null." style="color:red"/>
+           <br/>
+           <apex:outputText value="Any documents attached to the original FAF are not going to be copied, please reattach any applicable documents to the appropriate FAF component." style="color:red"/>
+           <br/>
+           <br/>
+            <table width="100%" cellspacing="0" title ="test1">
+                <tr width="100%" >
+                    <td width="20%">
+                        <apex:inputCheckbox label="Background Copy" value="{!BackgroundCopyBool}" />Background Copy
+                    </td>                 
+                </tr>             
+            </table>       
+           <br/>
+           <apex:outputText value="{!$Label.Background_Instruction}" style="color:red"/>
+           <br/>
+           <br/>     
+           <apex:actionFunction name="Accountchange"  reRender="thepgblk"  immediate="true" >
+                <apex:param name="param1" assignTo="{!AccountValue}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="opportunitychange"  reRender="thepgblk" immediate="true" >
+                <apex:param name="param12" assignTo="{!OpportunityValue}" value="" />
+            </apex:actionFunction>
+           <center>
+           <apex:commandButton value="Submit"  action="{!cloneFafrecord}"  rerender="thepgblk,popupMsgonSave" status="status" />
+           <apex:commandButton value="Cancel" action="{!Cancel}"/></center>
+           
+            <apex:actionFunction name="BackgroundCopy" action="{!BackGroundCopyRequest}" reRender="showmsg" status="status">
+                <!---<apex:param name="param1" assignTo="{!popupActionValue}" value="" />-->
+            </apex:actionFunction> 
+
+            <apex:actionFunction name="BackgroundCopyCancel" action="{!Cancel}" reRender="showmsg" status="status">
+                <!---<apex:param name="param1" assignTo="{popupActionValue}" value="" />-->
+            </apex:actionFunction>            
+           
+           <apex:outputpanel id="popupMsgonSave">
+            <script>
+                var valueChangeBoolVar ={!ShowPopup};
+                //alert(valueChangeBoolVar);
+                if(valueChangeBoolVar==true){
+                    var modal = document.getElementById('myPopModal1');
+                    modal.style.display = "block";
+                }
+                
+                function popupYes(){
+                
+                    BackgroundCopy();
+                    var modal = document.getElementById('myPopModal1');
+                    modal.style.display = "none"; 
+                }
+                function popupNo(){
+                    BackgroundCopyCancel();
+                    var modal = document.getElementById('myPopModal1');
+                    modal.style.display = "none";           
+                }
+            </script>
+        </apex:outputpanel>
+           
+        </apex:pageBlock>
+        
+         <div id="myPopModal1" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+           <div class="modal-header">
+              
+              <h2 style="font-size: 1.5em;font-weight: bold;" ><center>BACKGROUND COPY</center></h2>
+            </div>
+          
+            <div class="modal-body">
+              <center><p>{!$Label.FAF_Background_Copy}</p></center>
+              
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button2" type="button" onclick="popupYes()">Continue</button>
+              <button class="button button5" type="button" onclick="popupNo()">Cancel</button>
+            </div>
+          </div>
+
+        </div>
+       
+         <script>
+         function opportunityPopulate(){
+            var ex = document.getElementById('{!$Component.thefrm.thepgblk.theOpp}_lkid').value;
+            opportunitychange(ex);
+         }
+         </script>
+         <script>
+         function AccountPopulate(){
+            var ex = document.getElementById('{!$Component.thefrm.thepgblk.thAccount}_lkid').value;
+            Accountchange(ex);
+         }
+         </script>
+         
+    </apex:form>
+ 
+</apex:page>

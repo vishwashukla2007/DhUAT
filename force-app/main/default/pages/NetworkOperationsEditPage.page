@@ -1,0 +1,507 @@
+<apex:page standardController="Network_Operations__c" extensions="NetworkOperationController"
+    title="Network Operations Edit" id="pg" lightningStylesheets="true">
+    <!--   <apex:slds /> -->
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"/>
+    <apex:pageMessages />
+    <script>
+     function setFocusOnLoad() {
+     document.getElementById('{!$Component.pg.theForm.pb.Nos.Nclnt}').focus();
+        }   
+    </script>
+    <style>
+    
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        /* The Modal (background) */
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        /* Modal Content */
+        
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 50%;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+        /* Add Animation */
+        
+        @-webkit-keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0
+            }
+            to {
+                top: 0;
+                opacity: 1
+            }
+        }
+        
+        @keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0
+            }
+            to {
+                top: 0;
+                opacity: 1
+            }
+        }
+        
+        .modal-header {
+            padding: 0px;
+            height: 29px;
+            color: #ff0000;
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+            border-top-right-radius: .25rem;
+            border-top-left-radius: .25rem;
+            border-bottom: 2px solid rgb(221, 219, 218);
+            text-align: center;
+        }
+        
+        .modal-body {
+            padding: 10px 16px;
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+            color: #3c3d3e;
+        }
+        
+        .modal-footer {
+            padding: 5px;
+            padding-right: 4px;
+            text-align: right;
+            color: #000000;
+            border-top: 2px solid rgb(221, 219, 218);
+            background-color: rgb(243, 242, 242);
+            border-bottom-left-radius: .25rem;
+            border-bottom-right-radius: .25rem;
+        }
+        
+        .button {
+            background-color: #4CAF50;
+            /* Green */
+            border: none;
+            color: white;
+            padding: 1px 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 2px 2px;
+            -webkit-transition-duration: 0.4s;
+            /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius: 20px;
+        }
+        
+        .button2 {
+            background-color: rgba(0, 68, 135, 1.0);
+            color: white;
+            border: 2px solid rgba(0, 68, 135, 1.0);
+            border-radius: 5px;
+            width: 70px;
+            height: 28px;
+        }
+        
+        .button2:hover {
+            background-color: #002080;
+            color: white;
+        }
+        
+        .button5 {
+            background-color: #555555;
+            color: white;
+            border: 2px solid #555555;
+            border-radius: 5px;
+            width: 62px;
+            height: 33px;
+        }
+        
+        .button5:hover {
+            background-color: #262626;
+            color: white;
+        }
+
+    </style>
+<style type="text/css">
+.myClass2{
+ background-color: rgba(0, 68, 135, 1.0) !important;
+            color: white !important;
+            border: 2px solid rgba(0, 68, 135, 1.0) !important;
+            border-radius: 5px;
+            width: 80px;
+            height: 34px;
+            text-align: center !important;
+}
+.myClass2:hover{
+     background-color: #262626 !important;
+            color: white !important;
+             text-align: center !important;
+}
+</style>
+    <script>
+        var typeVal1 = '{!defaultNetworkType}';
+        var typeModelShow = false;
+        var confirmModelShow = false;
+        //alert('hi' + typeVal1);
+        
+        function showModel(thisObj) {
+            var hasExisitingTrans = '{!hasExisitingTrans}';
+            var feeShareVal = document.getElementById('{!$Component.theForm.pb.pbs1.pbsitem2.checkbox}').value;
+            //alert(feeShareVal)
+            if(!typeModelShow){
+                if(hasExisitingTrans == 'true'){
+                    if(feeShareVal == 'No' || feeShareVal == ''){
+                        typeModelShow = true;
+                   }
+                   else{
+                       //typeModelShow = false;
+                   }
+               }
+            }
+            console.log(typeModelShow);
+            console.log(confirmModelShow);
+            if(typeModelShow && !confirmModelShow) {
+                var notificationMessageDiv = $("[id$='dateModel']");
+                notificationMessageDiv.show();   
+                return false;             
+            } else if(!typeModelShow && confirmModelShow) {
+               $("#confirmModel").show(); 
+               return false;
+            } else if(typeModelShow && confirmModelShow) {
+               $("#dialogModel").show(); 
+               return false;
+            } else {
+                thisObj.disabled = true;
+                //thisObj.value = 'Saving..';
+                saveOperation();
+                return false;
+            }
+        }
+        
+        function TypeValDependency(type) {
+            var typeElement = document.getElementById(type);
+            var typeVal = typeElement.value;
+            var hasExisitingTrans = '{!hasExisitingTrans}';
+            if (typeVal == 'Not Tiered') {
+                if (hasExisitingTrans == 'true') {
+                    typeModelShow = true;
+                     enableClientShare(typeVal);
+                } else {
+                    enableClientShare(typeVal);
+                }
+            } else {
+                typeModelShow = false;
+                typeVal1 = typeVal;
+                disableClientShare();
+            }
+        }
+
+        function continueNotTired() {
+            var typeVal = document.getElementById('{!$Component.theForm.pb.pbs1.type}').value;
+            var notificationMessageDiv = $("[id$='dateModel']");
+            notificationMessageDiv.hide();
+            $("#dialogModel").hide();
+            typeModelShow = false;
+            enableClientShare(typeVal);
+        }
+
+        function oncompletedDothis() {
+            var typeVal = document.getElementById('{!$Component.theForm.pb.pbs1.type}');
+            typeVal.value = typeVal1;
+        }
+
+        function closeNotTired() {
+            var typeVal = document.getElementById('{!$Component.theForm.pb.pbs1.type}');
+           // typeVal.value = typeVal1;
+            var notificationMessageDiv = $("[id$='dateModel']");
+            notificationMessageDiv.hide();
+            $("#dialogModel").hide();
+             if(typeVal.value != typeVal1) {
+                typeModelShow = true;
+            } else {
+                typeModelShow = false;
+            }
+          //  typeModelShow = false;
+          //  disableClientShare();
+        }
+
+        var clientSelect;
+        var confirmModel;
+        var clientValue = '{!Network_Operations__c.Client__c}';
+        var hasExisitingNP = '{!hasExisitingNP}';
+
+        var groupa = ["Lower of Discount or U&C or MAC",
+            "Lower of MAC or Discount",
+            "MAC Prevails then Discount with U&C",
+            "MAC Prevails then Discount without U&C"
+        ];
+        var groupb = ["No MAC then Discount without U&C", "No MAC with U&C"];
+
+        function showConfirmModel(thisObj) {
+            console.log(hasExisitingNP);
+            if (hasExisitingNP == 'true') {
+                confirmModel = document.getElementById('confirmModel');
+
+                if ((groupa.indexOf(clientValue) > -1 && groupb.indexOf(thisObj.value) > -1) || (groupb.indexOf(clientValue) > -1 && groupa.indexOf(thisObj.value) > -1)) {
+                    clientSelect = thisObj;
+                    console.log(clientValue);
+                    console.log(clientSelect.value);
+                    if(clientSelect.value != clientValue) {
+                        confirmModelShow = true;
+                    } else {
+                        confirmModelShow = false;
+                    }                    
+                } else {
+                    confirmModelShow = false;
+                }
+            }
+        }
+
+        function confirmClentSelection() {
+            $("#confirmModel").hide();
+            $("#dialogModel").hide();
+            confirmModelShow = false;
+            clientValue = clientSelect.value;
+        }
+
+        function cancelClentSelection() {
+            $("#confirmModel").hide();
+            $("#dialogModel").hide();
+            if(clientSelect.value != clientValue) {
+                confirmModelShow = true;
+            } else {
+                confirmModelShow = false;
+            }
+        }
+
+    </script>
+
+    <apex:form id="theForm" rendered="{!!hasExistingNetworkOperations}">
+        <apex:outputPanel style="padding-left: 10px" />
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+
+        <!--<apex:actionRegion >
+            <apex:actionFunction name="handleRequiredFields"  rerender="pbs" immediate="true" status="status" >
+                <apex:param name="checkVal" assignTo="{!Network_Operations__c.Type__c}" value="" />
+            </apex:actionFunction> 
+        </apex:actionRegion>-->
+
+        <apex:actionFunction name="enableClientShare" action="{!transactionFeeTypeNotTieredSelected}"
+            rerender="pbs1" immediate="true">
+            <apex:param name="typeval" assignTo="{!NetWorkType}" value="" />
+        </apex:actionFunction>
+        <apex:actionFunction name="disableClientShare" action="{!transactionFeeTypeNotTieredNotSelected}"
+            rerender="pbs1" immediate="true" oncomplete="oncompletedDothis()">
+        </apex:actionFunction>
+        <apex:actionFunction name="disableClientShare1" action="{!transactionFeeTypeNotTieredNotSelected1}"
+            rerender="pbs1">
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="methodChange" immediate="true" rerender="pb" status="status">
+            <apex:param value="" name="method" assignTo="{!Network_Operations__c.Method__c}"/>
+        </apex:actionFunction>
+        
+        <apex:actionFunction name="saveOperation" action="{!saveNetworkOperations}"/>
+
+        <!-- The Modal 1 -->
+        <div id="dateModel" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>
+                        <center>WARNING</center>
+                    </h2>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <center>Do you want to permanently delete the defined tier(s) for
+                            Transaction Fee Sharing? </center>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                          <div class="slds-col slds-no-flex slds-grid slds-align-top">
+                    <apex:commandButton styleclass="button myClass2" value="Continue" action="{!saveNetworkOperations}" onclick="continueNotTired()"/>
+                    <button class="button button5" type="button" onclick="closeNotTired()">Cancel</button>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- The Modal 2 -->
+        <div id="confirmModel" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>
+                        <center>WARNING</center>
+                    </h2>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <center>The updating of Retail Network Adjudication Logic - Client
+                            value will delete/update the Generic Pricing values within
+                            the already created Network Pricing records. Would you
+                            like to continue with the change? </center>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <apex:commandButton styleclass="button myClass2" value="Continue" action="{!saveNetworkOperations}" onclick="confirmClentSelection()"/>
+                    <button class="button button5" type="button" onclick="cancelClentSelection()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- The Modal 3 -->
+        <div id="dialogModel" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>
+                        <center>WARNING</center>
+                    </h2>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <ul>
+                            <li>The updating of Retail Network Adjudication Logic - Client
+                        value will delete/update the Generic Pricing values within
+                        the already created Network Pricing records. Would you
+                        like to continue with the change?</li>
+                            <li>Do you want to permanently delete the defined tier(s) for
+                        Transaction Fee Sharing?</li>
+                        </ul>                          
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <apex:commandButton styleclass="button myClass2" value="Continue" action="{!saveNetworkOperations}" onclick="continueNotTired();confirmClentSelection();"/>
+                    <button class="button button5" type="button" onclick="closeNotTired();cancelClentSelection();">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+
+        <apex:pageBlock title="Network Operations Edit" id="pb">
+            <apex:pageBlockSection title="Information" collapsible="false">
+                <apex:outputField value="{!Network_Operations__c.FAF_ID__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Retail Adjudication Logic" id="Nos" collapsible="false">
+                <apex:inputField value="{!Network_Operations__c.Client__c}" id="Nclnt" required="true" onchange="showConfirmModel(this);"/>
+                <apex:inputField value="{!Network_Operations__c.Member__c}" required="true" />
+                <apex:inputField value="{!Network_Operations__c.Lower_of_MAC_Logic_NOT_required__c}"/>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Retail Guarantee Reconciliation" id="NGR" collapsible="false">
+                <apex:inputField id="mthd" value="{!Network_Operations__c.Method__c}" onchange="methodChange(this.value);"/>
+                <apex:inputField id="TimeFrame" value="{!Network_Operations__c.Time_Frame__c}" required="{!Network_Operations__c.Method__c <> null}" />
+
+                <apex:inputField id="lvl" value="{!Network_Operations__c.Level__c}" required="{!Network_Operations__c.Method__c <> null}" />
+
+                <apex:inputField value="{!Network_Operations__c.Custom_Language_Needed_to_Limit_Pena__c}" />
+                 
+                <script>
+                    var noMethodVal = '{!Network_Operations__c.Method__c}'; 
+                    if (!noMethodVal)
+                    { 
+                    document.getElementById('{!$Component.pg.theForm.pb.NGR.Timeframe}').value = '';
+                    document.getElementById( '{!$Component.pg.theForm.pb.NGR.Timeframe}').disabled = true;
+                    document.getElementById( '{!$Component.pg.theForm.pb.NGR.lvl}').value = '';
+                    document.getElementById( '{!$Component.pg.theForm.pb.NGR.lvl}').disabled= true; 
+                        
+                    }
+
+                    </script>
+                    
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Retail Network 90 Day's Definition" collapsible="false"
+                id="pbs">
+                <apex:pageBlockSectionItem id="pbsitem1">
+                    <apex:outputLabel value="{!$ObjectType.Network_Operations__c.fields.Retail_90_Days_Supply_84__c.label}"/>
+                    <apex:actionRegion >
+                        <apex:inputCheckbox id="checkbox" value="{!Network_Operations__c.Retail_90_Days_Supply_84__c}">
+                            <apex:actionSupport event="onchange" action="{!retailSelected}" rerender="pbs">
+                            </apex:actionSupport>
+                        </apex:inputCheckbox>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:inputField id="area1" value="{!Network_Operations__c.Days_Supply__c}" required="true"
+                    rendered="{!retailsDaysRequired}" />
+                <apex:inputField id="area11" value="{!Network_Operations__c.Days_Supply__c}" html-disabled="true"
+                    rendered="{!!retailsDaysRequired}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Transaction Fee Sharing" collapsible="false" id="pbs1">
+                <apex:pageBlockSectionItem id="pbsitem2">
+                    <apex:outputLabel value="{!$ObjectType.Network_Operations__c.fields.Transaction_Fee_Sharing__c.label}"/>
+                    <apex:actionRegion >
+                        <apex:inputField id="checkbox" required="true" value="{!Network_Operations__c.Transaction_Fee_Sharing__c}" >
+                            <apex:actionSupport event="onchange" action="{!transactionFeeTypeNotTieredNotSelected1}"
+                                rerender="pbs1">
+                            </apex:actionSupport>
+                        </apex:inputField>
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <!--<apex:pageBlockSectionItem id="pbsitem3">
+                    <apex:outputLabel value="{!$ObjectType.Network_Operations__c.fields.Type__c.label}" />
+                    <apex:actionRegion >-->
+                <apex:inputField id="type" value="{!Network_Operations__c.Type__c}" required="{!If(Network_Operations__c.Transaction_Fee_Sharing__c == 'Yes',true, false)}"  onchange="TypeValDependency('{!$Component.type}');" />
+                <!--</apex:actionRegion>
+                </apex:pageBlockSectionItem>-->
+                <apex:inputField id="clientShare" value="{!Network_Operations__c.Client_Share__c}"
+                    required="true" rendered="{!enbleClientShare}" />
+                <apex:inputField id="clientShare1" value="{!Network_Operations__c.Client_Share__c}"
+                    html-disabled="true" rendered="{!!enbleClientShare}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Transmission Fees" collapsible="false">
+                <apex:inputCheckBox value="{!Network_Operations__c.Transmission_Fee_Waived__c}" disabled="{!Transmission_Fee_Waived}" />
+                <apex:inputCheckBox value="{!Network_Operations__c.TSRMSF_Fee_Waived__c}" disabled="{!TSRMSF_Fee_Waived}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Additonal Retail Network Information" collapsible="false">
+                <apex:inputField value="{!Network_Operations__c.Additional_Retail_Network_Information__c}" style="width:800px" />
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save"   
+                onclick="return showModel(this);" />
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+    <apex:form rendered="{!hasExistingNetworkOperations}">
+        <apex:pageBlock title="Network Operations">
+            <h1>A FAF may contain only a single Network Operations record.</h1>
+            <br/>
+            <br/>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton title="Cancel" action="{!Cancel}" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+
+</apex:page>

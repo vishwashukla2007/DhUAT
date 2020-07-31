@@ -1,0 +1,85 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" access="global" controller="Apttus_PCD_GenerteDocController">
+     
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="pageNumber" type="Integer" default="1"/>
+    <aura:attribute name="pageSize" type="Integer" default="10"/>
+    <aura:attribute name="isLastPage" type="Boolean" default="false"/>
+    <aura:attribute name="dataSize" type="Integer" default="0"/> 
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="radioselection" type="String" default="docx"/>
+     <aura:attribute name="record" type="String"/>
+     
+    <div class="slds-is-relative">
+    <div class="slds-m-around_xx-large">
+        <div class="slds-box slds-theme_default" >
+            <div class="slds-text-heading_large" role="banner">
+                <p class="slds-page-header">Generate Document</p>
+            </div>
+              <div class="slds-box slds-theme_default" >
+                        <ui:inputRadio aura:id="docx" text="docx" label="" name="Role" change="{!c.onselectRadio}" value="true">      
+                              </ui:inputRadio>
+                  
+            <lightning:icon iconName="doctype:gdoc" alternativeText="Docx"  size="large"/>
+                  <span class="slds-text-heading_small">Used for editing cveats and peer review</span>
+                  &nbsp; &nbsp;
+                   <ui:inputRadio aura:id="pdf" text="pdf" label="" name="Role" change="{!c.onselectRadio}">      
+                              </ui:inputRadio>
+            <lightning:icon iconName="doctype:pdf" alternativeText="pdf"  size="large"/>
+                  <span class="slds-text-heading_small">Used for external review</span>
+                  
+                 
+                  
+
+                  
+                 <!--- <table>
+                      <tr>
+                          <td>
+                          <lightning:icon iconName="doctype:gdoc" alternativeText="Docx"  size="large"/>
+                  <p class="slds-text-heading_small">Used for editing cveats and peer review</p>
+                          </td>
+                          <td>
+                           <lightning:icon iconName="doctype:pdf" alternativeText="PDF" size="large" />
+                  <p class="slds-text-heading_small">Used for external review</p>
+                          </td>
+                           <td>
+                           
+                          </td>
+                      </tr>
+                  
+                  </table>-->
+                
+                
+            </div>
+            <div class="slds-text-heading_large" role="banner">
+               
+                
+            </div>
+        </div>
+         
+        <lightning:datatable aura:id = "templateDT"
+                             columns = "{!v.columns}"
+                             maxRowSelection="{!v.maxRowSelection}"
+                             data = "{!v.data}"
+                             keyField = "Id"
+                             selectedRows = "{!v.selectedRowList}"
+                             />
+         
+        <div class="slds-box slds-theme_default">
+            <div class="slds-page-header" role="banner">
+                <div class="slds-float_right">            
+                    <lightning:button label="Prev" iconName="utility:chevronleft" iconPosition="left"
+                                      onclick="{!c.handlePrev}" disabled="{! v.pageNumber == 1}"/>
+                    <lightning:button label="Next" iconName="utility:chevronright" iconPosition="right"
+                                      disabled="{! v.isLastPage}" onclick="{!c.handleNext}"/>
+                </div>
+                <p class="slds-text-align_left">Page {!v.pageNumber} | Showing records from {! ((v.pageNumber-1)*v.pageSize)+' to '+((v.pageNumber-1)*v.pageSize+v.dataSize)}</p>
+            </div>
+             <div class="slds-box slds-theme_default">            
+                    <lightning:button label="Generate"  variant="brand" onclick="{!c.createDocVersionDetail}"/> 
+                </div>
+            </div>	
+            
+    </div>
+    </div>
+</aura:component>

@@ -1,0 +1,222 @@
+<apex:page standardController="Specialty_Pricing__c" extensions="SpecialtyPriceNewEditClass" Title="Specialty Pricing Edit" id="pg" lightningStylesheets="true">
+    <apex:form id="frm">
+        <apex:pagemessages id="pmsg"></apex:pagemessages>
+        <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+        
+        <apex:pageBlock title="Specialty Pricing Edit" id="PB">
+            <apex:pageBlockSection title="Specialty Pricing Detail" id="PBS1">
+                <apex:outputField value="{!specPricObj.FAF_ID__c}"/>
+                <apex:outputField value="{!specPricObj.Specialty_Operations__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Specialty Pricing Information" id="PBS2">
+                <apex:pageBlockSectionItem id="PBSI2">
+                   <apex:outputLabel for="yearPnl" value="Year" />
+                   <apex:outputPanel id="yearPnl">
+                      <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                       
+                       <apex:selectList value="{!specPricObj.Year__c}" required="true" label="Year" id="year" size="1" onchange="changeYearVal(this.value);">
+                       <apex:selectOptions value="{!yearList}" />
+                        </apex:selectList>
+                         </div> 
+                   </apex:outputPanel>
+               </apex:pageBlockSectionItem>
+               <apex:inputField value="{!specPricObj.Pharmacy_Benefit__c}" required="{!NOT(disablePharmacyBenefitFlag)}" id="pharmacyBenefitId"/>
+               <apex:inputField value="{!specPricObj.LOB__c}" required="true"/>
+               <apex:inputField value="{!specPricObj.Price_List__c}" required="true"/>
+               <apex:inputField value="{!specPricObj.Specialty_Compare_Logic_On__c}"/>
+               <apex:inputField value="{!specPricObj.Open_HIV__c}"/>
+               <apex:inputField value="{!specPricObj.X340B_Pharmacy_Setup__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Brand & Generic Pricing" id="PBS3">                
+               <apex:inputField value="{!specPricObj.Brand_Basis__c}" required="true" id="brndBasisId" onchange="changeBrandBasis(this.value);"/>               
+               <apex:inputField value="{!specPricObj.Generic_Basis__c}" required="true" id="gnricBasisId" onchange="changeGenericBasis(this.value);"/>
+               <apex:inputField value="{!specPricObj.Brand_Rate__c}" required="true" id="brndRateId" onchange="changeBrandRate(this.value);"/>               
+               <apex:inputField value="{!specPricObj.Generic_Rate__c}" required="true" id="gnricRateId" onchange="changeGenericRate(this.value);"/>
+               <apex:inputField value="{!specPricObj.Brand_Dispensing_Fee__c}" required="true" id="brndDispFeeId" onchange="changeBrandDispFee(this.value);"/>               
+               <apex:inputField value="{!specPricObj.Generic_Dispensing_Fee__c}" required="true" id="gnricDispFeeId" onchange="changeGenericDispFee(this.value);"/>  
+               <apex:inputField value="{!specPricObj.Match_Generics_to_Brands__c}" id="matchCheckboxId" onchange="changeMatchCheckbox(this.checked);"/>               
+               <apex:inputField value="{!specPricObj.MAC_Modeled__c}"/>
+               <apex:outputlabel />
+               <apex:inputField value="{!specPricObj.Non_MAC_Rate__c}"/>
+               <apex:inputField value="{!specPricObj.New_to_Market_Brand_Rate__c}"/>
+               <apex:inputField value="{!specPricObj.New_to_Market_Generic_Rate__c}"/>               
+               <apex:inputField value="{!specPricObj.Limited_Distribution_Drug_LDD_Rate__c}" required="true"/>
+               <apex:inputField value="{!specPricObj.Biosimilar_Rate__c}" required="true"/>               
+               <apex:inputField value="{!specPricObj.LDD_No_Access_Rate__c}" required="true"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Guarantee Reconciliation" id="PBS4">
+               <apex:inputField value="{!specPricObj.Method__c}" />
+               <apex:inputField value="{!specPricObj.Level__c}" />
+               <apex:inputField value="{!specPricObj.Timeframe__c}"/>
+               <apex:inputField value="{!specPricObj.Custom_Language_Neeeded_to_Limit_Pena__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Guarantee Information" id="PBS5">
+               <apex:inputField value="{!specPricObj.Biosimilars_Into_Brands__c}" />
+               <apex:inputField value="{!specPricObj.Calendar_Year_New_to_Market_Period_Flag__c}"  />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Non-CVS Pharmacies" id="PBS6">
+               <apex:inputField value="{!specPricObj.Allow_Specialty_To_Be_Dispensed_At_Ot__c}" id="specPriceId" onchange="changeSpecFunction(this.checked)"/>       
+               <apex:inputField value="{!specPricObj.Network_ID__c}" id="nwrkId"/>
+               <apex:outputlabel />
+               <apex:inputField value="{!specPricObj.Non_CVS_Specialty_Pricing_Should_Mirror__c}" id="specMirrorId"/>
+               <apex:inputHidden id="redirect" value="{!redirect}"/> 
+            </apex:pageBlockSection> 
+            <apex:actionFunction name="changeYearVal" action="{!changeYearMeth}" reRender="PB,scriptId" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!yearval}" value="" />
+            </apex:actionFunction> 
+            
+            <apex:actionFunction name="saveUpdateSpecPrice" action="{!saveUpdateSpecPrice}" reRender="frm" oncomplete="sendToParent(true);" />
+            <apex:actionFunction name="cancel" action="{!cancel}"  reRender="redirect" oncomplete="sendToParent(false);" />
+        <apex:pageBlockButtons >
+            <apex:outputLink styleClass="btn" rendered="{!redirect}" value="javascript:void(0);" onclick="this.onclick=function(){return false;};callSave();return false;">Save</apex:outputLink>
+            <apex:outputLink styleClass="btn" rendered="{!redirect}" value="javascript:void(0);" onclick="callCancel();return false;">Cancel</apex:outputLink>
+            <apex:commandButton rendered="{!!redirect}" action="{!saveUpdateSpecPrice}" title="Save" value="Save" reRender="pmsg,PB,scriptId" oncomplete="window.scrollTo(0, 0);sendToParent();" status="status"/>
+            <apex:commandButton rendered="{! If(!redirect ,true,false) }" action="{!Cancel}" title="Cancel" value="Cancel" immediate="true" oncomplete="sendToParent();"/> <!--rendered="{!!redirect}"-->
+        </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+  
+  <apex:outputpanel id="scriptId">                                                                                                                
+  <script>
+//Workaround to work HelpText in Lightning Component
+    function workaround() { 
+        if ((window.sfdcPage) && (sfdcPage.executeOnloadQueue)) { 
+        sfdcPage.executeOnloadQueue(); 
+            } 
+        } 
+  window.addEventListener('load', workaround); 
+ 
+  var pharmaBenfitRec = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.pharmacyBenefitId}'));
+  pharmaBenfitRec.disabled = {!disablePharmacyBenefitFlag};
+  function changeSpecFunction(status) { 
+                     
+                    var nwrkRec = document.getElementById(('{!$Component.Pg.frm.PB.PBS6.nwrkId}'));
+                    var specMirrorRec = document.getElementById(('{!$Component.Pg.frm.PB.PBS6.specMirrorId}'));
+                    
+                    if(status){                        
+                    nwrkRec.disabled = false;
+                    specMirrorRec.disabled = false;
+                     
+                    }else{
+                    nwrkRec.disabled = true;
+                    nwrkRec.value = ''; 
+                    specMirrorRec.disabled = true;
+                    specMirrorRec.value = '';                           
+                    }
+                        
+                    }  
+            var nwrkRec = document.getElementById(('{!$Component.Pg.frm.PB.PBS6.nwrkId}'));
+            var specRec = document.getElementById(('{!$Component.Pg.frm.PB.PBS6.specPriceId}'));
+            var specMirrorRec = document.getElementById(('{!$Component.Pg.frm.PB.PBS6.specMirrorId}'));
+            
+            if(specRec.checked == false){
+                nwrkRec.disabled = true;
+                nwrkRec.value = '';
+                specMirrorRec.disabled = true;
+                specMirrorRec.value = '';   
+            }else{
+                nwrkRec.disabled = false;
+                specMirrorRec.disabled = false;
+            }
+    function sendToParent(save) {
+        var lexOrigin = 'https://{!$Label.EV_URL}';
+        var lightning = {!redirect};
+        var msg = (save==true)?document.getElementById('{!$Component.frm.pmsg}').textContent:'';
+        
+        if(lightning && msg=='') {
+            var message = 'success';
+            parent.postMessage(message, lexOrigin);
+        }
+    }
+    function callSave() {
+        saveUpdateSpecPrice();
+    }
+    function callCancel() {
+        cancel();
+    }
+    </script>
+    <script>
+        function setFocusOnLoad() {
+            document.getElementById('{!$Component.pg.frm.PB.PBS2.PBSI2.year}').focus();
+        }   
+    </script> 
+    <script> 
+        function changeMatchCheckbox(checkboxValue){
+            var brandBasis = document.getElementById(('{!$Component.Pg.frm.PB.PBS3.brndBasisId}'));        
+            var genericBasis = document.getElementById(('{!$Component.Pg.frm.PB.PBS3.gnricBasisId}'));
+            var brandRate = document.getElementById(('{!$Component.Pg.frm.PB.PBS3.brndRateId}'));
+            var genericRate = document.getElementById(('{!$Component.Pg.frm.PB.PBS3.gnricRateId}'));
+            var brandDispFee = document.getElementById(('{!$Component.Pg.frm.PB.PBS3.brndDispFeeId}'));
+            var genericDispFee = document.getElementById(('{!$Component.Pg.frm.PB.PBS3.gnricDispFeeId}'));
+            //alert(checkboxValue);
+            if(checkboxValue){
+                //alert('if');
+                genericBasis.value = brandBasis.value;
+                genericRate.value = brandRate.value;
+                genericDispFee.value = brandDispFee.value;
+            }else{
+                //alert('else');
+                genericBasis.value = null;
+                genericRate.value = null;
+                genericDispFee.value = null;
+            }
+        }
+        function changeBrandBasis(brandvalue) {
+            var matchCheckbox = document.getElementById('{!$Component.Pg.frm.PB.PBS3.matchCheckboxId}');
+            var genericBasis = document.getElementById(('{!$Component.Pg.frm.PB.PBS3.gnricBasisId}'));
+            if(matchCheckbox.checked){
+                genericBasis.value = brandvalue;
+            }
+        }
+        function changeBrandRate(brandvalue) {
+            var matchCheckbox = document.getElementById('{!$Component.Pg.frm.PB.PBS3.matchCheckboxId}');
+            var genericRate = document.getElementById(('{!$Component.Pg.frm.PB.PBS3.gnricRateId}'));
+            if(matchCheckbox.checked){
+                genericRate.value = brandvalue;
+            }
+        }
+        function changeBrandDispFee(brandvalue) {
+            var matchCheckbox = document.getElementById('{!$Component.Pg.frm.PB.PBS3.matchCheckboxId}');
+            var genericDispFee = document.getElementById(('{!$Component.Pg.frm.PB.PBS3.gnricDispFeeId}'));
+            if(matchCheckbox.checked){
+                genericDispFee.value = brandvalue;
+            }
+        }
+        function changeGenericBasis(genericvalue) {
+            var matchCheckbox = document.getElementById('{!$Component.Pg.frm.PB.PBS3.matchCheckboxId}');
+            var brandBasis = document.getElementById(('{!$Component.Pg.frm.PB.PBS3.brndBasisId}'));
+            if(genericvalue != brandBasis.value){
+                matchCheckbox.checked = false;
+            }
+        }
+        function changeGenericRate(genericvalue) {
+            var matchCheckbox = document.getElementById('{!$Component.Pg.frm.PB.PBS3.matchCheckboxId}');
+            var brandRate = document.getElementById(('{!$Component.Pg.frm.PB.PBS3.brndRateId}'));
+            if(genericvalue != brandRate.value){
+                matchCheckbox.checked = false;
+            }
+        }
+        function changeGenericDispFee(genericvalue) {
+            var matchCheckbox = document.getElementById('{!$Component.Pg.frm.PB.PBS3.matchCheckboxId}');
+            var brandDispFee = document.getElementById(('{!$Component.Pg.frm.PB.PBS3.brndDispFeeId}'));
+            if(genericvalue != brandDispFee.value){
+                matchCheckbox.checked = false;
+            }
+        }
+    </script> 
+    
+</apex:outputpanel> 
+</apex:page>

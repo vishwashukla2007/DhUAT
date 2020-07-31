@@ -1,0 +1,70 @@
+.THIS .slds-modal__container{
+       max-width: 60rem !important;
+       width:60% !important;
+
+}
+.THIS .slds-modal__container1{ 
+    height : 20%; 
+    width: 30%; 
+    max-width: 30%; 
+    position: absolute;
+	top: 40%;
+	left: 40%;
+    background-color: white; 
+   }
+.THIS .slds-spinner_container
+  {
+    background-color: transparent; 
+  }
+.THIS .fontsize
+{
+  font-size: 13pt;
+}
+.THIS .fontheadingsize
+{
+  font-size: 14pt;
+}
+.THIS .fontlobsize
+{
+  font-size: 11pt;
+}
+.THIS .width  
+{
+     width: 200%;
+}
+.THIS .modalwidth  
+{
+    width: 100%;
+    background-color: lightyellow;
+
+}
+.THIS .modalmargin 
+{
+    padding-left: 4px;
+    margin-left: 4px;
+    padding-right: 4px;
+    margin-right: 4px;
+    padding-top: 4px;
+    margin-top: 4px;
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+
+}
+.THIS .position
+{
+  font-size: 10pt;
+  left: 90%;
+  padding: 1px;
+  margin-right: 1px;
+}
+.THIS .marginleft
+{
+  padding-left: 2px;
+  margin-left: 2px;
+}
+.THIS .nopadding
+{
+  padding-left: 0px;
+  margin-left: 0px;
+  left: 0px;
+}

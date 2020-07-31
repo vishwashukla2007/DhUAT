@@ -1,0 +1,41 @@
+.THIS 
+{
+ zoom: 140%;
+}
+.THIS .fontsize
+{
+ font-size: 20px;
+}
+.THIS .fontcolor
+{
+    color:  rgb(0,161,218);
+}
+.THIS .delete
+{
+ zoom: 70%;
+ padding-left: 2px;
+}
+.THIS .modal
+{
+ zoom: 80%;
+}
+.THIS .marginleft
+{
+  font-size: 5pt;
+  height: 10%;
+}
+.THIS .margingtop
+{
+ padding-top: 2px;
+ margin-top: 1px;
+}
+.THIS .red
+{
+    background-color: rgb(231, 50, 66);
+    color: white;
+    font-size: 15pt;
+}
+.THIS .fontmodalsize
+{
+ font-size: 10px;
+}

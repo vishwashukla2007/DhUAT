@@ -1,0 +1,293 @@
+.THIS .widthAuto{
+    width: auto !important;
+    background-color: white;
+}
+
+.THIS .Black{
+    color: black;
+    background-color: red;
+}
+
+.THIS .widthAuto .slds-pill-container {
+    width: 145px !important;
+}
+
+.THIS .widthAuto .slds-form-element__label{
+    display: none !important;
+}
+
+.THIS .widthAuto .slds-lookup__search-input{
+    width: 145px !important;
+}
+
+.THIS .eDateMsg{
+    color:red;
+    display: block;
+    word-wrap:break-word;
+    width: 101%;
+    white-space: normal
+}
+
+.THIS .highlight{
+	color: red;
+}
+.THIS .mymodal {
+    min-height: 1000px;
+}
+
+.THIS .hover
+{
+    width:120%;
+}
+
+.THIS .billingadminrate
+{
+    width:80px;
+    margin-left:49px;
+    background-color: white;
+}
+.THIS .billingadmineffdate
+{
+    width:240px;
+    margin-left:49px;
+    background-color: white;
+}
+
+.THIS .padding
+{
+    height:30%;
+    padding-top:2px !important;
+    padding-bottom:2px !important;
+    margin-top:0px !important;
+    margin-bottom:0px !important;
+}
+
+
+
+.THIS table {
+  position: relative;
+  border-collapse: collapse;
+}
+
+.THIS td {
+  padding: 0.25rem;
+}
+.THIS th {
+  padding: 0.25rem;
+}
+
+.THIS thead th {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  top: 0;
+  background: #000;
+  color: #FFF;
+}
+
+.THIS thead th:first-child {
+  left: 0;
+  z-index: 1;
+}
+.THIS tbody th {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  left: 0;
+  background: #FFF;
+  border-right: 1px solid #CCC;
+}
+
+.THIS table tr td:first-child {
+    z-index: 1;
+}
+.THIS .platformleft {
+    width: 100px;
+    margin-left:0px;  
+    left: 222px;
+    z-index: 10000;
+    background-color: rgb(239,250,255)  !important;
+}
+.THIS .linkleft 
+{
+ width:150px;   
+ left:65px;
+ z-index: 10000;
+ background-color: rgb(239,250,255)  !important;
+}
+.THIS .checkboxleft 
+{
+ width: 60px;
+ padding-left:10px;
+ left:0px;
+ z-index: 10000;
+ background-color: rgb(239,250,255)  !important;
+}
+.THIS .lob
+{
+ width: 124px;
+ margin-left:15px;
+ padding-left:5px;
+ left:327px;
+ z-index: 10000;
+  background-color: rgb(239,250,255)  !important;
+}
+.THIS .instruction
+{
+ width: 124px;
+ margin-left:5px;
+ left:457px;
+ z-index: 10000;
+ background-color: rgb(239,250,255)  !important;
+}
+.THIS .level1id
+{
+ width: 190px;
+ margin-left:0px;
+ left:590px;
+ z-index: 10000;
+ background-color: rgb(239,250,255)  !important; 
+}
+.THIS .level1name
+{
+ width: 130px;
+ margin-left:0px;
+ left:790px;
+ background-color: rgb(239,250,255)  !important; 
+}
+.THIS .level2id
+{
+ width: 180px;
+ margin-left:10px;
+ padding-left:10px;
+ left:920px;
+ margin-top:2px;
+ margin-bottom:2px;
+ background-color: white;
+}
+.THIS .level3id
+{
+ width: 190px;
+ margin-left:0px;
+ left:1040px;
+ margin-top:2px;
+ margin-bottom:2px;
+ background-color: white;
+}
+.THIS .effectivedate
+{
+ width: 150px;
+ margin-left:0px;
+ left:1230px;
+ margin-top:2px;
+ margin-bottom:2px;
+ background-color: white;
+}
+.THIS .billingrate
+{
+ width: 150px;
+ left:920px;
+ margin-left:20px;
+ margin-top:2px;
+ margin-bottom:2px;
+ background-color: white;
+}
+.THIS .materialcode
+{
+ width: 150px;
+ margin-left:0px;
+ left:970px;
+ margin-top:2px;
+ margin-bottom:2px;
+ background-color: white;
+}
+.THIS .billingadminrate
+{
+ width:80px;
+ margin-left:0px;
+ margin-top:2px;
+ margin-bottom:2px;
+ background-color: white;
+}
+.THIS .billingadmineffdate
+{
+ width:190px;
+ left:1020px;
+ margin-left:0px;
+ margin-top:2px;
+ margin-bottom:2px;
+ background-color: white;
+}
+.THIS .termed
+{
+ width: 100px;
+ margin-top:2px;
+ margin-left:0px;
+ margin-bottom:2px;
+ background-color: white;
+}
+.THIS .termeddate
+{
+ width: 140px;
+ margin-top:2px;
+ margin-left:0px;
+ margin-bottom:2px;
+ background-color: white;
+}
+.THIS .specialtypharmacy
+{
+ width: 250px;
+ margin-top:2px;
+ margin-left:0px;
+ margin-bottom:2px;
+ background-color: white;
+}
+.THIS .differentgstp
+{
+ width: 220px;
+ left:440px;
+ margin-top:2px;
+ margin-left:0px;
+ margin-bottom:2px;
+ background-color: white;
+}
+.THIS .nonspecialtyformulary
+{
+ width: 250px;
+ left:580px;
+ margin-top:2px;
+ margin-left:50px;
+ margin-bottom:2px;
+ background-color: white;
+}
+.THIS .nonspecialtyformularyeffdate
+{
+ width: 270px;
+ margin-top:2px;
+ margin-left:0px;
+ margin-bottom:2px;
+ background-color: white;
+}
+.THIS .nonspecialtyenddate
+{
+ width: 270px;
+ margin-top:2px;
+ margin-left:0px;
+ margin-bottom:2px;
+ background-color: white;
+}
+.THIS .textfields
+{
+ width: 270px;
+ margin-top:2px;
+ margin-left:0px;
+ margin-bottom:2px;
+ text-align:left;
+ background-color: white;
+}
+.THIS .sticky
+{
+  position:sticky;
+}
+.THIS .datewidth
+{
+  width:110px;
+}

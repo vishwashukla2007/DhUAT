@@ -1,0 +1,26 @@
+.THIS {
+  background-color: white;
+  zoom: 100%;
+}
+.THIS .Padding {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+    margin-right: -20px;    
+}
+.THIS .Paddings {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+    margin-right: -20px;
+    margin-top: 20px
+    
+}
+
+.THIS .item_style {
+    width: 90px;
+}

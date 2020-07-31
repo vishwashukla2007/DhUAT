@@ -1,0 +1,5 @@
+<aura:event type="APPLICATION" description="Event template" >
+		<aura:attribute name="message" type="String"/>
+    	<aura:attribute name="recordIdentify" type="String"/>
+    	<aura:attribute name="iserror" type="String"/>
+</aura:event>

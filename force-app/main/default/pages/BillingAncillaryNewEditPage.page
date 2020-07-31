@@ -1,0 +1,358 @@
+<apex:page standardController="Billing_Ancillary_Fee__c" extensions="BillAncillaryNewEditClass" id="pg" lightningStylesheets="true">
+    <script>
+    function setFocusOnLoad() {
+        document.getElementById('{!$Component.pg.frm.PB.PBS2.PBSI1.year}').focus();
+    }   
+    </script>
+    <!-- Jquery reference files --->
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" />
+    <style>
+        body {font-family: Arial, Helvetica, sans-serif;}
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 50%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+
+        /* Add Animation */
+        @-webkit-keyframes animatetop {
+            from {top:-300px; opacity:0} 
+            to {top:0; opacity:1}
+        }
+
+        @keyframes animatetop {
+            from {top:-300px; opacity:0}
+            to {top:0; opacity:1}
+        }
+
+        .modal-header {
+            padding: 0px;
+            height: 29px;
+            color: #ff0000;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            border-top-right-radius: .25rem;
+            border-top-left-radius: .25rem;
+            border-bottom: 2px solid rgb(221, 219, 218);
+            text-align: center;
+        }
+
+        .modal-body {
+            padding: 10px 16px;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            color: #3c3d3e;
+        }
+
+        .modal-footer {
+            padding: 5px;
+            padding-right: 4px;
+            text-align: right;   
+            color: #000000;
+            border-top: 2px solid rgb(221, 219, 218);
+            background-color: rgb(243, 242, 242);
+            border-bottom-left-radius: .25rem;
+            border-bottom-right-radius: .25rem;
+        }
+
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 1px 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 2px 2px;
+            -webkit-transition-duration: 0.4s; /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius : 20px;
+        }
+        .button2 {
+            background-color: rgba(0, 68, 135, 1.0); 
+            color: white; 
+            border: 2px solid rgba(0, 68, 135, 1.0);
+            border-radius: 5px;
+            width: 80px;
+            height: 28px;
+        }
+
+        .button2:hover {
+            background-color: #002080;
+            color: white;
+        }
+        .button5 {
+            background-color: #555555;
+            color: white;
+            border: 2px solid #555555;
+            border-radius: 5px;
+            width: 80px;
+            height: 28px;
+        }
+        .renderedfalse {
+        	display : none;
+        }
+
+        .button5:hover {
+            background-color: #262626;
+            color: white;
+        }
+
+    </style>
+
+    <apex:form id="frm">
+    
+        <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <div style="display: inline-block; padding: 2px; width: 125px;">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                        </div>
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        <apex:pagemessages id="pmsg"></apex:pagemessages>
+        <apex:outputPanel style="padding-left: 10px"/>
+        <apex:pageBlock title="Billing Ancillary Fees Edit" id="PB">
+            <apex:pageBlockSection title="Billing Ancillary Fees Detail" id="PBS1">
+                <apex:outputField value="{!baf.FAF_ID__c}" />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:outputField value="{!baf.Billing_Operations__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Billing Ancillary Fees Information" id="PBS2">
+                 <!-- Defect fix for Year required-->
+                 <apex:pageBlockSectionItem id="PBSI1">
+                   <apex:outputLabel for="yearPnl" value="Year" />
+                   <apex:outputPanel id="yearPnl">
+                      <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                       <!-- Defect fix 1.12.17.3a 8Aug included Onchange() attribute-->
+                       <apex:selectList value="{!baf.Year__c}"  required="true" label="Year" id="year" size="1" onchange="changeYearValue(this.value);">
+                       <apex:selectOptions value="{!yearList}" />
+                        </apex:selectList>
+                         </div> 
+                   </apex:outputPanel>
+               </apex:pageBlockSectionItem>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!baf.LOB2__c}" id="LOBid" onchange="changeLOBValue(this.value);" required="true"/>    
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!baf.Ancillary_Fee_Type__c}" id="ancFeeTypeId" onchange="changefeeType(this.value,'');" required="true"/>             
+                <apex:outputLabel ></apex:outputLabel>
+                
+                	<apex:inputField rendered="{!IF(ISNULL(baf.PBM_Services__c), true , false)}" value="{!baf.Ancillary_Fee_Description__c}" id="ancFeeDescId" onchange="changefeeDescption(this.value,'');" required="true"/>
+                	<apex:inputField rendered="{!IF(ISNULL(baf.PBM_Services__c), false , true)}" value="{!baf.Ancillary_Fee_Description_2__c}" id="ancFeeDesc2Id" onchange="changefeeDescption(this.value,'');" required="true"/>
+                                           
+                <apex:outputLabel ></apex:outputLabel>
+                <!--apex:inputField value="{!baf.Fee_Basis__c}" id="feeBasId" onchange="changefeeBasis(this.value);" required="true"/-->
+                <apex:pageBlockSectionItem id="PBS2a">                  
+                    <apex:outputLabel for="feeBasisPnl" value="Fee Basis" />
+                    <apex:outputPanel id="feeBasisPnl">
+                        <div class="requiredInput" >
+                            <div id="requiredOfferingBlog1"></div> 
+                            <div class="{!IF(ISNULL(baf.PBM_Services__c),'renderedTrue','renderedfalse')}">
+                                <apex:selectList value="{!baf.Fee_Basis__c}" id="feeBasId" onchange="changefeeBasis(this.value);"    size="1">
+                                	<apex:selectOptions value="{!feeBasisList}"/>
+                            	</apex:selectList>
+                            </div>
+                            <div class="{!IF(ISNULL(baf.PBM_Services__c), 'renderedfalse' , 'renderedTrue')}">
+                                <apex:inputField value="{!baf.Fee_Basis2__c}" id="feeBas2Id" onchange="changefeeBasis(this.value);"/>
+                            </div>                            
+                         </div> 
+                   </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:outputLabel ></apex:outputLabel>          
+                <apex:inputField value="{!baf.Fee_Amount__c}" id="feeAmtId1" rendered="{!NOT(NoAdminFeeFlag)}" required="{!if(AND(makeRequireBool, NOT(NoAdminFeeFlag)), true, false)}"/>
+                <apex:outputField value="{!baf.Fee_Amount__c}" id="feeAmtId" rendered="{!NoAdminFeeFlag}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!baf.Additive__c}" id="addId" onchange="disablefeeAdditive(this.checked);"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!baf.Additive_Amount__c}" id="addAmtId" required="{!feeAdditiveValue}" />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!baf.Service_Effective_Date__c}" id="sed" required="false" />
+         </apex:pageBlockSection>
+          <apex:actionFunction name="changefeeType" action="{!FeeAmountAction}" reRender="panelScript,panelScript2,PBS2,additivePanel" immediate="true" status="status">
+                <apex:param name="param3" assignTo="{!feeTypeValue}" value="" />
+                <apex:param name="param5" assignTo="{!feeDescptionValue}" value="" />
+            </apex:actionFunction>                       
+         <apex:actionFunction name="changefeeDescption" action="{!FeeAmountAction}" reRender="panelScript,panelScript2,PBS2,additivePanel" oncomplete="" immediate="true" status="status">
+                <apex:param name="param2" assignTo="{!feeDescptionValue}" value="" />
+                <apex:param name="param3" assignTo="{!feeBasisValue}" value="" />
+            </apex:actionFunction>          
+         <apex:actionFunction name="changefeeBasis" action="{!FeeAmountAction}" reRender="PBS2,panelScript,panelScript2,additivePanel" oncomplete="NoAdminFeePopUp();" immediate="true" status="status">
+                <apex:param name="param3" assignTo="{!feeBasisValue}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="disablefeeAdditive" action="{!FeeAdditiveAction}" reRender="additivePanel,PBS2" oncomplete="" immediate="true" status="status">
+                <apex:param name="param4" assignTo="{!feeAdditiveValue}" value="" />
+            </apex:actionFunction>
+        <apex:actionFunction name="changeYearValue" action="{!changeAction}" reRender="panelScript,panelScript2,PBS2,additivePanel"  oncomplete="NoAdminFeePopUp();" immediate="true" status="status">
+                <apex:param name="param3" assignTo="{!changeYear}" value="" />
+                <!--apex:param name="param4" assignTo="{!changeLOB}" value="" /-->
+            </apex:actionFunction>
+        <apex:actionFunction name="changeLOBValue" action="{!changeAction}" reRender="panelScript,panelScript2,PBS2,additivePanel"  oncomplete="NoAdminFeePopUp();" immediate="true" status="status">
+                <apex:param name="param3" assignTo="{!changeLOB}" value="" />
+                <!--:param name="param4" assignTo="{!feeTypeValue}" value="" /-->
+            </apex:actionFunction>          
+        <apex:pageBlockButtons >
+            <apex:commandButton action="{!saveUpdateBAF}" title="Save" value="Save" reRender="panelScript3,pmsg,PB,panelScript,additivePanel"  status="status" oncomplete="window.scrollTo(0, 0);"/>
+            <apex:commandButton action="{!Cancel}" title="Cancel" value="Cancel" immediate="true"/>
+            <!--apex:commandButton action="{!saveUpdateBBTP}" title="Save" value="Save" rerender="PB" oncomplete=""/-->
+        </apex:pageBlockButtons>       
+        </apex:pageBlock>
+        <!-- The Modal -->
+        <div id="myModal1" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p><center>Matching Billing Admin Fee Type does not exist for Year and LOB selected</center></p>
+              
+            </div>
+            
+            <div class="modal-footer">
+              
+              <button class="button button2" type="button" onclick="NoAdminFeePopUpOk()">OK</button>
+            </div>
+          </div>
+
+        </div>
+        <!-- The Modal -->
+        <div id="myModal2" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p><center>Matching Billing Admin Fee record does not exist for Year and LOB selected</center></p>
+              
+            </div>
+            
+            <div class="modal-footer">
+              
+              <button class="button button2" type="button" onclick="NoAdminRecordPopUpOk()">OK</button>
+            </div>
+          </div>
+
+        </div>
+           
+        
+    
+        <apex:outputpanel id="panelScript">
+        <script>
+       // alert('{!feeBasisFlag}');
+            if({!feeBasisFlag} == false){
+            document.getElementById('requiredOfferingBlog1').className = 'requiredBlock' ; 
+            }
+            var feeBasisVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.PBS2a.feeBasId}'));
+            
+            feeBasisVar.disabled = {!feeBasisFlag};
+            feeBasisVar.value = '{!baf.Fee_Basis__c}';
+             function NoAdminFeePopUp(){
+            console.log('test'); 
+            if({!adminFeePopUpFlag} == true){
+                var modal = document.getElementById('myModal1');
+                modal.style.display = "block";      
+            }
+
+            if({!adminRecordPopUpFlag} == true){
+                var modal = document.getElementById('myModal2');
+                modal.style.display = "block";      
+            }               
+        }
+        
+        
+        function NoAdminFeePopUpOk(){                    
+            //document.getElementById(('{!$Component.pg.frm.PB.PBS2.admFeeType}')).checked = true;
+            var modal = document.getElementById('myModal1');
+            modal.style.display = "none";                    
+        }
+        
+        
+        function NoAdminRecordPopUpOk(){                    
+            //document.getElementById(('{!$Component.pg.frm.PB.PBS2.admFeeType}')).checked = true;
+            var modal = document.getElementById('myModal2');
+            modal.style.display = "none";                     
+        }
+        
+        </script>
+        </apex:outputpanel>
+        
+        <apex:outputpanel id="additivePanel">
+        <script>
+         var feeAdditiveVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.addAmtId}'));
+         feeAdditiveVar.disabled = {!feeAdditiveFlag};
+            
+            if({!feeAdditiveFlag} == true){
+                feeAdditiveVar.value = '{!baf.Additive_Amount__c}';
+            }
+            
+        </script>
+        </apex:outputpanel>
+        <apex:outputpanel id="panelScript2">
+        <script>
+          //alert('{!NoAdminFeeFlag}');
+         if({!NOT(NoAdminFeeFlag)}){
+            
+            var feeAmtVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.feeAmtId1}'));
+            //alert('panelScript2'+'{!baf.Fee_Amount__c}');
+           //alert('panelScript2'+feeAmtVar.value);
+            //if(feeAmtVar.value == ''){
+            feeAmtVar.value = '{!baf.Fee_Amount__c}';
+            //} 
+            }
+        </script>
+        </apex:outputpanel>
+        <apex:outputpanel id="panelScript3">
+        <script>
+          //alert('{!NoAdminFeeFlag}');
+         if({!NOT(NoAdminFeeFlag)}){
+          
+            var feeAmtVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.feeAmtId1}'));
+            //alert('panelScript3'+'{!baf.Fee_Amount__c}');
+           //alert('panelScript3'+feeAmtVar.value);
+            if(feeAmtVar.value == ''){
+            feeAmtVar.value = '{!baf.Fee_Amount__c}';
+            } 
+            
+            }
+        </script>
+        </apex:outputpanel>
+    </apex:form>
+</apex:page>

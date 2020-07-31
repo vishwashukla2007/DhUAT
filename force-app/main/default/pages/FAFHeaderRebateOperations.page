@@ -1,0 +1,3 @@
+<apex:page standardController="Rebate_Operations__c" lightningStylesheets="true">
+    <c:FAFHeaderVC fafRecordId="{!Rebate_Operations__c.FAF_ID__c}"></c:FAFHeaderVC>
+</apex:page>

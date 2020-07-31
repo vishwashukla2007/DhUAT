@@ -1,0 +1,23 @@
+.THIS {
+  width: 50%;
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+
+.THIS .leftPaddingClass {
+    padding-right: 0rem;
+}
+ 
+.THIS .pillSize{
+ width:80%;
+  padding-right: .50rem;
+  padding-left: .50rem;
+}
+.THIS .lookup_padding{
+    padding-right: 0rem;
+    padding-left: 0rem;
+}
+.THIS.slds-spinner_container {  
+  z-index: 10000;
+  position: fixed;   
+}

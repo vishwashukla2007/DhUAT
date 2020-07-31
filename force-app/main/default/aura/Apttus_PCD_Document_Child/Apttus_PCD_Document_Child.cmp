@@ -1,0 +1,121 @@
+<aura:component controller="PCD_GridObjectdata" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"  >
+<aura:attribute name="selected" type="Integer"/> 
+<aura:attribute name="displaycount" type="Integer"/>
+<aura:attribute name="isDelete" type="Boolean" default="false"/> 
+<aura:attribute name="isDisplay" type="Boolean" default="true"/> 
+<aura:attribute name="objects" type="Apttus__DocumentVersionDetail__c" />
+<aura:attribute name="attobj" type="Attachment"/>
+<aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}"/>
+<aura:attribute name="fafid" type="String" />   
+<aura:attribute name="docs" type="Apttus__DocumentVersionDetail__c" />
+<aura:attribute name="url" type="String"/>
+<aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+<aura:registerEvent name="appEvent" type="c:Apttus_PCD_Document_Event"/>
+<aura:if isTrue="{!v.isDisplay}">
+ <aura:if isTrue="{!(v.displaycount > v.selected)}">
+ <lightning:card >  
+                    <aura:if isTrue="{!v.isDelete}">
+                    <div class="modal">
+                    <div role="dialog" tabindex="-1" aria-labelledby="header99" style="Width: 61%;left: 180px;" class="slds-modal slds-fade-in-open ">
+                        <div class="slds-modal__container" style="Width: 61%;">
+                            <div class="red slds-modal__header">
+                                <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                                    X
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="header99" class="slds-text-heading--medium">Are You Sure You Want to Delete?</h2>
+                            </div>
+                            <div class="fontmodalsize slds-modal__content slds-p-around--medium">
+                                <center><p>
+                                        Deleting {!v.docs.Apttus__Title__c} can't be undone.
+                                    </p> 
+                                </center>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <lightning:button class="fontmodalsize slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                                <lightning:button class="fontmodalsize slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Confirm</lightning:button>                    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-backdrop slds-backdrop--open"></div> 
+                    </div>
+                </aura:if>
+     <lightning:layout>
+         <lightning:layoutitem>
+             <p><b>{!v.docs.Task_SubType__c}</b></p>
+             <div class="slds-p-bottom_small"></div>
+         </lightning:layoutitem>
+     </lightning:layout>
+     <aura:if isTrue="{!(v.docs.Apttus__DocumentInfo__c=='Final')}">
+      <lightning:layout >
+      <lightning:layoutitem>
+      <lightning:icon iconName="doctype:pdf" alternativeText="Pdf"  size="x-small"/>
+      </lightning:layoutitem>
+       <div class="slds-p-left_small"></div>
+       
+      <lightning:layoutitem>
+          <div class="slds-p-top_xx-small"></div>
+          <p>{!v.docs.Apttus__Title__c} 
+         <!--  <lightning:icon iconName="utility:delete" onclick="{!c.deletepricing}" class="delete" size="xx-small" variant="error"  alternativeText="Delete!"/> -->
+          </p>
+      </lightning:layoutitem>
+       </lightning:layout>
+      <lightning:layout >
+          <div class="slds-p-left_large"></div>
+          <div class="slds-p-left_large"></div>
+           <lightning:formattedDateTime value="{!v.docs.LastModifiedDate}" year="numeric" month="numeric" day="numeric"  hour="2-digit" minute="2-digit" timeZoneName="short" />
+      </lightning:layout>
+      <lightning:layout >
+          <div class="slds-p-left_large"></div>
+          <div class="slds-p-left_large"></div>
+         <lightning:layoutitem>
+         <div class="slds-p-top_small"></div>
+           <div class="slds-p-top_xxx-small"></div>
+         <lightning:navigation  aura:id="fileopen"/><a class="url margintop fontcolor" href="{!v.url}">View PDF    |</a>
+          </lightning:layoutitem>
+         <lightning:layoutitem>
+         <div class="slds-p-top_xxx-small"></div>
+          <div class="slds-p-top_xxx-small"></div>
+         <lightning:button variant="base" class="marginleft fontcolor" label="Delete" title="Delete" onclick="{!c.deletepricing}"/>
+         </lightning:layoutitem>
+      </lightning:layout>
+     </aura:if>
+     <aura:if isTrue="{!(v.docs.Apttus__DocumentInfo__c=='Draft')}">
+      <lightning:layout >
+      <lightning:layoutitem>
+      <!-- <lightning:icon iconName="doctype:word" alternativeText="Docx"  size="x-small"/> -->
+      <img style="width: 17px;height: 18px;" src="{!$Resource.docxIcon}"/>
+      <!-- <lightning:icon  src="{!$Resource.pcddocx + '#docx'}" alternativeText="Docx"  size="x-small"/> -->
+      </lightning:layoutitem>
+      <div class="slds-p-left_small"></div>
+      <lightning:layoutitem>
+          <div class="slds-p-top_xx-small"></div>
+          <p>{!v.docs.Apttus__Title__c}</p>
+        <!--  <lightning:icon iconName="utility:delete" onclick="{!c.deletepricing}" class="delete" size="xx-small" variant="error"  alternativeText="Delete!"/> -->
+      </lightning:layoutitem>
+       </lightning:layout>
+      <lightning:layout >
+          <div class="slds-p-left_large"></div>
+          <div class="slds-p-left_large"></div>
+          <lightning:formattedDateTime value="{!v.docs.LastModifiedDate}" year="numeric" month="numeric" day="numeric"  hour="2-digit" minute="2-digit" timeZoneName="short" />
+      </lightning:layout>
+      <lightning:layout >
+          <div class="slds-p-left_large"></div>
+          <div class="slds-p-left_large"></div>
+          <div class="slds-p-top_large"></div>
+         <lightning:layoutitem>
+         <div class="slds-p-top_medium"></div>
+         <lightning:navigation aura:id="fileopen"/><a class="url fontcolor" href="{!v.url}">View DOCX   |</a>
+         <div class="slds-p-right_large"></div>
+          </lightning:layoutitem>
+         <lightning:layoutitem>
+          <div class="slds-p-top_xx-small"></div>
+          <div class="slds-p-top_xxx-small"></div>
+         <lightning:button variant="base" class="marginleft fontcolor" label="Delete" title="Delete" onclick="{!c.deletepricing}"/>
+         </lightning:layoutitem>
+     </lightning:layout>
+     </aura:if>
+ </lightning:card>    
+ </aura:if>
+ </aura:if>
+</aura:component>

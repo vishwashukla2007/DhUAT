@@ -1,0 +1,47 @@
+<aura:component controller="changeDashboardWrapper" implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <lightning:quickActionAPI aura:id="quickActionAPI" />
+    <lightning:navigation aura:id="navService"/>
+    <aura:attribute name="record" type="Object" />
+    <aura:attribute name="simpleRecord" type="Object" />
+    <aura:attribute name="recordError" type="String" />
+    
+    <force:recordData aura:id="record"
+                      layoutType="FULL"
+                      recordId="{!v.recordId}"
+                      targetError="{!v.recordError}"
+                      targetRecord="{!v.record}"
+                      targetFields="{!v.simpleRecord}"
+                      mode="VIEW" 
+                      fields="FAF_Data_Sync__c, Legal_Doc_data_sync__c"/>
+    
+    <lightning:recordViewForm recordId="{!v.recordId}" objectApiName="Apttus__APTS_Agreement__c" density="comfy">
+        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_warning" role="alert">
+            <span class="slds-assistive-text">warning</span>
+            <span class="slds-icon_container slds-icon-utility-warning slds-m-right_x-small" title="Description of icon when needed">
+                <span class="slds-avatar slds-avatar--x-small">
+                       <lightning:icon iconName="utility:warning"/>
+                </span>
+            </span>
+            <h2>
+                <aura:if isTrue="{!v.simpleRecord.FAF_Data_Sync__c==false}">
+                    {!$Label.c.agreementSyncErrorMessage}
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!v.simpleRecord.Legal_Doc_data_sync__c==false}">
+                            {!$Label.c.agreementSyncErrorMessageUpdtLegalDoc}
+                        </aura:if>
+                    </aura:set>
+                </aura:if>
+                
+                <aura:if isTrue="{!v.simpleRecord.FAF_Data_Sync__c==false}">
+                    &nbsp;<a href="javascript:void(0)" onclick="{!c.showChangeDashboard}">{!$Label.c.changeDashboardClickToReconcile}</a>
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!v.simpleRecord.Legal_Doc_data_sync__c==false}">
+                            &nbsp;<a href="javascript:void(0)" onclick="{!c.showChangeDashboard}">{!$Label.c.changeDashboardUpdateLegalDoc}</a>
+                        </aura:if>
+                    </aura:set>
+                </aura:if> 
+            </h2>
+        </div>
+    </lightning:recordViewForm>
+    
+</aura:component>

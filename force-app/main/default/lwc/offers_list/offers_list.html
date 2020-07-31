@@ -1,0 +1,25 @@
+<template>
+    <lightning-card title="Offers">
+        <div style="margin-left:3%;">
+            <lightning-radio-group label="" 
+                                    name="radioButtonGroup" 
+                                    onchange={handleChange} 
+                                    options={options}
+                                    value={selectedValue}
+                                    type="radio"></lightning-radio-group>
+        
+            <br/>
+            <div if:true={selectedValue}>
+                Selected Vlaue: <b>{selectedValue}</b>
+            </div>
+        </div>
+        <div class="slds-p-around_medium lgc-bg">
+            <lightning-tree-grid
+                columns={options}
+                data={options}
+                key-field="name"
+            ></lightning-tree-grid>
+        </div>
+
+    </lightning-card>
+</template>

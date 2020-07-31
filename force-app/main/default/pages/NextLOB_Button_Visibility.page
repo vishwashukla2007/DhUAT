@@ -1,0 +1,59 @@
+<!-- Visualforce page to dynamicaly make visible of Next LOB Button
+Date - 09/06/2019
+Controller - NextLOBButtonController
+-->
+<apex:page lightningStylesheets="true"   showHeader="false" >
+<!--
+<apex:page  lightningStylesheets="true"  extensions="NextLOBButtonController" showHeader="false" >
+
+ <style>
+        body {
+              width=600px;
+              height:80px;
+              border: none;
+              scroll: none;
+              overflow: hidden;
+              background-color: white;
+              color="black";
+              font color="black";
+              font-size: .25rem;
+              padding-left: 0px;
+              margin-left: 0px;
+              margin-right:20px;
+              .requiredInput{
+                            display: inline-block;
+                             }
+              font-family: 'Salesforce Sans', Arial, sans-serif;
+             }  
+   .button{
+           color:white !important;
+           background:#3371FF !important;
+           margin-left: 20px;
+           }
+ </style>  
+ <script>
+    function refreshPage(){
+        window.top.location.href =  "/{!Apttus__APTS_Agreement__c.Id}";
+    }
+ </script>
+ <apex:form id="myfrm">
+ <apex:pageBlock >
+ <div id="InnternalDiv">
+ <apex:outputPanel layout="list">
+ <apex:pageBlockSection >
+ <apex:outputPanel layout="block" id="form">
+ <apex:pageBlockSectionItem >
+ <apex:inputField Style="font-family:'Salesforce Sans', Arial, sans-serif; font-size: .85rem; color=grey; font color=grey;" Label="Label" id="lob" value="{!Apttus__APTS_Agreement__c.Submitted_Questionnaire_LOB__c}"/>
+  </apex:pageBlockSectionItem>
+  <apex:pageBlockSectionItem >
+  <apex:commandButton Style="margin-left: 20px;" styleClass="button"  value="Previous" action="{!LOBUpdatePrevious}" rendered="{!displayLOB}" oncomplete="refreshPage();" status="progress"/>
+  <apex:commandButton Style="margin-right: 20px;" styleClass="button"  value="Next" action="{!LOBUpdate}" rendered="{!displayLOB}" oncomplete="refreshPage();" status="progress"/>
+  </apex:pageBlockSectionItem>
+  </apex:outputPanel>
+ </apex:pageBlockSection>
+   </apex:outputPanel>
+ </div>
+ </apex:pageBlock>
+ </apex:form>
+ -->
+</apex:page>

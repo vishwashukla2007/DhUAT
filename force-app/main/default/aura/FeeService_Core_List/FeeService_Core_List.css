@@ -1,0 +1,31 @@
+.THIS .readOnly .slds-cell-edit__button{
+    pointer-events: none !important;
+    display: none;
+}
+.THIS .newButton {
+    margin-right: -10%;
+}
+.THIS .holder{
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+}
+.THIS.slds-spinner_container {  
+  z-index: 10000;
+  position: fixed;   
+}
+.THIS .slds-card__body{
+    position : relative;
+}
+
+.THIS .errorDiv{
+    height:4rem;
+    position: absolute;
+    top: -65px;
+    right: 25%;
+}
+
+.THIS .errorDiv .slds-notify_container{
+    z-index:0!important;
+}

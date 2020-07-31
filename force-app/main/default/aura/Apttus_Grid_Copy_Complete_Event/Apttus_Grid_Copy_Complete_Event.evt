@@ -1,0 +1,12 @@
+<aura:event type="APPLICATION">
+    <!-- Add aura:attribute tags to define event shape.
+         One sample attribute here. -->
+    <aura:attribute name="message" type="String"/>
+    <aura:attribute name="SaveRec" type="Boolean"/>
+    <aura:attribute name="isSavedAndClose" type="Boolean"/>
+    <aura:attribute name="Mail" type="Mail_Pricing__c"/>
+    <aura:attribute name="Admin" type="Billing_Administrative_Fees__c"/>
+    <aura:attribute name="Grid" type="String" Default="None"/>
+    <aura:attribute name="Section" type="String"/>
+    <aura:attribute name="isMatchToSave" type="Boolean" default="false"/>
+</aura:event>

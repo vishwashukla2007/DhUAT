@@ -1,0 +1,310 @@
+<aura:component controller="Apttus_GridObjectdata" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:attribute name="objects" type="Rebate_Guarantees__c" />
+	<aura:attribute name="yearoptions" type="List"/>
+	<aura:attribute name="brandbasis" type="Object"/>
+	<aura:attribute name="NonSpec" type="Object"/>
+	<aura:attribute name="Spec" type="Object"/>
+	<aura:attribute name="GstpOption" type="Object"/>
+	<aura:attribute name="Plandesign" type="Object"/>
+	<aura:attribute name="disabled" type="Boolean" Default="false"/>
+	
+	<aura:attribute name="NonSpecBol" type="Boolean" Default="false"/>
+	<aura:attribute name="SpecBol" type="Boolean" Default="false"/>
+	<aura:attribute name="GSTPBol" type="Boolean" Default="false"/>
+	
+	<aura:attribute name="PicklistError" type="Boolean" Default="false"/>
+	<aura:attribute name="DollarErrormsg" type="Boolean" Default="false"/>
+	<aura:attribute name="PercentageErrorMsg" type="Boolean" Default="false"/>
+      <aura:attribute name="activerownum" type="Integer"/>
+	
+	
+	<aura:attribute name="berdisabled" type="Boolean" Default="false"/>
+	<aura:attribute name="gerdisabled" type="Boolean" Default="false"/>
+	<aura:attribute name="merdisabled" type="Boolean" Default="false"/>
+	<aura:attribute name="neddisabled" type="Boolean" Default="false"/>
+	<aura:attribute name="ssgdisabled" type="Boolean" Default="false"/>
+	<aura:attribute name="brdisabled" type="Boolean" Default="false"/>
+	<aura:attribute name="flatdisabled" type="Boolean" Default="false"/>
+	<aura:attribute name="nonmacdisabled" type="Boolean" Default="false"/>
+	<aura:attribute name="brandrequired" type="Boolean" Default="false"/>
+	<aura:attribute name="prefrequired" type="Boolean" Default="false"/>
+	<aura:attribute name="flatrequired" type="Boolean" Default="false"/>
+	<aura:attribute name="nonmacrequired" type="Boolean" Default="false"/>
+	<aura:attribute name="duplicaterow" type="Integer" default="0"/>
+	<aura:attribute name="networkname" type="String" default="" />
+	<aura:attribute name="networktype" type="String" default="" />
+	<aura:attribute name="lob" type="String" default="" />
+	<aura:attribute name="desc" type="String" default="" />
+	<aura:attribute name="isDeleteAlertOpen" type="Boolean" default="false" />
+	<aura:attribute name="yearcount" type="Integer"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Save_Event" action="{!c.handleSave}"/>
+    <aura:handler event="c:Apttus_Grid_Copy_Event" action="{!c.handleupdate}"/>
+    <aura:attribute name="percentageCheck" type="Boolean" default="false" />
+    <aura:registerEvent name="savenotifyEvent" type="c:Apttus_Grid_NT_Notify_Save_Event"/>
+    <aura:registerEvent name="errornotifyEvent" type="c:Apttus_Grid_NT_Notify_Error_Event"/>
+    <aura:registerEvent name="cancelnotifyEvent" type="c:Apttus_Grid_Cancel_Parent_Event"/>
+    <aura:registerEvent name="refreshnotifyEvent" type="c:Apttus_Grid_Refresh_Parent_Event"/>
+    <aura:registerEvent name="savenotEvent" type="c:Apttus_Grid_Close_New_Event"/>
+    <aura:registerEvent name="inactiveEvent" type="c:Apttus_Grid_Inactive_Parent_Event"/>
+    <aura:registerEvent name="copycomplete" type="c:Apttus_Grid_Copy_Complete_Event"/>
+    <aura:handler event="c:Apttus_Grid_Copy_Start_Event" action="{!c.copystart}"/>
+	<ltng:require styles="{!$Resource.multilinetoastmessage}" />
+        <lightning:layout>
+			 <aura:if isTrue="{!v.isDeleteAlertOpen}">
+						<div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+							<div class="slds-modal__container" style="Width: 31%;">
+								<div class="slds-modal__header">
+									<button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+										X
+										<span class="slds-assistive-text">Close</span>
+									</button>
+									<h2 id="header99" class="slds-text-heading--medium">Delete Rebate Guarantee Record</h2>
+								</div>
+								<div class="slds-modal__content slds-p-around--medium">
+									<center><p>
+										Are you sure you want to delete the record?
+										</p> 
+									</center>
+								</div>
+								<div class="slds-modal__footer">
+									<lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+									<lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete</lightning:button>                    
+								</div>
+							</div>
+						</div>
+						<div class="slds-backdrop slds-backdrop--open"></div>        
+			</aura:if>
+        </lightning:layout>
+    <aura:if isTrue="{!v.percentageCheck==false}">
+		 <tr aura:id="tablerow" class="highlight"> 
+			<td>
+				  <div>
+					<div class="slds-p-top_x-small"></div>
+                      
+					<lightning:icon iconName="utility:delete" size="small"  onclick="{!c.handledelete}" alternativeText="Delete" />
+				  </div>      
+			</td>
+			<td>
+                <div>
+                    <lightning:select aura:id="inputYear"  name="inputYear"  required = "true" disabled= "false" onchange="{!c.handleChange}">
+						<option value="{!v.objects.Year__c}" text="{!v.objects.Year__c}"></option>
+						<aura:iteration items="{!v.yearoptions}" var="opt">
+							<option value="{!opt.value}">{!opt.value}</option>
+						</aura:iteration>
+   					</lightning:select>              
+                </div>      
+            </td>
+			<td>
+				<div>
+					<lightning:input   aura:id="input111" disabled="true" name="input11" value="{!v.objects.Plan_Year__c}" />                         
+				</div> 
+            </td>
+			<td>
+                <div>
+                    <lightning:select aura:id="inputPlan"  name="inputPlan"  required="true" disabled= "false" onchange="{!c.handleChange}">
+                        <aura:iteration items="{!v.Plandesign}" var="opt">
+  					    <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    					</aura:iteration>
+        			    <option value="{!v.objects.Plan_Design__c}" text="{!v.objects.Plan_Design__c}"></option>
+   			        </lightning:select>
+                </div>      
+            </td>
+            <td>
+                <div>
+                    <lightning:select aura:id="inputGSTP"  name="inputGSTP"  disabled= "false" onchange="{!c.handleChange}">
+                        <aura:iteration items="{!v.GstpOption}" var="opt">
+  					    <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    					</aura:iteration>
+        			    <option value="{!v.objects.GSTP__c}" text="{!v.objects.GSTP__c}"></option>
+   			        </lightning:select>
+                </div>      
+            </td>
+             <td>
+                <div>
+                    <lightning:select aura:id="inputNonspec"  name="inputNonspec"  required="true" disabled= "false" onchange="{!c.handleChange}">
+                	    <aura:iteration items="{!v.NonSpec}" var="opt">
+  					    <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    				    </aura:iteration>
+        			    <option value="{!v.objects.Non_Specialty_Formulary_2__c}" text="{!v.objects.Non_Specialty_Formulary_2__c}"></option>
+   					</lightning:select>
+                </div>      
+            </td>
+			<td>
+                <div>
+                    <lightning:select aura:id="inputSpec"  name="inputSpec"  disabled= "false" onchange="{!c.handleChange}">
+                	    <aura:iteration items="{!v.Spec}" var="opt">
+  					    <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    				    </aura:iteration>
+        			    <option value="{!v.objects.Specialty_Formulary__c}" text="{!v.objects.Specialty_Formulary__c}"></option>
+   					</lightning:select>
+                </div>      
+            </td>
+            <td>
+                <div>
+                    <lightning:select aura:id="inputBrandBasis"  name="inputBrandBasis"  required="true" disabled= "false" onchange="{!c.handleChange}">
+                        <aura:iteration items="{!v.brandbasis}" var="opt">
+  					    <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    					</aura:iteration>
+        			    <option value="{!v.objects.Basis__c}" text="{!v.objects.Basis__c}"></option>
+   			        </lightning:select>
+                </div>      
+            </td>
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputRetail30Dol" name="inputRetail30Dol" disabled="false" value="{!v.objects.Retail_30__c}"/>                        
+			  </div>
+			</td>
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputRetail90Dol" name="inputRetail90Dol" disabled="false" value="{!v.objects.Retail_90__c}"/>                         
+			  </div>
+			</td>
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputClient30Dol" name="inputClient30Dol" disabled="false" value="{!v.objects.Client_Owned_30__c}"/>                         
+			  </div>
+			</td>
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputClient90Dol" name="inputClient90Dol" disabled="false" value="{!v.objects.Client_Owned_90__c}"/>                         
+			  </div>
+			</td>
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputMailDol" name="inputMailDol" disabled="false" value="{!v.objects.Mail_1__c}"/>                       
+			  </div>
+			</td> 
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputMChoiceDol" name="inputMChoiceDol" disabled="false" value="{!v.objects.Mchoice__c}"/>                       
+			  </div>
+			</td> 
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputSpecialtyDol" name="inputSpecialtyDol" disabled="false" value="{!v.objects.Specialty__c}"/>                        
+			  </div>
+			</td>
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputSpecialtyRetailDol" name="inputSpecialtyRetailDol" disabled="false" value="{!v.objects.Specialty_Retail__c}"/>                       
+			  </div>
+			</td> 	
+		</tr>
+	</aura:if>
+	 <aura:if isTrue="{!v.percentageCheck}">
+		 <tr aura:id="tablerow" class="highlight">
+			<td>
+				  <div>
+					<div class="slds-p-top_x-small"></div>
+					<lightning:icon iconName="utility:delete" size="small"  onclick="{!c.handledelete}" alternativeText="Delete" />
+				  </div>      
+			</td>
+		    <td>
+                <div>
+                    <lightning:select aura:id="inputYear"  name="inputYear"  required = "true" disabled= "false" onchange="{!c.handleChange}">
+						<option value="{!v.objects.Year__c}" text="{!v.objects.Year__c}"></option>
+						<aura:iteration items="{!v.yearoptions}" var="opt">
+							<option value="{!opt.value}">{!opt.value}</option>
+						</aura:iteration>
+   					</lightning:select>              
+                </div>      
+            </td>
+			<td>
+				<div>
+					<lightning:input   aura:id="input111" disabled="true" name="input11" value="{!v.objects.Plan_Year__c}" />                         
+				</div> 
+            </td>
+			<td>
+                <div>
+                    <lightning:select aura:id="inputPlan"  name="inputPlan"  required="true" disabled= "false" onchange="{!c.handleChange}">
+                        <aura:iteration items="{!v.Plandesign}" var="opt">
+  					    <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    					</aura:iteration>
+        			    <option value="{!v.objects.GSTP__c}" text="{!v.objects.Plan_Design__c}"></option>
+   			        </lightning:select>
+                </div>      
+            </td>
+            <td>
+                <div>
+                    <lightning:select aura:id="inputGSTP"  name="inputGSTP"   disabled= "false" onchange="{!c.handleChange}">
+                        <aura:iteration items="{!v.GstpOption}" var="opt">
+  					    <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    					</aura:iteration>
+        			    <option value="{!v.objects.GSTP__c}" text="{!v.objects.GSTP__c}"></option>
+   			        </lightning:select>
+                </div>      
+            </td>
+            <td>
+                <div>
+                    <lightning:select aura:id="inputNonspec"  name="inputNonspec" required="true" disabled= "false" onchange="{!c.handleChange}">
+                	    <aura:iteration items="{!v.NonSpec}" var="opt">
+  					    <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    				    </aura:iteration>
+        			    <option value="{!v.objects.Non_Specialty_Formulary_2__c}" text="{!v.objects.Non_Specialty_Formulary_2__c}"></option>
+   					</lightning:select>
+                </div>      
+            </td>
+			<td>
+                <div>
+                    <lightning:select aura:id="inputSpec"  name="inputSpec"  disabled= "false" onchange="{!c.handleChange}">
+                	    <aura:iteration items="{!v.Spec}" var="opt">
+  					    <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    				    </aura:iteration>
+        			    <option value="{!v.objects.Specialty_Formulary__c}" text="{!v.objects.Specialty_Formulary__c}"></option>
+   					</lightning:select>
+                </div>      
+            </td>
+            <td>
+                <div>
+                    <lightning:select aura:id="inputBrandBasis"  name="inputBrandBasis"  required="true" disabled= "false" onchange="{!c.handleChange}">
+                        <aura:iteration items="{!v.brandbasis}" var="opt">
+  					    <option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    					</aura:iteration>
+        			    <option value="{!v.objects.Basis__c}" text="{!v.objects.Basis__c}"></option>
+   			        </lightning:select>
+                </div>      
+            </td>
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputRetail30Per" name="inputRetail30Per" disabled="false" value="{!v.objects.Retail_30_1__c}"/>                        
+			  </div>
+			</td>
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputRetail90Per" name="inputRetail90Per" disabled="false" value="{!v.objects.Retail_90_1__c}"/>                        
+			  </div>
+			</td> 
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputClient30Per" name="inputClient30Per" disabled="false" value="{!v.objects.Client_Owned_30_1__c}"/>                       
+			  </div>
+			</td> 
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputClient90Per" name="inputClient90Per" disabled="false" value="{!v.objects.Client_Owned_90_1__c}"/>                       
+			  </div>
+			</td> 
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputMailPer" name="inputMailPer" disabled="false" value="{!v.objects.Mail_1__c}"/>                       
+			  </div>
+			</td> 
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputMChoicePer" name="inputMChoicePer" disabled="false" value="{!v.objects.Mchoice_1__c}"/>                       
+			  </div>
+			</td>
+			<td>
+			  <div>
+				<lightning:input type="text" aura:id="inputSpecialtyPer" name="inputSpecialtyPer" disabled="false" value="{!v.objects.Specialty_1__c}"/>                        
+			  </div>
+			</td>
+			<td >
+			  <div>
+				<lightning:input type="text" aura:id="inputSpecialtyRetailPer" name="inputSpecialtyRetailPer" disabled="false" value="{!v.objects.Specialty_Retail_1__c}"/>                       
+			  </div>
+			</td> 	
+		</tr>
+	</aura:if>
+</aura:component>

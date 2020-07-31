@@ -1,0 +1,85 @@
+<aura:component controller="FeeServiceCoreList" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:isUrlAddressable" access="global" >
+    <aura:attribute type="object" name="coreList"/>    
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute name="draftValues" type="Object" default="[]"/>
+    <aura:attribute name="SearchKeyWord" type="string"/>     
+    <aura:attribute name="spinner" type="Boolean" default="false"/>
+    
+    <!--Sorting Attributes -->
+    <aura:attribute name="sortDirection" type="String" default="asc" />
+    <aura:attribute name="defaultSortDirection" type="String" default="asc" />
+    <aura:attribute name="sortedBy" type="String" />
+    
+    <!-- Loading Atributes -->
+    <aura:attribute name="enableInfiniteLoading" type="Boolean" default="true"/>
+    <aura:attribute name="initialRows" type="Integer" default="50"/>
+    <aura:attribute name="currentCount" type="Integer" default="0"/>
+    <aura:attribute name="totalRows" type="Integer" default="0"/>
+    <aura:attribute name="loadOffset" type="Integer" default="1"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>        
+    
+    
+    <!--loading spinner start-->
+    <aura:if isTrue="{!v.spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    <!-- Loading spinner end-->
+    
+    <lightning:card iconName="standard:account" title="PBM CORE SERVICES"> 
+        <div class="slds-m-top_large"></div>
+        <lightning:layout>
+            <div class="slds-m-left_medium"></div>
+            <div class="slds-size_4-of-12">
+                <span>
+                    <div class="slds-m-right_large"></div>
+                    <ui:inputText   value="{!v.SearchKeyWord}" placeholder="Search .."/>
+                </span>
+                <div class="slds-m-right_large"></div>
+            </div>
+            <div class="slds-m-left_large"></div>
+            <div class="slds-size_1-of-12">
+                <span>
+                    <lightning:button variant="brand" label="Search" title="Search" onclick="{!c.Searchlist}"/>
+                </span>
+            </div>
+            <div class="slds-size_2-of-12">
+                <span>
+                    <lightning:button variant="neutral" label="Clear Search" title="Clear Search" onclick="{!c.ClearSearch}"/>
+                </span>                
+            </div>
+            <div class="slds-size_4-of-12 ">
+                <div class="slds-float_right newButton">
+                    <!--<lightning:button variant="neutral" label="New" title="New" onclick="{!c.createNewCoreServices}"/>-->
+                </div>
+            </div>            	            
+        </lightning:layout>
+        <div class="slds-m-top_large"></div>
+        <div style="height:450px">
+            <lightning:datatable aura:id="coreTable"
+                                 showRowNumberColumn="true"
+                                 columnWidthsMode ="auto"
+                                 maxColumnWidth="auto"
+                                 data="{!v.coreList }" 
+                                 columns="{! v.mycolumns }" 
+                                 draftValues="{!v.draftValues}"                              
+                                 keyField="Id" 
+                                 hideCheckboxColumn="true"                              
+                                 sortedDirection="{!v.sortDirection}"
+                                 sortedBy="{!v.sortedBy}"
+                                 onsort="{!c.handleSort}"
+                                 onsave="{! c.onSave }"
+                                 enableInfiniteLoading="{!v.enableInfiniteLoading}"
+                                 loadMoreOffset="{!v.loadOffset}"
+                                 onloadmore="{!c.loadMoreData }"/> 
+        </div>
+        <div class="slds-clearfix">
+        </div>
+    </lightning:card>
+</aura:component>

@@ -1,0 +1,601 @@
+<apex:page lightningStylesheets="true" standardController="Retail_Network_Guarantees__c" id="pg" extensions="NetworkGuaranteesExt">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+   function setFocusOnLoad() {
+   document.getElementById('{!$Component.pg.frm.Gblock.Gsection.GType}').focus();
+        }   
+</script>
+<apex:pageMessages id="apexPageMsgList" rendered="{!hasMethodExists}"/>
+<!---***Changes for W-000293 Start***-->
+
+<apex:outputPanel id="popupPanel">
+        <script>
+        
+        function SaveDailog(){
+                var v=validateData();
+                if(v==true){
+                        var message = 'A Mail Pricing record needs to be created when Network Name on the Network Pricing starts with characters \'MC\'.';
+                        if({!NoMailPriceatFAF}){
+                            document.getElementById("paragraphId").innerHTML = message;
+                            var modal = document.getElementById('myModal16');
+                            modal.style.display = "block";
+                        }
+                        else{
+                        saveMethod();
+                        }
+               }
+               else{
+                   return false;
+               }
+        } 
+        
+        function popupContinue(id){
+                var modal = document.getElementById(id);
+                modal.style.display = "none";
+                saveMethod();
+        }
+        
+        </script>
+        </apex:outputPanel>
+        
+ <!-- The Modal -->
+        <div id="myModal16" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+                <p >
+                    <ul id="paragraphId" ></ul>                         
+                </p>                
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button2" type="button" onclick="popupContinue('myModal16')">OK</button>
+            </div>
+          </div>
+
+        </div>
+        
+
+
+<!---***Changes for W-000293 End***-->
+<script>
+
+function showrequired(fieldclass){
+    jQuery("."+fieldclass).attr("disabled", false);
+    var field = jQuery("."+fieldclass);
+    if(field.is('select') && fieldclass=='Mac'){
+        field = jQuery("."+fieldclass).parent('span');
+    }
+    field.wrap("<div class=\"requiredInput\"></div>");
+    jQuery("<div class=\"requiredBlock\"></div>").insertBefore(field);
+}
+function showrequiredonfield(fieldclass){
+    elserequired(fieldclass);
+    showrequired(fieldclass);    
+}
+
+function showrequiredonload(fieldclass){
+    showrequired(fieldclass);
+}
+ 
+function hiderequired(fieldclass){
+    jQuery("."+fieldclass).val('').attr("disabled", "disabled"); 
+    jQuery("."+fieldclass).closest('td').find('div.requiredInput').children('div:first').remove();
+    jQuery("."+fieldclass).closest('td').find('div.requiredInput').contents().unwrap();
+    jQuery("."+fieldclass).removeClass('error');
+    jQuery("."+fieldclass).parent().find('.errorMsg').remove();
+    if(fieldclass=='340B' || fieldclass=='LDD' || fieldclass=='Vaccine'){
+       jQuery("."+fieldclass).trigger('change');
+    }
+}
+function elserequired(fieldclass){
+    jQuery("."+fieldclass).attr("disabled", false);
+    jQuery("."+fieldclass).closest('td').find('div.requiredInput').children('div:first').remove();
+    jQuery("."+fieldclass).closest('td').find('div.requiredInput').contents().unwrap();
+    jQuery("."+fieldclass).removeClass('error');
+    jQuery("."+fieldclass).parent().find('.errorMsg').remove();
+}        
+function Field(val){
+     if(val == 'SSG'){
+        hiderequired('Compound')
+        hiderequired('ZBD')
+        hiderequired('Vaccine')
+        hiderequired('OTC')
+        hiderequired('340B')
+        hiderequired('Paper')
+        hiderequired('COB')
+        hiderequired('LDD')
+        hiderequired('Biosimilars')
+        hiderequired('UC')
+    } else{
+        showrequiredonfield('Compound')
+        showrequiredonfield('ZBD')
+        showrequiredonfield('Vaccine')
+        showrequiredonfield('OTC')
+        showrequiredonfield('340B')
+        showrequiredonfield('Paper')
+        showrequiredonfield('COB')
+        showrequiredonfield('LDD')
+        showrequiredonfield('Biosimilars')
+        showrequiredonfield('UC')
+    }  
+    populateRate();   
+    Field1(jQuery('.SSG').val(), false);
+       
+} 
+function Field1(val, call){
+    valu = jQuery(".Type").val();
+    if(val == 'Yes' && valu == 'SSG'){
+        hiderequired('Rate')
+        //jQuery(".Rate").val("");
+        hiderequired('Compound')
+        hiderequired('ZBD')
+        hiderequired('Vaccine')
+        hiderequired('OTC')
+        hiderequired('340B')
+        hiderequired('Paper')
+        hiderequired('COB')
+        hiderequired('LDD')
+        hiderequired('Biosimilars')
+        hiderequired('UC')
+    }else if(valu == 'SSG' && val == 'No'){
+        showrequiredonfield('Rate')
+    }else if(valu != 'SSG' && val == 'Yes'){
+        showrequiredonfield('Rate')
+    }else{
+        showrequiredonfield('Rate')
+    }
+    populateRate();        
+    if(val == 'No' && call)
+     {
+            document.getElementById('confirmModel').style.display = '';
+            $("#confirmModel").show();
+        }else
+        {
+            document.getElementById('confirmModel').style.display = 'none';
+        
+        }
+ }       
+function Ok(){
+      $("#confirmModel").hide();
+      }
+
+function Field2(val){
+     if(val){       
+        hiderequired('Rate')
+        hiderequired('Type')
+        hiderequired('Compound')
+        hiderequired('ZBD')
+        hiderequired('Vaccine')
+        hiderequired('OTC')
+        hiderequired('340B')
+        hiderequired('Paper')
+        hiderequired('SSG')
+        hiderequired('COB')
+        hiderequired('LDD')
+        hiderequired('Biosimilars')
+        hiderequired('UC')       
+     }else{
+        showrequiredonfield('Rate')
+        showrequiredonfield('Type')
+        showrequiredonfield('SSG')
+        showrequiredonfield('Compound')
+        showrequiredonfield('ZBD')
+        showrequiredonfield('Vaccine')
+        showrequiredonfield('OTC')
+        showrequiredonfield('340B')
+        showrequiredonfield('Paper')
+        showrequiredonfield('COB')
+        showrequiredonfield('LDD')
+        showrequiredonfield('Biosimilars')
+        showrequiredonfield('UC')    
+     }
+}
+
+function populateRate() { 
+    var type = jQuery('.Type').val();
+    var ssg = jQuery('.SSG').val();
+    if(type=='SSG' && ssg=='No') {
+        populateratessg();    
+    } else {
+    }
+}
+jQuery(document).ready(function() { 
+var valu = jQuery(".Type").val();
+var value = jQuery(".SSG").val(); 
+        showrequiredonload('Type')
+        showrequiredonload('Rate')
+        showrequiredonload('SSG')
+        showrequiredonload('Compound')
+        showrequiredonload('ZBD')
+        showrequiredonload('Vaccine')
+        showrequiredonload('OTC')
+        showrequiredonload('340B')
+        showrequiredonload('Paper')
+        showrequiredonload('COB')
+        showrequiredonload('LDD')
+        showrequiredonload('Biosimilars')
+        showrequiredonload('UC')
+     if(valu == 'SSG'){
+        hiderequired('Compound')
+        hiderequired('ZBD')
+        hiderequired('Vaccine')
+        hiderequired('OTC')
+        hiderequired('340B')
+        hiderequired('Paper')
+        hiderequired('COB')
+        hiderequired('LDD')
+        hiderequired('Biosimilars')
+        hiderequired('UC')
+    } else{
+        showrequiredonload('Compound')
+        showrequiredonload('ZBD')
+        showrequiredonload('Vaccine')
+        showrequiredonload('OTC')
+        showrequiredonload('340B')
+        showrequiredonload('Paper')
+        showrequiredonload('COB')
+        showrequiredonload('LDD')
+        showrequiredonload('Biosimilars')
+        showrequiredonload('UC')
+    } 
+
+    if(valu == 'SSG' && value == 'Yes'){
+        hiderequired('Rate')
+        hiderequired('Compound')
+        hiderequired('ZBD')
+        hiderequired('Vaccine')
+        hiderequired('OTC')
+        hiderequired('340B')
+        hiderequired('Paper')
+        hiderequired('COB')
+        hiderequired('LDD')
+        hiderequired('Biosimilars')
+        hiderequired('UC')
+    }else if(valu == 'SSG' && value == 'No'){
+        showrequiredonload('Rate')  
+    }else if(valu != 'SSG' && value == 'Yes'){
+        showrequiredonload('Rate')
+    }else{
+        showrequiredonload('Rate')
+    }   
+     if(jQuery('.MirrorMail').attr('checked')){       
+        hiderequired('Rate')
+        hiderequired('Type')
+        hiderequired('Compound')
+        hiderequired('ZBD')
+        hiderequired('Vaccine')
+        hiderequired('OTC')
+        hiderequired('340B')
+        hiderequired('Paper')
+        hiderequired('SSG')
+        hiderequired('COB')
+        hiderequired('LDD')
+        hiderequired('Biosimilars')
+        hiderequired('UC')       
+      }
+});
+function validateData() {
+    document.getElementById('{!$Component.apexPageMsgList}').style.display = 'none';
+    var counter=0;
+    jQuery("#pgMsgList").empty();
+    jQuery("div.requiredInput").find("input:text, select").each(function() {
+    if(typeof (jQuery(this).attr('data-label'))!='undefined'){
+        if(jQuery(this).val() == '') {
+            counter++;
+            jQuery(this).addClass('error'); 
+            var label = jQuery(this).attr('data-label');
+            jQuery(this).parents('.requiredInput').eq(0).find('.errorMsg').remove();
+            jQuery(this).parents('.requiredInput').eq(0).append('<div class="errorMsg"><strong>Error:</strong> You must enter a value</div>');
+            jQuery("#pgMsgList").append('<li style="padding-top:5px">'+label+': You must enter a value</li>');
+        } else {
+            jQuery(this).removeClass('error');
+            jQuery(this).parents('.requiredInput').eq(0).find('.errorMsg').remove();
+        }
+        }
+    });
+    
+    if(counter) {
+        jQuery("#pageMessages").show();
+        return false;
+    } else {
+        jQuery("#pageMessages").hide();
+        jQuery("form").find("input:text, select").each(function() {
+            if(jQuery(this).attr('disabled')) {
+            jQuery(this).val('').attr('disabled', false);
+            }
+         });
+         return true;
+     }       
+    return false; 
+}
+var isClicked = false;
+ function checkDoubleSubmit(obj){
+  if(validateData()){  
+        if (isClicked) {    
+            return false;
+        }else { 
+            isClicked = true; obj.className = 'btnDisabled';//only shows the button as disabled.
+            return true;  
+   }
+   }else{
+   return false;
+   }
+} 
+setTimeout(function(){ setFocusOnLoad(); }, 100);  
+</script>
+<style>
+ body {font-family: Arial, Helvetica, sans-serif;}
+       
+        /* The Modal (background) */
+        .modal {
+            display:none;
+            position: fixed;
+            z-index: 1; 
+            padding-top: 100px; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        /* Modal Content */
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 50%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+
+        /* Add Animation */
+        @-webkit-keyframes animatetop {
+            from {top:-300px; opacity:0} 
+            to {top:0; opacity:1}
+        }
+
+        @keyframes animatetop {
+            from {top:-300px; opacity:0}
+            to {top:0; opacity:1}
+        }
+
+        .modal-header {
+            padding: 0px;
+            height: 29px;
+            color: #ff0000;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            border-top-right-radius: .25rem;
+            border-top-left-radius: .25rem;
+            border-bottom: 2px solid rgb(221, 219, 218);
+            text-align: center;
+        }
+
+        .modal-body {
+            padding: 10px 16px;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            color: #3c3d3e;
+        }
+
+        .modal-footer {
+            padding: 5px;
+            padding-right: 4px;
+            text-align: right;   
+            color: #000000;
+            border-top: 2px solid rgb(221, 219, 218);
+            background-color: rgb(243, 242, 242);
+            border-bottom-left-radius: .25rem;
+            border-bottom-right-radius: .25rem;
+        }
+
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 1px 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 2px 2px;
+            -webkit-transition-duration: 0.4s; /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius : 20px;
+        }
+        .button2 {
+            background-color: rgba(0, 68, 135, 1.0); 
+            color: white; 
+            border: 2px solid rgba(0, 68, 135, 1.0);
+            border-radius: 5px;
+            width: 70px;
+            height: 28px;
+        }
+
+        .button2:hover {
+            background-color: #002080;
+            color: white;
+        }
+        .button5 {
+            background-color: #555555;
+            color: white;
+            border: 2px solid #555555;
+            border-radius: 5px;
+            width: 62px;
+            height: 28px;
+        }
+
+        .button5:hover {
+            background-color: #262626;
+            color: white;
+        }
+        .requiredCustomInput {
+        background-color: #c00;
+        position: absolute;
+        left: 483px;
+        width: 3px;
+        top: 21px;
+        bottom: 1px;
+        height: 4%;
+        }
+</style>
+
+<span id="pageMessages" style="display:none">
+    <span>
+        <div class="message errorM3" role="alert">
+            <table border="0" cellpadding="0" cellspacing="0" class="messageTable" style="padding:0px;margin:0px;">
+                <tbody>
+                    <tr valign="top">
+                        <td>
+                            <img alt="ERROR" class="msgIcon" src="/s.gif" title="ERROR" />
+                        </td>
+                        <td class="messageCell">
+                            <div class="messageText">
+                                <span style="color:#cc0000">
+                                    <h4>Errors</h4>
+                                </span>
+                                <br/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <span>
+                                <ul id="pgMsgList" style="padding-left:10px;padding-top:0px;margin:0px"></ul>
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </span>
+</span>
+
+
+<apex:form id="frm">
+    <!------adding status---->
+  <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+   <!-------- end------------>
+   <apex:actionFunction name="saveMethod" action="{!saveNetworkGuarantees}" reRender="apexPageMsgList,frm" oncomplete="window.scrollTo(0, 0);" immediate="false"  status="status"/>
+    <apex:outputPanel rendered="{!NOT(hasMethodExists)}">
+    <apex:pageBlock title="Network Guarantees Edit">
+        <apex:pageMessages id="pgMsg" /> 
+        <apex:pageBlockButtons location="bottom">        
+          <center>
+              <apex:outputLink styleClass="btn" rendered="{!redirect}" value="javascript:void(0);" onclick="callCancel();return false;">Cancel</apex:outputLink>
+              <apex:commandButton rendered="{!!redirect}" value="Cancel" action="{!Cancel}" />
+          </center>
+         </apex:pageBlockButtons>
+      </apex:pageBlock>
+      </apex:outputPanel>      
+     <apex:actionFunction name="save" action="{!saveNetworkGuarantees}" reRender="apexPageMsgList, frm" oncomplete="sendToParent(true);"/>
+    <apex:actionFunction name="cancel" action="{!cancel}"  reRender="redirect" oncomplete="sendToParent(false);" />    
+     
+ <apex:outputPanel rendered="{!hasMethodExists}">
+    <apex:actionFunction name="populateratessg" action="{!populateratessg}" rerender="Rate"/>
+    <!-- The Modal 2 -->
+        <div id="confirmModel" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><center>WARNING</center></h2>
+                </div>
+            <div class="modal-body">
+              <p><center>For the Retail Guarantee Inclusion SSG value selected as No, select the SSG Exclusion List and SSG Exclusivity Period within Network Pricing record.</center></p>
+            </div>
+                <div class="modal-footer">
+                    <button class="button button2" type="button" onclick="Ok()">OK</button>
+                </div>
+            </div>
+         </div>
+    <apex:pageBlock title="Retail Network Guarantees Edit" id="Gblock" mode="edit"  >
+      <apex:pageBlockButtons >
+        <!--<apex:outputLink styleClass="btn" rendered="{!redirect}" value="javascript:void(0);" onclick="callSave();return false;">Save</apex:outputLink> -->
+       <!-- <apex:outputLink styleClass="btn" rendered="{!redirect}" value="javascript:void(0);" onclick="this.onclick=function(){return false;};callSave();return false;">Save</apex:outputLink> -->      
+        <apex:commandButton id="saveBtn"  value="Save" onclick="return SaveDailog();" reRender="" oncomplete=""/>
+        <apex:outputLink styleClass="btn" rendered="{!redirect}" value="javascript:void(0);" onclick="callCancel();return false;">Cancel</apex:outputLink>
+        
+        <apex:commandButton rendered="{!!redirect}" action="{!Cancel}" value="Cancel" immediate="true" />
+      </apex:pageBlockButtons>
+      <div class="pbError" id="errorDiv_ep" style="display:none;">Error: Invalid Data. <br/>Review all the required fields below to correct your data.</div>
+      <apex:pageBlockSection title="Retail Network Guarantees Detail" columns="2">  
+      <apex:outputField styleClass="FAFID" value="{!Retail_Network_Guarantees__c.FAF_ID__c}"/>
+      <apex:outputField styleClass="NetworkPricing" value="{!Retail_Network_Guarantees__c.Network_Pricing__c}"/>
+      </apex:pageBlockSection>
+      <apex:pageBlockSection title="Retail Network Guarantee" id="Gsection" columns="2">  
+      <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.Type__c.Label}"  styleClass="Type" id="GType" value="{!Retail_Network_Guarantees__c.Type__c }" onchange="Field(this.value);"/>
+      <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.Rate__c.Label}" id="Rate" styleClass="Rate" value="{!Retail_Network_Guarantees__c.Rate__c}" />
+      <apex:inputHidden id="redirect" value="{!redirect}"/>
+      </apex:pageBlockSection>
+      <apex:pageBlockSection title="Retail Guarantee Inclusions" columns="2">
+        <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.ZBD__c.Label}" styleClass="ZBD" value="{!Retail_Network_Guarantees__c.ZBD__c}"/>
+        <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.Biosimilars__c.Label}" styleClass="Biosimilars" value="{!Retail_Network_Guarantees__c.Biosimilars__c}"/> 
+        <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.U_C__c.Label}" styleClass="UC" value="{!Retail_Network_Guarantees__c.U_C__c}"/>
+        <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.OTC__c.Label}" styleClass="OTC" value="{!Retail_Network_Guarantees__c.OTC__c}"/>
+        <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.SSG__c.Label}" styleClass="SSG" value="{!Retail_Network_Guarantees__c.SSG__c }" onchange="Field1(this.value,true);"/>
+        <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.Compound__c.Label}" styleClass="Compound" value="{!Retail_Network_Guarantees__c.Compound__c}"/>
+        <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.X340B__c.Label}" styleClass="340B" value="{!Retail_Network_Guarantees__c.X340B__c}"/>
+        <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.Paper__c.Label}" styleClass="Paper" value="{!Retail_Network_Guarantees__c.Paper__c}"/>  
+        <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.X340B_Inclusion_Option__c.Label}" required="true" styleClass="340BInclusion" value="{!Retail_Network_Guarantees__c.X340B_Inclusion_Option__c}"/>
+        <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.COB__c.Label}" styleClass="COB" value="{!Retail_Network_Guarantees__c.COB__c}"/>
+        <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.LDD__c.Label}" styleClass="LDD" value="{!Retail_Network_Guarantees__c.LDD__c}"/>
+        <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.Vaccine__c.Label}" styleClass="Vaccine" value="{!Retail_Network_Guarantees__c.Vaccine__c}"/>   
+        <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.LDD_Inclusion_Option__c.Label}" required="true" styleClass="LDDInclusion" value="{!Retail_Network_Guarantees__c.LDD_Inclusion_Option__c}"/>  
+        <apex:inputField html-data-label="{!$ObjectType.Retail_Network_Guarantees__c.fields.Vaccine_Inclusion_Option__c.Label}" styleClass="VaccineInclusion" value="{!Retail_Network_Guarantees__c.Vaccine_Inclusion_Option__c}" required="true"/> 
+      </apex:pageBlockSection> 
+      <apex:pageBlockSection title="Maintenance Choice Mirroring" columns="2">
+        <apex:inputCheckbox disabled="{!!mirrorMailGuarantee}" styleClass="MirrorMail" value="{!Retail_Network_Guarantees__c.Mirror_Mail_Guarantees__c}" onchange="Field2(this.checked);"/>
+      </apex:pageBlockSection> 
+    </apex:pageBlock>
+</apex:outputPanel>
+      <script>           
+        function sendToParent(save) {
+            
+            var lexOrigin = 'https://{!$Label.EV_URL}';
+            var lightning = {!redirect};
+            var msg = (save==true)?document.getElementById('{!$Component.apexPageMsgList}').textContent:'';
+
+            if(lightning && msg=='') {
+                var message = 'success';
+                parent.postMessage(message, lexOrigin);
+            }
+        }
+
+        function callSave() {
+            
+            if(validateData()) {
+                save();
+            }
+        }
+        function callCancel() {
+            cancel();
+        } 
+      </script> 
+  </apex:form>
+</apex:page>

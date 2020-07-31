@@ -1,0 +1,8 @@
+<!--c:aeEvent-->
+<aura:event type="APPLICATION">
+    <aura:attribute name="networkname" type="String"/>
+    <aura:attribute name="networktype" type="String"/>
+    <aura:attribute name="lob" type="String"/>
+    <aura:attribute name="desc" type="String"/>
+     <aura:attribute name="custdesc" type="String"/>
+</aura:event>

@@ -1,0 +1,32 @@
+.THIS {
+  background-color: white;
+  
+   zoom:90%;
+}
+
+.THIS .link_style {
+    padding-top: 37px;
+    width: 34px;
+    font-size: medium
+}
+.THIS  .slds-form-element__label {
+    font-size: 1rem !important;
+    font: -webkit-control !important;
+}
+.THIS .slds-grow {
+    font :-webkit-control  !important;  
+    font-size:22px !important;
+}
+.THIS .slds-grow .slds-select{
+ font :-webkit-control  !important;
+    
+}
+.THIS .tableLayout  tr td{
+     padding:10px !important;
+     width: 1800px!important;
+}
+
+.THIS .slds-grow .slds-textarea{
+ font :-webkit-control  !important;
+ height:70px;
+}

@@ -1,0 +1,6 @@
+<apex:page >
+    <apex:form >
+        
+        <c:CustomLookupVC />
+    </apex:form>
+</apex:page>

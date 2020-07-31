@@ -1,0 +1,39 @@
+<aura:component  controller="CreatePCDQuestionAnswerRecord" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:isUrlAddressable" access="global" >
+    <aura:attribute name="accountName" type="String"/>
+    <aura:attribute name="accountid" type="String"/>
+    <aura:attribute name="taskid" type="String"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="ahrefvalue" type="String"/>
+    <aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}"/>
+    <aura:registerEvent name="appEvent" type="c:Apttus_Grid_AccountId_Event"/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />	
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.reInit}" />
+    
+<!--     <lightning:card aura:id="card" variant="base"  class="card">
+      <div class="cardstyle slds-p-around_none">
+         <lightning:layout>
+             <div class="slds-p-left_small"/>
+           <lightning:layoutitem>
+                <img style="width: 34px;height: 30px;" src="{!$Resource.FAF_icon}"/>
+           </lightning:layoutitem>
+             <div class="slds-p-left_small"/>
+           <lightning:layoutitem class="card"> 
+             <a href="{!'https://'+ v.vfHost + '/lightning/r/Account/' + v.accountid + '/view'}" style="color:black"><b>PCD Account Page -  {!v.accountName}</b></a>
+           </lightning:layoutitem> 
+         </lightning:layout>    
+      </div>
+    </lightning:card> -->
+    <c:PCD_OFFER_AccountPage_header_child accountid="{!v.accountid}" accountName="{!v.accountName}"/>
+  
+   <lightning:card>
+    <lightning:layout>
+   <lightning:layoutitem size="3">
+    <c:Apttus_PCD_Offer_Page accountid = "{!v.accountid}" taskid = "{!v.taskid}"/>
+   </lightning:layoutitem>
+   <lightning:layoutitem size="9">
+    <c:Apttus_PCD_LOB_Parent taskid = "{!v.taskid}"/>
+   </lightning:layoutitem>
+  </lightning:layout>
+   </lightning:card>
+     
+</aura:component>

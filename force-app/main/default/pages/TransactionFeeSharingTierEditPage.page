@@ -1,0 +1,25 @@
+<apex:page standardController="Transaction_Fee_Sharing_Tier__c" extensions="TransactionFeeSharingController" title="Transaction Fee Sharing Tier Edit" lightningStylesheets="true"> 
+<script>
+     function setFocusOnLoad() {
+     document.getElementById('{!$Component.theForm.pb.pbs.from}').focus();
+        }   
+</script>
+   <apex:form id="theForm">
+     <apex:pageBlock title="Transaction Fee Sharing Tier Detail" id="pb">
+         <apex:pageMessages ></apex:pageMessages>
+            <apex:pageBlockSection title="Information" columns="1" id="pbs" collapsible="false" rendered="{!!hasDefaultErrors}">
+                <apex:outputField value="{!Transaction_Fee_Sharing_Tier__c.FAF_ID__c}"/>
+                <apex:outputField value="{!Transaction_Fee_Sharing_Tier__c.Network_Operations__c}"/>
+                <apex:outputField value="{!Transaction_Fee_Sharing_Tier__c.Tier__c}"/>
+                <apex:inputField value="{!Transaction_Fee_Sharing_Tier__c.From__c}" id="from" required="true"/>
+                <apex:inputField value="{!Transaction_Fee_Sharing_Tier__c.To__c}"/>
+                <apex:inputField value="{!Transaction_Fee_Sharing_Tier__c.Client_Share__c}" required="true"/>
+            </apex:pageBlockSection>
+           
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!saveTransactionFeeSharing}" rendered="{!! hasDefaultErrors}" rerender="pb" onclick="this.onclick=function(){return false;}"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

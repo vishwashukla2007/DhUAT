@@ -1,0 +1,126 @@
+<aura:component 
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" 
+                access="global" controller="Apttus_MP_Parent_Controller" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="isAccess" type="boolean"/>
+    <aura:attribute name="mailOpId" type="String"/>
+    <aura:attribute name="mpNew" type="Boolean" default="false" />
+    <aura:attribute name="mailPricingList" type="Mail_Pricing__c[]" />
+    <aura:attribute name="vfHost" type="String" default="pbmfinancecvshealth--apttusdev.lightning.force.com"/>
+    <aura:attribute name="mpParams" type="String"  />  
+    <aura:attribute name="isDeleteAlertOpen" type="Boolean" default="false" />
+        <aura:attribute name="isCreateable" type="Boolean" default="true"/>
+    <aura:attribute name="isDeletable" type="Boolean" default="true"/>
+        <aura:attribute name="isEditable" type="Boolean" default="true"/>
+    <!--Pagination-->
+
+    
+    <div>
+        
+        <div class="right-aligns slds-p-right_small" style="position: absolute;">
+            
+            <aura:if isTrue="{!v.isAccess}">
+            <lightning:button aura:id="clickNew" value="clickNew" label="New Mail Pricing"
+                                  variant="brand"
+                                  class="slds-button"
+                                  onclick="{!c.clickNew}"/>  
+                <aura:if isTrue="{!v.mailPricingList.length != 0}">
+                    <lightning:button aura:id="changeIt" label="Delete Mail Pricing"
+                                      iconName="utility:delete"
+                                      iconPosition="right"
+                                      variant="destructive"
+                                      onclick="{!c.deleteSelected}" >
+                    </lightning:button>
+                </aura:if>
+            </aura:if>
+        </div> 
+        
+         <lightning:icon iconName="standard:account" size="small" class="slds-m-left_medium" />
+        <span class="slds-form-element__label text slds-text-heading_small" style="font-weight: 800; padding-left: 15px;font-size: 21px; padding-top: -30px;"> Mail Pricing and Guarantee</span>
+        <br/>
+        <div>
+            <aura:if isTrue="{!v.mailPricingList.length != 0}">
+                
+                <div class="slds-form-element__control">
+                    <label class="slds-checkbox" style="padding-top: 18px; padding-left: 19px;">
+                        <ui:inputCheckbox aura:id="cbox" change="{!c.selectAllRecords}"/>
+                        <span class="slds-checkbox--faux"></span>
+                        <span class="slds-form-element__label text slds-text-heading_small" style="font-weight: 400; padding-left: 19px;font-size: 20px;"> Select All</span>
+                    </label>
+                </div>
+            </aura:if>
+        </div>
+        <aura:if isTrue="{!v.mpNew}">
+            <div class="demo-only" style="height: 90%;width:90%;"> 
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container" style="height: 100%;width:100%;max-width: 100%;">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <!--
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New MailPricing</h2>
+                -->
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                            <iframe aura:id="vfFrame" src="{! 'https://' +v.vfHost + '/apex/MailPricingEditNewPage?' +v.mpParams}" height="100%" width="100%"/>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+        </aura:if>        
+        <aura:iteration items="{!v.mailPricingList}" var="mailPricing"> 
+            <div class="slds-card" > 
+                <div class="slds-grid">
+                    <div  style="padding-left: 15px;padding-top: 16px;font-size:0">
+                        <div class="slds-form-element">
+                            <div class="slds-form-element__control">
+                                <ui:inputCheckbox text="{!mailPricing}" aura:id="cboxRow"  change="{!c.onCheckboxSelect}"/>				
+                            </div>
+                        </div>
+                    </div> 
+                    <div class="slds-col">
+                        <c:Apttus_MP_Pricing isAccess="{!v.isAccess}" aura:id="mailPricing" mailPricing="{!mailPricing}" mailOperationsId ="{!v.mailOpId}"/>
+                    </div>
+                </div>
+            </div>
+            
+        </aura:iteration>
+
+ 
+        <aura:if isTrue="{!v.isDeleteAlertOpen}">
+            <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                <div class="slds-modal__container" style="Width: 31%;">
+                    <div class="slds-modal__header">
+                        <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                            X
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="header99" class="slds-text-heading--medium">Delete Mail Pricing Record</h2>
+                    </div>
+                    <div class="slds-modal__content slds-p-around--medium">
+                        <center><p>
+                            Are you sure you want to delete the selected record(s).
+                            </p>
+                        </center>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                        <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete</lightning:button>                    
+                    </div>
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open"></div>        
+        </aura:if>
+    </div>
+    <aura:if isTrue="{!v.mailPricingList.length == 0}">
+        <ui:message title="Information" severity="info" closable="false">
+            Mail Pricing not defined.
+        </ui:message>
+    </aura:if>
+</aura:component>

@@ -1,0 +1,74 @@
+<!--
+Lightning Component to replace Highlighted panel in Lightning Record page for Sales User. this to support custom buttons
+for dynamic visibility based on logic
+-->
+<aura:component controller="FAFInfoEditButton" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" access="global" >
+<aura:attribute name="record" type="Object" description="The record object to be displayed"/>
+<aura:attribute name="faf" type="Central_Hub__c" description="A simplified view record object to be displayed"/>
+<aura:attribute name="recordError" type="String" description="An error message bound to force:recordData"/>
+<aura:attribute name="showEditBtn" type="Boolean" />
+<aura:attribute name="params" type="String" />
+<aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}"/>
+<!-- <aura:attribute name="recordId" type="String" />  -->
+<aura:attribute name="showModal" type="Boolean" default="false"/>
+<aura:attribute name="showPrint" type="Boolean" default="false"/>
+<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+<lightning:flow aura:id="flowData"  />
+<aura:attribute name="showReqPBM" type="Boolean" />
+<lightning:navigation aura:id="navService"/> 
+    
+
+<force:recordData aura:id="record"
+                   layoutType="FULL"
+                   recordId="{!v.recordId}"
+                   targetError="{!v.recordError}"
+                   targetRecord="{!v.record}"
+                   targetFields="{!v.faf }"
+                   mode="VIEW"/>    
+<article class="forceHighlightsPanel"> 
+<div class="slds-page-header slds-page-header_record-home ">
+<header class="slds-media slds-media_center slds-has-flexi-truncate">
+<div class="slds-media__figure">
+<span class="slds-icon_container" title="Client Information">
+
+<img src="{!$Resource.FAF_icon}" 
+     class="icon " alt="Client Information" title="Client Information" style="width: 32px"/>    
+<span class="slds-assistive-text">account</span>
+</span>
+</div>
+<div class="slds-media__body">
+
+ <ol class="slds-breadcrumb slds-line-height_reset" >
+     <li class="slds-breadcrumb__item" >
+         <span data-aura-rendered-by="568:0">FAF</span></li>
+</ol>   
+<h1 class="slds-page-header__title slds-m-right--small slds-truncate slds-align-middle"> 
+       <span >{!v.faf.Name}</span>
+   </h1>
+</div>
+<div class="slds-no-flex"> 
+<aura:if isTrue="{!v.showEditBtn}">
+<lightning:button class="slds-button slds-button_neutral" onclick="{!c.handleEditBtn}">Edit</lightning:button>
+</aura:if> 
+<lightning:button class="slds-button slds-button_neutral" onclick="{!c.printBtn}">Print FAF</lightning:button>
+<aura:if isTrue="{!v.showModal}"> 
+        <c:FafEditPageCmp aura:id="EditClientinfo" params="{!v.params}"/>  
+</aura:if>
+ 
+<aura:if isTrue="{!v.showPrint}"> 
+        <c:FAFPtintComp aura:id="PrintFAFComp" params="{!v.params}"/>  
+</aura:if>
+<!--
+	//Added by: ryan.francis.m.roque@accenture.com
+    //Date Modified: 01/21/2020
+    //CLM US: US22856
+-->
+<aura:if isTrue="{!v.showReqPBM}">    
+	<!--<lightning:button class="slds-button slds-button_neutral" onclick="{!c.reqPBM}">Request PBM Contract</lightning:button>-->
+    <lightning:button class="slds-button slds-button_neutral" onclick="{!c.reqPBMNew}">Request PBM Contract</lightning:button>
+</aura:if>
+</div> 
+</header>
+</div>
+</article> 
+</aura:component>

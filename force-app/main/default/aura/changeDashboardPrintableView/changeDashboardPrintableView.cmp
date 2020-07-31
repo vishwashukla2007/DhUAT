@@ -1,0 +1,432 @@
+<aura:component controller="changeDashboardWrapper" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable" access="global"> 
+    <aura:attribute name="fieldList" type="List" default="[]"/>
+    <aura:attribute name="fieldChangeLogList" type="Contract_Field_Change_Log__c[]"/>
+    <aura:attribute name="isSync" type="boolean" default="true"/>
+    <aura:attribute name="type" type="String"/>
+    <aura:attribute name="typeLabel" type="String"/>
+    <aura:handler name="init" value="{!this}" action="{!c.onPageReferenceChange}"/>
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.onPageReferenceChange}"/>
+    <lightning:navigation aura:id="navService"/>
+    <aura:attribute name="headerDoCheckboxDef" type="boolean" default="false"/>
+    <aura:attribute name="SelectedRecDocCount" type="integer" default="0"/>
+    
+     <aura:html tag="style">    
+        .slds-scope .slds-text-title_caps{
+        	font-size:.50rem !important; 
+        }
+        .slds-scope .slds-table {
+        	font-size: .60rem !important;
+        } 
+     </aura:html>
+    
+    
+    <!-- Header Start -->
+    <div class="slds-m-around_large slds-text-body_small">
+        <div class="slds-grid "  >
+            <div class="slds-col slds-size_1-of-1">
+                <div class="slds-clearfix">
+                    <div class="slds-float_right">
+                        <!--
+                        <aura:if isTrue="{!v.type=='viewRecHist'}">
+                        	<lightning:button variant="brand" label="Update Reconcile to Doc" title="Update Reconcile to Document" onclick="{! c.upRecDoc }" />
+                        </aura:if>
+						-->
+                        <lightning:button variant="brand" label="Print" title="Print" onclick="{! c.print }" />  
+                    </div>
+                </div>
+                    <h4 class="title slds-text-heading--medium" >{!v.typeLabel}</h4>
+                	<div class="slds-float_left">
+                    </div>
+            </div>
+        </div>   
+    </div>
+    <!-- Header End -->
+    
+    <!-- data table start Change Dashboard-->
+    <aura:if isTrue="{!v.type=='printPreviewRecFAF'}">
+        <div class="slds-m-around_large slds-text-body_small">
+            <div class="slds-grid "  >
+                <div class="slds-col slds-size_1-of-1">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <!--<th style="width:3.25rem;" class="slds-text-align_right">
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <label class="slds-checkbox">
+                                                Rec to Agree?
+                                                <ui:inputCheckbox disabled="false"
+                                                                  aura:id="selectAllAgreeId"
+                                                                  change="{!c.selectAllAgreeCheckbox}"/>
+                                                <span class="slds-checkbox_faux"></span>
+                                                <span class="slds-form-element__label"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </th>-->
+                                <!--<th style="width:3.25rem;">
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <label class="slds-checkbox">
+                                                Reconcile to
+                                                <span class="slds-form-element__label"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <label class="slds-checkbox">
+                                                Legal Doc
+                                                <ui:inputCheckbox disabled="false"
+                                                                  aura:id="selectAllDocId"
+                                                                  change="{!c.selectAllDocCheckbox}"/>
+                                                <span class="slds-checkbox_faux"></span>
+                                                <span class="slds-form-element__label"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </th>-->
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Field Label">Field Label</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="FAF Object">FAF Object</div>   
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="FAF Value">New Value</div>   
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Agreement Value">Old Value</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="FAF Updated By">FAF Updated By</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="FAF Update Date">FAF Update Date</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.fieldList}" var="item">
+                                <tr>
+                                    <!--<th scope="row" class="slds-text-align_right" style="width:3.25rem;">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <label class="slds-checkbox">
+                                                    <ui:inputCheckbox text="{!item.recToAgree}"
+                                                                      value="{!item.recToAgree}"
+                                                                      change="{!c.agreeCheckboxSelect}"/>
+                                                    <span class="slds-checkbox_faux"></span>
+                                                    <span class="slds-form-element__label text"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </th>-->
+                                    <!--<th scope="row" class="slds-text-align_right" style="width:3.25rem;">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <label class="slds-checkbox">
+                                                    <ui:inputCheckbox text="{!item.recToDoc}"
+                                                                      value="{!item.recToDoc}"
+                                                                      change="{!c.CheckboxSelect}"/>
+                                                    <span class="slds-checkbox_faux"></span>
+                                                    <span class="slds-form-element__label text"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </th>-->
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.fieldlabel}">
+                                            {!item.fieldlabel}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.fafObject}">
+                                            {!item.fafObject}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.fafValue}">
+                                            {!item.fafValue}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.agreeValue}">
+                                            {!item.agreeValue}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.fafModifiedBy}">
+                                            {!item.fafModifiedBy}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.fafModifiedDt}">
+                                            <p><lightning:formattedDateTime value="{!item.fafModifiedDt}"/> &nbsp; <lightning:formattedDateTime value="{!item.fafModifiedDt}" hour="2-digit" minute="2-digit" second="2-digit" hour12="true"/></p>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>    
+                </div>
+            </div>   
+        </div>
+    </aura:if>
+    <!-- DataTable End Change Dashbord -->
+    
+    
+    <!-- data table start RecAg and RecDoc-->
+    <aura:if isTrue="{!v.type=='printPreviewUpdateDoc'}">
+        <div class="slds-m-around_large slds-text-body_small">
+            <div class="slds-grid "  >
+                <div class="slds-col slds-size_1-of-1">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Field Label">Field Label</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="FAF Object">FAF Object</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="FAF Value">New Value</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Agreement Value">Old Value</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="FAF Updated By">FAF Updated By</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="FAF Update Date">FAF Update Date</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.fieldChangeLogList}" var="item">
+                                <tr>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.Agreement_Extension_Field_Name__c}">
+                                            {!item.Agreement_Extension_Field_Name__c}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.Source_Data_Object_Name__c}">
+                                            {!item.Source_Data_Object_Name__c}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.Source_Data_Field_Value__c}">
+                                            {!item.Source_Data_Field_Value__c}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.Agreement_Extension_Field_Value__c}">
+                                            {!item.Agreement_Extension_Field_Value__c}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.FAF_Updated_By__c}">
+                                            {!item.FAF_Updated_By__c}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.FAF_Update_Date__c}">
+                                            <p><lightning:formattedDateTime value="{!item.FAF_Update_Date__c}"/> &nbsp; <lightning:formattedDateTime value="{!item.FAF_Update_Date__c}" hour="2-digit" minute="2-digit" second="2-digit" hour12="true"/></p>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>    
+                </div>
+            </div>   
+        </div>
+    </aura:if>
+    <!-- DataTable End Recdoc and RecAgree -->
+    
+    
+    <!-- DataTable Start Reconcile History -->
+    <aura:if isTrue="{!v.type=='viewRecHist'}">
+        <div class="slds-m-around_large slds-text-body_small">
+            <div class="slds-grid slds-gutters"  >
+                <div class="slds-col slds-size_1-of-1">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <!--
+                                <th style="width:3.25rem;" >
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <label class="slds-checkbox">
+                                                Reconcile to
+                                                <span class="slds-form-element__label"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <label class="slds-checkbox">
+                                                Agmt Record
+                                                <ui:inputCheckbox disabled="true"
+                                                                  aura:id="selectAllRecId"
+                                                                  change="{!c.selectAllRecCheckbox}"
+                                                                  value="true"/>
+                                                <span class="slds-checkbox_faux"></span>
+                                                <span class="slds-form-element__label"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th style="width:3.25rem;" >
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <label class="slds-checkbox">
+                                                Reconcile to
+                                                <span class="slds-form-element__label"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <label class="slds-checkbox">
+                                                Legal Doc
+                                                <ui:inputCheckbox disabled="false"
+                                                                  aura:id="selectAllDocId"
+                                                                  change="{!c.selectAllDocCheckbox}"
+                                                                  value="{!v.headerDoCheckboxDef}"/>
+                                                <span class="slds-checkbox_faux"></span>
+                                                <span class="slds-form-element__label"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Field Label">Reconcile to</div>
+                                    <div class="slds-truncate" title="Field Label">Agreement Record</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Field Label">Reconcile to</div>
+                                    <div class="slds-truncate" title="Field Label">Legal Document</div>
+                                </th>
+								-->
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Field Label">Field Label</div>
+                                </th>
+                                 <th scope="col">
+                                    <div class="slds-truncate" title="FAF Object">FAF Object</div>
+                                </th>
+                                 <th scope="col">
+                                    <div class="slds-truncate" title="FAF Value">FAF Value</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Agreement Value">Agreement Value</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Reconcile to Agreement Record By">Reconcile to</div>
+                                    <div class="slds-truncate" title="Reconcile to Agreement Record By">Agmt record by</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Reconcile to Agreement Record Date">Reconcile to</div>
+                                    <div class="slds-truncate" title="Reconcile to Agreement Record Date">Agmt record date</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Update to Legal Document By">Update to Legal</div>
+                                    <div class="slds-truncate" title="Update to Legal Document By">Document By</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="slds-truncate" title="Update to Legal Document Date">Update to Legal</div>
+                                    <div class="slds-truncate" title="Update to Legal Document Date">Document Date</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.fieldChangeLogList}" var="item">
+                                <tr>
+                                    <!--
+                                    <th scope="row" class="slds-text-align_right" style="width:3.25rem;">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <label class="slds-checkbox">
+                                                    <ui:inputCheckbox text="{!item.Reconcile_to_Agreement__c}"
+                                                                      value="{!item.Reconcile_to_Agreement__c}"
+                                                                      disabled="true"/>
+                                                    <span class="slds-checkbox_faux"></span>
+                                                    <span class="slds-form-element__label text"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </th>
+                           			<th scope="row" class="slds-text-align_right" style="width:3.25rem;">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                <label class="slds-checkbox">
+                                                    <ui:inputCheckbox text="{!item.Reconcile_to_Document__c}"
+                                                                      value="{!item.Reconcile_to_Document__c}"
+                                                                      change="{!c.CheckboxSelect}"
+                                                                      disabled="true"/>
+                                                    <span class="slds-checkbox_faux"></span>
+                                                    <span class="slds-form-element__label text"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </th>
+									-->
+                                    <th scope="row">
+                                        <div class="slds-truncate"  title="{!item.Agreement_Extension_Field_Name__c}">
+                                            {!item.Agreement_Extension_Field_Name__c}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate"  title="{!item.Source_Data_Object_Name__c}" >
+                                            {!item.Source_Data_Object_Name__c}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate"  title="{!item.Source_Data_Field_Value__c}" >
+                                            {!item.Source_Data_Field_Value__c}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate"  title="{!item.Agreement_Extension_Field_Value__c}">
+                                            {!item.Agreement_Extension_Field_Value__c}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate"  title="{!item.CreatedBy.Name}">
+                                            {!item.CreatedBy.Name}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.CreatedDate}">
+                                            <p><lightning:formattedDateTime value="{!item.CreatedDate}"/></p>
+                                            <p><lightning:formattedDateTime value="{!item.CreatedDate}" hour="2-digit" minute="2-digit" second="2-digit" hour12="true"/></p>
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.Reconcile_Unreconcile_Doc_By__r.Name}">
+                                            {!item.Reconcile_Unreconcile_Doc_By__r.Name}
+                                        </div>
+                                    </th>
+                                    <th scope="row">
+                                        <div class="slds-truncate" title="{!item.Reconcile_Unreconcile_Doc_Date__c}">
+                                            <p><lightning:formattedDateTime value="{!item.Reconcile_Unreconcile_Doc_Date__c}"/></p>
+                                             <p><lightning:formattedDateTime value="{!item.Reconcile_Unreconcile_Doc_Date__c}" hour="2-digit" minute="2-digit" second="2-digit" hour12="true"/></p>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>    
+                </div>
+            </div>   
+        </div>
+    </aura:if>
+    <!-- DataTable End Reconcile History -->
+
+   
+</aura:component>

@@ -1,0 +1,109 @@
+<aura:component controller="Apttus_GridObjectdata" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+ <aura:attribute name="objects" type="Billing_Administrative_Fees__c"/>	
+ <aura:attribute name="yearoptions" type="List"/>
+ <aura:attribute name="adminfeetype" type="Object"/>
+ <aura:attribute name="loboption" type="Object"/>
+ <aura:attribute name="display" type="Boolean" Default="true"/>
+ <aura:attribute name="baserequired" type="Boolean" Default="false"/>
+ <aura:attribute name="duplicaterow" type="Integer" default="0"/>
+ <aura:attribute name="isDeleteAlertOpen" type="Boolean" default="false" />
+  <aura:attribute name="Errordesc" type="String" default="false"/>
+ <aura:attribute name="yearcount" type="Integer"/>
+  <aura:attribute name="lob" type="String"/>
+ <aura:attribute name="desc" type="String"/>
+ <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+ <aura:handler event="c:Apttus_Grid_NT_Save_Event" action="{!c.handleSave}"/>
+ <aura:handler event="c:Apttus_Grid_Duplicate_Event" action="{!c.handleduplicate}"/>
+ <aura:handler event="c:Apttus_Grid_Copy_Event" action="{!c.handleupdate}"/>
+  <aura:handler event="c:Apttus_Grid_Edit_Admin_Custom_Des_Event" action="{!c.customdesError}"/>
+ <aura:registerEvent name="savenotifyEvent" type="c:Apttus_Grid_NT_Notify_Save_Event"/>
+ <aura:registerEvent name="errornotifyEvent" type="c:Apttus_Grid_NT_Notify_Error_Event"/>
+ <aura:registerEvent name="cancelnotifyEvent" type="c:Apttus_Grid_Cancel_Parent_Event"/>
+ <aura:registerEvent name="refreshnotifyEvent" type="c:Apttus_Grid_Refresh_Parent_Event"/>
+ <aura:registerEvent name="savenotEvent" type="c:Apttus_Grid_Close_New_Event"/>
+ <aura:registerEvent name="inactiveEvent" type="c:Apttus_Grid_Inactive_Parent_Event"/>
+ <aura:registerEvent name="deleteVerify" type="c:Apttus_Delete_Verify_Event"/>   
+ <ltng:require styles="{!$Resource.multilinetoastmessage}" />
+  <aura:if isTrue="{!v.display}">
+ <lightning:layout>
+ <aura:if isTrue="{!v.isDeleteAlertOpen}">
+                <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                    <div class="slds-modal__container" style="Width: 31%;">
+                        <div class="slds-modal__header">
+                            <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                                X
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="header99" class="slds-text-heading--medium">Delete Administrative Fees Record</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            <center><p>
+                                Are you sure you want to delete the record?
+                                </p> 
+                            </center>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                            <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete</lightning:button>                    
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open"></div>        
+            </aura:if>
+ </lightning:layout>
+ <tr aura:id="tablerow" class="highlight" >
+           <td>
+              <div>
+                <div class="slds-p-top_x-small"></div>
+                <lightning:icon iconName="utility:delete" size="small"  onclick="{!c.handledelete}" alternativeText="Delete" />
+              </div>      
+            </td>
+            <td>
+                        <div>
+                            <lightning:select aura:id="input1"  name="input1"  required = "true" disabled= "false" onchange="{!c.handleChange}">
+                	            <option value="{!v.objects.Year__c}" text="{!v.objects.Year__c}"></option>
+                                <aura:iteration items="{!v.yearoptions}" var="opt">
+  								<option value="{!opt.value}">{!opt.value}</option>
+    							</aura:iteration>
+   							</lightning:select>              
+                        </div>      
+            </td>
+            <td>
+                        <div>
+                             <lightning:input   aura:id="input2" disabled="true" name="input2" value="{!v.objects.Plan_Year__c}" />                         
+                        </div>      
+            </td>
+            <td>
+                        <div>
+                            <lightning:select aura:id="input3"  name="input3"  required = "true" disabled= "false" onchange="{!c.handleChange}">
+                                <aura:iteration items="{!v.loboption}" var="opt">
+  								<option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    							</aura:iteration>
+                                    <option value="{!v.objects.LOB__c}" text="{!v.objects.LOB__c}"></option>
+   							</lightning:select>              
+                        </div>      
+            </td>
+              <td>
+                        <div>
+                              <lightning:select aura:id="input4"  name="input4"  required="true" disabled= "false" onchange="{!c.handleChange}">
+                				<aura:iteration items="{!v.adminfeetype}" var="opt">
+  								<option value="{!opt.pickListValue}">{!opt.pickListLabel}</option>
+    					       </aura:iteration>
+        					    <option value="{!v.objects.Admin_Fee_Type__c}" text="{!v.objects.Admin_Fee_Type__c}"></option>
+   			                  </lightning:select>
+                        </div>      
+            </td>
+            <td>
+                        <div>
+                             <lightning:input type="text" aura:id="input5" required="{!v.baserequired}"  name="input5" value="{!v.objects.Base_Amount__c}" onchange="{!c.handleChange}"/>                         
+                        </div>      
+            </td>
+           
+            <td>
+                        <div>
+                             <lightning:input type="text" aura:id="input6" name="input6" value="{!v.objects.Broker_Amount__c}" onchange="{!c.handleChange}"/>                         
+                        </div>      
+            </td>
+</tr>
+</aura:if>
+</aura:component>

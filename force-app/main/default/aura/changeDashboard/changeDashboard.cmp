@@ -1,0 +1,462 @@
+<aura:component controller="changeDashboardWrapper" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable" access="global"> 
+    <aura:attribute name="fieldList" type="List" default="[]"/>
+    <aura:attribute name="fieldList2" type="List" default="[]"/>
+    <aura:attribute name="fieldChangeLogList" type="Contract_Field_Change_Log__c[]"/>
+    <aura:attribute name="recAgreeList" type="Contract_Field_Change_Log__c[]"/>
+    <aura:attribute name="recDocuList" type="Contract_Field_Change_Log__c[]"/>
+    <aura:attribute name="isSync" type="boolean" default="true"/>
+    <aura:attribute name="headerAgCheckboxDef" type="boolean" default="false"/>
+    <aura:attribute name="headerDoCheckboxDef" type="boolean" default="false"/>
+    <aura:attribute name="fieldListSize" type="Integer" default="0"/>
+    <aura:attribute name="fieldChangeLogListSize" type="Integer" default="0"/>
+    <aura:attribute name="agName" type="String"/>
+    <aura:attribute name="SelectedRecAgCount" type="integer" default="0"/>
+    <aura:attribute name="SelectedRecDocCount" type="integer" default="0"/>
+    <aura:attribute name="recHistCount" type="integer" default="0"/>
+    <aura:attribute name="NoOfMismatch" type="integer" default="0"/>
+    <aura:attribute name="NoRecAgree" type="integer" default="0"/>
+    <aura:attribute name="NoRecDocu" type="integer" default="0"/>
+    <aura:attribute name="IsSpinner" type="Boolean"/>
+    <aura:handler name="init" value="{!this}" action="{!c.onPageReferenceChange}"/>
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.onPageReferenceChange}"/>
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <lightning:navigation aura:id="navLink"/>
+    <aura:attribute name="currentStepInd" type="String"/>
+    <aura:attribute name="currentStepMark" type="Boolean"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="backgroundImageURL" type="String" default=""/>
+    
+    
+    <aura:if isTrue="{!v.IsSpinner}">
+        <lightning:spinner variant="brand"  size="large" />
+    </aura:if>
+    
+    <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+    <aura:if isTrue="{!v.isOpen}">
+        <!--###### MODAL BOX Start######--> 
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- ###### MODAL BOX HEADER Start ######-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{!$Label.c.changeDashboardLearnMoreHeader}</h2>
+                </header>
+                <!--###### MODAL BOX BODY Part Start######-->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p><b>{!$Label.c.changeDashboardLearnMoreTitle}</b></p>
+                    <br/>
+                    <p>{!$Label.c.changeDashboardLearnMore1}</p>
+                    <br/>
+                    <p>{!$Label.c.changeDashboardLearnMore2}</p>
+                    <br/>
+                    <img src="{!$Resource.changeDashboardUpdateFrSalesIcon}"  width="70" height="70"/>
+                    <br/>
+                    <br/>
+                    <p>{!$Label.c.changeDashboardLearnMore3}</p>
+                    <br/>
+                    <img src="{!$Resource.changeDashboardRegenerateIcon}"  width="70" height="70"/><img src="{!$Resource.changeDashboardAddIcon}"  width="20" height="20"/><img src="{!$Resource.changeDashboardCompareIcon}"  width="70" height="70"/>
+                    <br/>
+                    <p><strong>{!$Label.c.changeDashboardLearnMoreFooter}</strong></p>
+                </div>
+                <!--###### MODAL BOX FOOTER Part Start ######-->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" 
+                                      label="Back"
+                                      title="Back"
+                                      onclick="{! c.closeModel }"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+        <!--###### MODAL BOX Part END Here ######-->
+    </aura:if>
+    
+    
+    <!-- header -->
+    <div class="slds-page-header slds-page-header_related-list">
+        <div class="slds-page-header__row">
+            <div class="slds-page-header__col-title">
+                <nav role="navigation" aria-label="Breadcrumbs">
+                    <ol class="slds-breadcrumb slds-list_horizontal slds-wrap">
+                        <li class="slds-breadcrumb__item">
+                            <a href="javascript:void(0);" onclick="{!c.navigateToTab}">Agreement</a>
+                        </li>
+                        <li class="slds-breadcrumb__item">
+                            <a href="javascript:void(0);" onclick="{!c.navigateToRec}">{!v.agName}</a>
+                        </li>
+                    </ol>
+                </nav>
+                <div class="slds-media">
+                    <div class="slds-media__body">
+                        <div class="slds-page-header__name">
+                            <div class="slds-page-header__name-title">
+                                <h1>
+                                    <aura:if isTrue="{!v.currentStepInd=='1'}">
+                                        <span class="slds-page-header__title slds-truncate" title="Change Dashboard">{!$Label.c.changeDashboardStep1Title}</span>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.currentStepInd=='2'}">
+                                        <span class="slds-page-header__title slds-truncate" title="Change Dashboard">{!$Label.c.changeDashboardStep2Title}</span>
+                                    </aura:if>
+                                    <aura:if isTrue="{!v.currentStepInd=='3'}">
+                                        <span class="slds-page-header__title slds-truncate" title="Change Dashboard">{!$Label.c.changeDashboardStep3Title}</span>
+                                    </aura:if>
+                                    
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-page-header__col-actions">
+                <div class="slds-page-header__controls">
+                    <div class="slds-page-header__control">
+                        <ul class="slds-button-group-list">
+                            <li>
+                                <aura:if isTrue="{!v.currentStepInd=='1'}">
+                                    <!--<a href="javascript:void(0)" onclick="{!c.printablePage}" name="printPreviewRecFAF">Print Preview</a>-->
+                                    <lightning:button variant="neutral" label="Print Preview" title="Print Preview" name="printPreviewRecFAF" onclick="{! c.printablePage }"/>
+                                </aura:if>
+                                <aura:if isTrue="{!v.currentStepInd=='2'}">
+                                    <!--<a href="javascript:void(0)" onclick="{!c.printablePage}" name="printPreviewUpdateDoc">Print Preview</a>-->
+                                    <lightning:button variant="neutral" label="Print Preview" title="Print Preview" name="printPreviewUpdateDoc" onclick="{! c.printablePage }"/>
+                                </aura:if>
+                                
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slds-page-header__row">
+            <div class="slds-page-header__col-meta">
+                <aura:if isTrue="{!v.currentStepInd=='1'}">
+                    <p class="slds-page-header__meta-text">{!v.fieldListSize} Item/s</p>
+                </aura:if>
+                <aura:if isTrue="{!v.currentStepInd=='2'}">
+                    <p class="slds-page-header__meta-text">{!v.fieldChangeLogListSize} Item/s</p>
+                </aura:if>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 1: Reconcile FAF Changes -->
+    <aura:if isTrue="{!v.currentStepInd=='1'}">
+        <lightning:card footer="" title="">
+            <div class="slds-scrollable slds-box slds-m-around_x-small" style="height:24rem;width:auto;">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th scope="col">
+                                <div class="slds-truncate" title="Field Label">Field Label</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="FAF Object">FAF Object</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="FAF Value">New Value</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Agreement Value">Old Value</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="FAF Updated By">FAF Updated By</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="FAF Update Date">FAF Update Date</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.fieldList}" var="item">
+                            <tr>
+                                <th scope="row">
+                                    <div class="slds-truncate" title="{!item.fieldlabel}">
+                                        {!item.fieldlabel}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate" title="{!item.fafObject}">
+                                        {!item.fafObject}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate" title="{!item.fafValue}">
+                                        {!item.fafValue}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate" title="{!item.agreeValue}">
+                                        {!item.agreeValue}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate" title="{!item.fafModifiedBy}">
+                                        {!item.fafModifiedBy}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate" title="{!item.fafModifiedDt}">
+                                        <p><lightning:formattedDateTime value="{!item.fafModifiedDt}"/> &nbsp; <lightning:formattedDateTime value="{!item.fafModifiedDt}" hour="2-digit" minute="2-digit" second="2-digit" hour12="true"/></p>
+                                    </div>
+                                </th>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+        </lightning:card>
+    </aura:if>
+    <!-- Step 1: Reconcile FAF Changes -->
+    
+    
+    <!-- Step 2: Update Legal Doc -->
+    <!--
+    <aura:if isTrue="{!v.currentStepInd=='2'}">
+        <lightning:card footer="" title="">
+            <div class="slds-m-around_x-small">
+                {!$Label.c.changeDashboardWhatToDoLabel} &nbsp; <a href="javascript:void(0);" onclick="{!c.openModel}" name="printRecAg"><u>Learn More</u></a>
+            </div>
+            <div class="slds-scrollable slds-box slds-m-around_x-small" style="height:24rem;width:auto;">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th style="width:3.25rem;" >
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <label class="slds-checkbox">
+                                            <ui:inputCheckbox disabled="false"
+                                                              aura:id="selectAllDocId"
+                                                              change="{!c.selectAllDocCheckbox}"
+                                                              value="{!v.headerDoCheckboxDef}"/>
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-form-element__label"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Field Label">Field Label</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="FAF Object">FAF Object</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="FAF Value">New Value</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Agreement Value">Old Value</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="FAF Updated By">FAF Updated By</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="FAF Update Date">FAF Update Date</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.fieldChangeLogList}" var="item">
+                            <tr>
+                                <th scope="row" class="slds-text-align_right" style="width:3.25rem;">
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <label class="slds-checkbox">
+                                                <ui:inputCheckbox text="{!item.Reconcile_to_Document__c}"
+                                                                  value="{!item.Reconcile_to_Document__c}"
+                                                                  change="{!c.CheckboxSelect}"
+                                                                  disabled="false"/>
+                                                <span class="slds-checkbox_faux"></span>
+                                                <span class="slds-form-element__label text"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate"  title="{!item.Agreement_Extension_Field_Name__c}">
+                                        {!item.Agreement_Extension_Field_Name__c}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate"  title="{!item.Source_Data_Object_Name__c}" >
+                                        {!item.Source_Data_Object_Name__c}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate"  title="{!item.Source_Data_Field_Value__c}" >
+                                        {!item.Source_Data_Field_Value__c}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate"  title="{!item.Agreement_Extension_Field_Value__c}">
+                                        {!item.Agreement_Extension_Field_Value__c}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate"  title="{!item.FAF_Updated_By__c}">
+                                        {!item.FAF_Updated_By__c}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate"  title="{!item.FAF_Update_Date__c}">
+                                        <p><lightning:formattedDateTime value="{!item.FAF_Update_Date__c}"/> &nbsp; <lightning:formattedDateTime value="{!item.FAF_Update_Date__c}" hour="2-digit" minute="2-digit" second="2-digit" hour12="true"/></p>
+                                    </div>
+                                </th>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>                
+            </div>
+        </lightning:card>
+    </aura:if>
+    -->
+    <!-- Step 2: Update Legal Doc -->
+    
+    
+    <aura:if isTrue="{!v.currentStepInd=='2'}">
+        <lightning:card footer="" title="">
+            <div class="slds-m-around_x-small">
+                {!$Label.c.changeDashboardWhatToDoLabel} &nbsp; <a href="javascript:void(0);" onclick="{!c.openModel}" name="printRecAg"><u>Learn More</u></a>
+            </div>
+            <div class="slds-scrollable slds-box slds-m-around_x-small" style="height:24rem;width:auto;">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th style="width:3.25rem;" >
+                                <div class="slds-form-element">
+                                    <div class="slds-form-element__control">
+                                        <label class="slds-checkbox">
+                                            <ui:inputCheckbox disabled="false"
+                                                              aura:id="selectAllDocId"
+                                                              change="{!c.selectAllDocCheckbox}"
+                                                              value="{!v.headerDoCheckboxDef}"/>
+                                            <span class="slds-checkbox_faux"></span>
+                                            <span class="slds-form-element__label"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Field Label">Field Label</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="FAF Object">FAF Object</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="FAF Value">New Value</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Agreement Value">Old Value</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="FAF Updated By">FAF Updated By</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="FAF Update Date">FAF Update Date</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.fieldList2}" var="item">
+                            <tr>
+                                <th scope="row" class="slds-text-align_right" style="width:3.25rem;">
+                                    <div class="slds-form-element">
+                                        <div class="slds-form-element__control">
+                                            <label class="slds-checkbox">
+                                                <ui:inputCheckbox text="{!item.recToDoc2}"
+                                                                  value="{!item.recToDoc2}"
+                                                                  change="{!c.CheckboxSelect}"
+                                                                  disabled="false"/>
+                                                <span class="slds-checkbox_faux"></span>
+                                                <span class="slds-form-element__label text"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate"  title="{!item.fieldlabel2}">
+                                        {!item.fieldlabel2}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate"  title="{!item.fafObject2}" >
+                                        {!item.fafObject2}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate"  title="{!item.fafValue2}" >
+                                        {!item.fafValue2}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate"  title="{!item.agreeValue2}">
+                                        {!item.agreeValue2}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate"  title="{!item.fafModifiedBy2}">
+                                        {!item.fafModifiedBy2}
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="slds-truncate"  title="{!item.fafModifiedDt2}">
+                                        <p><lightning:formattedDateTime value="{!item.fafModifiedDt2}"/> &nbsp; <lightning:formattedDateTime value="{!item.fafModifiedDt2}" hour="2-digit" minute="2-digit" second="2-digit" hour12="true"/></p>
+                                    </div>
+                                </th>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>                
+            </div>
+        </lightning:card>
+    </aura:if>
+    
+    
+    
+    <!-- Step 3: Update complete -->
+    <aura:if isTrue="{!v.currentStepInd=='3'}">
+        <lightning:card footer="" title="">
+            <div class="slds-scrollable slds-box slds-m-around_x-small" style="{!'position: relative; height:24rem;width:auto; background:' + v.backgroundColor + ' url(' + v.backgroundImageURL +') no-repeat;background-position: center;background-size: 300px;'}">
+                
+            </div>
+        </lightning:card>
+    </aura:if>
+    <!-- Step 3: Update complete -->
+    
+    
+    <!-- FOOTER -->
+    <div class="slds-page-header slds-page-header_related-list">
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col slds-size_1-of-3">
+                <lightning:button variant="neutral" label="Back" title="Back" onclick="{! c.navigateToRec }"/>
+            </div>
+            
+            <div class="slds-col slds-size_1-of-3">
+                <lightning:progressIndicator currentStep="{!v.currentStepInd}" type="base" hasError="{!v.currentStepMark}" variant="base">
+                    <lightning:progressStep label="Reconcile FAF Changes" value="1"/>
+                    <lightning:progressStep label="Update Legal Document" value="2"/>
+                    <lightning:progressStep label="Update Complete" value="3"/>
+                </lightning:progressIndicator>
+            </div>
+            <div class="slds-col slds-size_1-of-3">
+                <div class="slds-float--right">
+                    <lightning:button variant="neutral" label="View Reconcile History" title="View Reconcile History" onclick="{! c.printablePage}" disabled="{!v.recHistCount == 0}" name="viewRecHist" />
+                    <aura:if isTrue="{!v.isSync}">
+                        <aura:set attribute="else">
+                            <lightning:button variant="brand" label="Reconcile" title="Reconcile" onclick="{! c.handleReconcile }" disabled="false" />
+                        </aura:set>
+                    </aura:if>
+                    <aura:if isTrue="{!v.currentStepInd=='2'}">
+                        <lightning:button variant="brand" label="Save" title="Update Reconcile to Document" onclick="{! c.upRecDoc }" disabled="{!v.SelectedRecDocCount == 0}" />        
+                    </aura:if>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer END --> 
+    
+</aura:component>

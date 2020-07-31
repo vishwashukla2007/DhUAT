@@ -1,0 +1,172 @@
+<apex:page standardController="Rebate_Guarantees__c" extensions="RebateguaranteeNewEditClass" lightningStylesheets="true" id="pg">
+<script>
+    function setFocusOnLoad() {
+        document.getElementById('{!$Component.pg.frm.PB.RGD2.PBSI1.year}').focus();
+         
+    }
+    
+</script>
+<div aura:id="overlay" class="slds-backdrop slds-backdrop--open">
+    <apex:form id="frm">
+    <apex:pagemessages id="pmsg"></apex:pagemessages>
+    <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+        <apex:pageBlock id="PB1" rendered="{!condition}">
+        <apex:commandButton action="{!Cancel}" title="Cancel" value="Cancel" immediate="true"/>
+        </apex:pageBlock>
+        <apex:pageBlock title="Rebate Guarantees" id="PB" rendered="{! !condition}">
+          
+            <apex:pageBlockSection title="Rebate Guarantees Detail" id="RGD1" columns="2">
+                <apex:outputField value="{!Rguarantees.FAF_ID__c}" />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:outputField value="{!Rguarantees.Rebate_Operations__c}" id="jsname" />
+                <apex:outputLabel ></apex:outputLabel>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Rebate Guarantees" id="RGD2" columns="2">
+                  <!-- Defect fix for Year required-->
+                 <apex:pageBlockSectionItem id="PBSI1">
+                   <apex:outputLabel for="yearPnl" value="Year" />
+                   <apex:outputPanel id="yearPnl">
+                      <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                       
+                       <apex:selectList value="{!Rguarantees.Year__c}"  required="true" label="Year" id="year" size="1">
+                       <apex:selectOptions value="{!yearList}" />
+                        </apex:selectList>
+                         </div> 
+                   </apex:outputPanel>
+               </apex:pageBlockSectionItem>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!Rguarantees.LOB2__c}" id="lobId" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>               
+                <apex:inputField value="{!Rguarantees.Basis__c}" id="basisId" required="true"/>                
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!Rguarantees.GSTP__c}" id="gstpId"/>
+                <apex:outputLabel ></apex:outputLabel>
+           <!-- <apex:inputField value="{!Rguarantees.Non_Specialty_Formulary_2__c}" id="NonSpecFormId" onchange="nonspecialtyFormularyChange(this.value);"/>-->
+    <!--Start Changes Done By Mohit Srivastava as a part of Plan design Defect-->
+                <apex:inputField value="{!Rguarantees.Non_Specialty_Formulary_2__c}" id="NonSpecFormId" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!Rguarantees.Plan_Design__c}" id="planDesignId" required="true"/>
+     <!--END Changes Done By Mohit Srivastava as a part of Plan design Defect-->
+            <!--    <apex:outputLabel ></apex:outputLabel> -->
+           <!--    <apex:selectList id="planDesignId" size="1" multiselect="false" value="{!Rguarantees.Plan_Design__c}" title="">
+                <apex:selectOptions value="{!plandesignList}"/>
+                </apex:selectList> -->
+                <apex:outputLabel ></apex:outputLabel>                
+                <apex:inputField value="{!Rguarantees.Specialty_Formulary__c}" id="SpecFormId" />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!Rguarantees.Retail_30__c}" id="retail30Id" rendered="{!enablePercentage}" onchange="setSpecialtyRetailval()"/>
+                <apex:inputField value="{!Rguarantees.Retail_30_1__c}" id="retail301Id" rendered="{!enableDollar}" onchange="setSpecialtyRetailval()"/>
+                <apex:inputField value="{!Rguarantees.Retail_90__c}" id="retail90Id" rendered="{!enablePercentage}"/>
+                <apex:inputField value="{!Rguarantees.Retail_90_1__c}" id="retail901Id" rendered="{!enableDollar}"/>               
+                <apex:inputField value="{!Rguarantees.Mail__c}" id="mailId" rendered="{!enablePercentage}"/>
+                <apex:inputField value="{!Rguarantees.Mail_1__c}" id="Mail1Id" rendered="{!enableDollar}"/>
+                <apex:inputField value="{!Rguarantees.Mchoice__c}" id="mchoiceId" rendered="{!enablePercentage}"/>
+                <apex:inputField value="{!Rguarantees.Mchoice_1__c}" id="mchoice1Id" rendered="{!enableDollar}"/>   
+                <apex:inputField value="{!Rguarantees.Specialty__c}" id="specId" rendered="{!enablePercentage}" onchange="setSpecialtyRetailval()"/>
+                <apex:inputField value="{!Rguarantees.Specialty_1__c}" id="spec1Id" rendered="{!enableDollar}" onchange="setSpecialtyRetailval()"/>
+                <apex:inputField value="{!Rguarantees.Specialty_Retail__c}" id="specretailId" rendered="{!enablePercentage}" />
+                <apex:inputField value="{!Rguarantees.Specialty_Retail_1__c}" id="specRetail1Id" rendered="{!enableDollar}"  /> 
+                <apex:inputField value="{!Rguarantees.Client_Owned_30__c}" id="clientOwned30Id" rendered="{!enablePercentage}"/>
+                <apex:inputField value="{!Rguarantees.Client_Owned_30_1__c}" id="clientOwned301Id" rendered="{!enableDollar}"/> 
+                <apex:inputField value="{!Rguarantees.Client_Owned_90__c}" id="clientOwned90Id" rendered="{!enablePercentage}"/>                                                                                               
+                <apex:inputField value="{!Rguarantees.Client_Owned_90_1__c}" id="clientOwned901Id" rendered="{!enableDollar}"/>                                                                   
+            </apex:pageBlockSection>
+    <!--     <apex:actionFunction name="nonspecialtyFormularyChange" action="{!changeplanDesign}" reRender="PB,RG2,perguanranteeSec,disableSec" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!nonspecialtyFormulary}" value="" />
+            </apex:actionFunction>   -->       
+        <apex:pageBlockButtons >
+            <apex:commandButton action="{!saveUpdateRec}" title="Save" value="Save"  rerender="pmsg,PB,perguanranteeSec,disableSec" oncomplete="window.scrollTo(0, 0);" status="status"/>
+         <!--   <apex:commandButton action="{!Cancel}" title="Cancel" value="Cancel" immediate="true"/> -->
+          <!-- Added on 08.23.18 by Sridevi for Expanded View -->
+            <apex:commandButton immediate="true" action="{!Cancel}"  value="Cancel" rendered="{!NOT(isExpandableView)}" />
+                <apex:commandButton immediate="true" action="{!Cancel}"  value="Cancel"  rendered="{!isExpandableView}" 
+                onclick="parent.window.location.href='/{!rebateOprId1}';return false;" />
+        </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+    </div>
+     <script>
+        
+        //alert('{!condition}');
+        document.getElementById(('{!$Component.Pg.frm.PB.RGD2.lobId}')).disabled = {!condition};
+        document.getElementById(('{!$Component.Pg.frm.PB.RGD2.yearId}')).disabled = {!condition};
+        document.getElementById(('{!$Component.Pg.frm.PB.RGD2.basisId}')).disabled = {!condition};
+        document.getElementById(('{!$Component.Pg.frm.PB.RGD2.PlanDesignId}')).disabled = {!condition};
+        document.getElementById(('{!$Component.Pg.frm.PB.RGD2.gstpId}')).disabled = {!condition};
+        document.getElementById(('{!$Component.Pg.frm.PB.RGD2.NonSpecFormId}')).disabled = {!condition};
+        document.getElementById(('{!$Component.Pg.frm.PB.RGD2.SpecFormId}')).disabled = {!condition};
+        
+        function setSpecialtyRetailval(){
+                var sr30D= document.getElementById(('{!$Component.pg.frm.PB.RGD2.specretailId}'));
+                var sr30P= document.getElementById(('{!$Component.pg.frm.PB.RGD2.specRetail1Id}'));
+                var sD= document.getElementById(('{!$Component.pg.frm.PB.RGD2.specId}'));
+                var sP= document.getElementById(('{!$Component.pg.frm.PB.RGD2.spec1Id}'));
+                var r30D= document.getElementById(('{!$Component.pg.frm.PB.RGD2.retail30Id}'));
+                var r30P= document.getElementById(('{!$Component.pg.frm.PB.RGD2.retail301Id}'));
+                if({!rebateOpsSPMR30}){
+                    if(sr30P!=null)
+                    sr30P.value= r30P.value;
+                    if(sr30D!=null)
+                    sr30D.value= r30D.value;
+                }
+                else{
+                    if(sr30P!=null)
+                    sr30P.value= sP.value;
+                    if(sr30D!=null)
+                    sr30D.value= sD.value;
+                }
+            }
+        
+    </script>
+    
+    <apex:outputpanel id="disableSec">
+    <script>
+    var NonSpecFormVar = document.getElementById(('{!$Component.Pg.frm.PB.RGD2.NonSpecFormId}'));
+    NonSpecFormVar.disabled = {!disableNonSpecFormulary};
+    var SpecFormVar = document.getElementById(('{!$Component.Pg.frm.PB.RGD2.SpecFormId}'));
+    SpecFormVar.disabled = {!disableSpecFormulary};
+    var GSTPVar = document.getElementById(('{!$Component.Pg.frm.PB.RGD2.gstpId}'));
+    GSTPVar.disabled = {!disableGSTP};
+    </script>
+    </apex:outputpanel>
+    
+    <apex:outputpanel id="perguanranteeSec">
+        <script>
+         //alert('{!dolspecRetailFlag}');
+         //alert('{!dolretail90Flag}');
+         //alert('{!dolmChoiceFlag}');
+        // Added on 08.23.18 by Sridevi for Expanded View 
+         if('{!urlString}') {
+         parent.window.location.href='{!urlString}';
+     }        
+        if({!enableDollar}){
+            document.getElementById(('{!$Component.Pg.frm.PB.RGD2.retail901Id}')).disabled = {!dolretail90Flag};
+            document.getElementById(('{!$Component.Pg.frm.PB.RGD2.mchoice1Id}')).disabled = {!dolmChoiceFlag};       
+            document.getElementById(('{!$Component.Pg.frm.PB.RGD2.specRetail1Id}')).disabled = {!dolspecRetailFlag};
+        
+        }
+        
+        if({!enablePercentage}){
+            document.getElementById(('{!$Component.Pg.frm.PB.RGD2.retail90Id}')).disabled = {!dolretail90Flag};       
+            document.getElementById(('{!$Component.Pg.frm.PB.RGD2.mchoiceId}')).disabled = {!dolmChoiceFlag};       
+            document.getElementById(('{!$Component.Pg.frm.PB.RGD2.specretailId}')).disabled = {!dolspecRetailFlag};
+        }
+        
+        
+        
+        </script>
+        </apex:outputpanel>
+</apex:page>

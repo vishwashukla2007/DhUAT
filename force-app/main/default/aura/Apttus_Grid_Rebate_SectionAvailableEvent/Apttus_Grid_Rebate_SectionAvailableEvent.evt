@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Event template" >
+    <aura:attribute name="isAvailable" type="Boolean"/>
+    <aura:attribute name="section" type="String"/>
+</aura:event>

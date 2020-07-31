@@ -1,0 +1,18 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="true" controller="changeDashboardPrintPageController" >
+    <apex:includeLightning />
+	  
+    <div id="printableViewDiv"/>
+    
+    <script>
+        $Lightning.use("c:changeDashboardApp", function() {
+            $Lightning.createComponent("c:changeDashboardPrintableView"
+                , {"recordId" : "{!AString}",
+                  "type" : "{!TString}"}
+                , "printableViewDiv"
+                , function(cmp) {
+                    console.log('[Account360Page] Printable Account 360 initialized');
+                });
+            });
+    </script>
+    
+</apex:page>

@@ -1,0 +1,547 @@
+<aura:component controller="Apttus_GridObjectdata" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId">
+    <aura:attribute name="isSpecialty" type="Boolean" Default="false"/>
+    <aura:attribute name="isRebate" type="Boolean" Default="false"/>
+    <aura:attribute name="isCarveOut" type="Boolean" Default="false"/>
+    <aura:attribute name="btnvisible" type="Boolean" Default="false"/>
+    <aura:attribute name="disablebtn" type="Boolean" Default="false"/>
+    <aura:attribute name="clickNewModal" type="Boolean" Default="false"/>
+    <aura:attribute name="disablesavebtn" type="Boolean" Default="false"/>
+    <aura:attribute name="AddGridElectronic" type="Boolean"/>
+    <aura:attribute name="AddGridManual" type="Boolean"/>
+    <aura:attribute name="AddGridM340B" type="Boolean"/>
+    <aura:attribute name="tableCols" type="List" />
+    <aura:attribute name="rebatedefault" type="List" />
+    <aura:attribute name="OpsId" type="String"/>
+    <aura:attribute name="fafid" type="String"/>
+    <aura:attribute name="sopsid" type="String"/>
+    <aura:attribute name="record" type="String"/>
+    <aura:attribute name="btnlabel" type="String"/>
+    <aura:attribute name="alirecord" type="String"/>
+    <aura:attribute name="ObjectName" type="String" Default="Network_Pricing__c"/>
+    <aura:attribute name="objects" type="Object" default="Network_Pricing__c"/>
+    <aura:attribute name="opbjects" type="Object" />
+    <aura:attribute name="SpecialtyOperationObj" type = "object" default="Specialty_Operations__c"/>
+    <aura:attribute name="Addobjects" type="Object" />
+    <aura:attribute name="Carveobjects" type="Object" />
+    <aura:attribute name="agreementObj" type="Object" />
+    <aura:attribute name="totalcount" type="Integer"/>    
+    <aura:attribute name="DisplaySpinner" type="Boolean" default="false" /> 
+    
+    <aura:attribute name="isDiaplayAddProg" type="Boolean" Default="false"/>
+    <aura:attribute name="isSavedAndClose" type="Boolean" Default="true"/>
+    
+    <aura:attribute name="is2TQAvailable" type="Boolean" Default="false"/>
+    <aura:attribute name="is3TQAvailable" type="Boolean" Default="false"/>
+    <aura:attribute name="is3TNQAvailable" type="Boolean" Default="false"/>
+    <aura:attribute name="isClosedAvailable" type="Boolean" Default="false"/>
+    <aura:attribute name="isSpecAvailable" type="Boolean" Default="false"/>
+    <aura:attribute name="multiplelob" type="Boolean" Default="false"/>
+    <aura:attribute name="is2TQSaved" type="Boolean" Default="false"/>
+    <aura:attribute name="is3TQSaved" type="Boolean" Default="false"/>
+    <aura:attribute name="is3TNQSaved" type="Boolean" Default="false"/>
+    <aura:attribute name="isClosedSaved" type="Boolean" Default="false"/>
+    <aura:attribute name="isSpecSaved" type="Boolean" Default="false"/>
+    <aura:attribute name="chkboxvalue" type="boolean"/> 
+    <aura:attribute name="AddAdditionalNP" type="Boolean" Default="false"/>
+	<aura:attribute name="AddAdditionalAdmin" type="Boolean" Default="false"/>
+    <aura:attribute name="AddAdditionalMP" type="Boolean" Default="false"/>
+    <aura:attribute name="AddAdditionalRebate" type="Boolean" Default="false"/>
+    <aura:attribute name="AddAdditionalSpecialty" type="Boolean" Default="false"/>
+    
+    <aura:registerEvent name="appEvent" type="c:Apttus_Grid_Ops_Id_Event" />
+    <aura:registerEvent name="closeEvent" type="c:Apttus_Grid_NT_Close_Event"/>
+    <aura:registerEvent name="closeModal" type="c:Apttus_Grid_NT_Open_Event"/>
+    <aura:registerEvent name="saveEvent" type="c:Apttus_Grid_NT_Save_Event"/>
+    <aura:registerEvent name="refreshnotifyEvent" type="c:Apttus_Grid_Refresh_Parent_Event"/>
+    <aura:registerEvent name="appEventR" type="c:Apttus_Grid_Add_MLOB_Rebate_Event"/>
+    <aura:registerEvent name="appEventM" type="c:Apttus_Grid_Add_MLOB_Count_Event"/>
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler event="c:Apttus_Grid_Name_Event" action="{!c.GridChange}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Close_Event" action="{!c.closeEdit}"/> 
+    <aura:handler event="c:Apttus_Grid_Cancel_Event" action="{!c.doInit}"/>
+    
+    <aura:handler event="c:Apttus_Grid_NT_Notify_Error_Event" action="{!c.handleError}"/>
+    <aura:handler event="c:Apttus_Grid_Height_Event" action="{!c.stylechange}"/>
+    <aura:handler event="c:Apttus_Grid_Close_New_Event" action="{!c.handleCloseEdit}"/>
+    <aura:handler event="c:Apttus_Grid_Cancel_Parent_Event" action="{!c.handleClose}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Save_Event" action="{!c.handleSave}"/>
+    <aura:handler event="c:Apttus_RebateSaveAndCloseEvent" action="{!c.handleSaveAndClose}"/>
+    <aura:handler event="c:Apttus_Grid_Add_MLOB_Save_Event" action="{!c.handleMLOBSaveEvent}"/>
+    <aura:handler event="c:Apttus_Grid_Rebate_SectionAvailableEvent" action="{!c.handleRebateSection}"/>
+    
+    <ltng:require styles="{!$Resource.multilinetoastmessage}" />
+    <lightning:layout>
+        <aura:if isTrue="{!v.DisplaySpinner}">
+            <lightning:spinner alternativeText="Saving" variant="brand" size="medium" class="slds-spinner_container"/>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </aura:if>   
+    </lightning:layout>
+    <lightning:card title="" class="container">
+        <c:Apttus_PCD_Grid_Option/>
+        <lightning:layout>
+            
+            <aura:if isTrue="{!v.AddAdditionalNP}">
+                <div class="demo-only" > 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" aura:id="modalheight" >
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Add Network</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                                <c:Apttus_Grid_Add_Additional_NP aura:id="compmod"  fafid="{!v.OpsId}" ali="{!v.alirecord}"/>
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                                <button type="button" disabled="{!v.disablesavebtn}" class="slds-button slds-button_brand" onclick="{!c.updatepricing}">Save  &amp; Close</button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if>
+			<!--Admin Fee-->
+			   <aura:if isTrue="{!v.AddAdditionalAdmin}">
+                <div class="demo-only" > 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" aura:id="modalheight" >
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Add Administrative Fees</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                                <c:Apttus_Grid_Additional_Admin_fee aura:id="compmod"  fafid="{!v.OpsId}" ali="{!v.alirecord}"/>
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                                <button type="button" disabled="{!v.disablesavebtn}" class="slds-button slds-button_brand" onclick="{!c.updatepricing}">Save  &amp; Close</button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if>
+            <!--Specialty-->
+			 <aura:if isTrue="{!v.AddAdditionalSpecialty}">
+                <div class="demo-only" > 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" aura:id="modalheight" >
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Add Specialty</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                                <c:Apttus_Grid_Additional_Specialty aura:id="compmod"  fafid="{!v.OpsId}" ali="{!v.alirecord}"/>
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                                <button type="button" disabled="{!v.disablesavebtn}" class="slds-button slds-button_brand" onclick="">Save  &amp; Close</button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.AddAdditionalMP}">
+                <div class="demo-only" > 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" aura:id="modalheight" >
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Add Mail</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                               <c:Apttus_Grid_Add_Additional_MP aura:id="mailAdd"  fafid="{!v.OpsId}" ali="{!v.alirecord}"/> 
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                                <button type="button" disabled="{!v.disablesavebtn}" class="slds-button slds-button_brand" onclick="{!c.updateMail}">Save  &amp; Close</button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if>
+            
+                <aura:if isTrue="{!v.AddAdditionalRebate}">
+                <div class="demo-only" > 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" aura:id="modalheight" >
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Add Rebate</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                                <c:Apttus_Grid_Add_Additional_Rebate aura:id="compmod"  fafid="{!v.OpsId}" ali="{!v.alirecord}"/>
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                                <button type="button" disabled="{!v.disablesavebtn}" class="slds-button slds-button_brand" onclick="{!c.updatelobpricing}">Save  &amp; Close</button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if> 
+            
+        </lightning:layout>
+        <lightning:layout horizontalAlign="right" verticalAlign="end">
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div> 
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <div class="slds-p-left_xx-large"></div>
+            <!--  <aura:if isTrue="{!v.btnvisible}">
+                <lightning:layoutitem class="right-align"> 
+                    <lightning:button class="slds-float_right slds-button" label="{!v.btnlabel}" disabled="{!v.disablebtn}" iconName="utility:add" iconPosition="left"  onclick="{!c.create}"/>
+                </lightning:layoutitem>
+            </aura:if> -->
+        </lightning:layout>
+        <div class="slds-scrollable--y" >
+            <aura:if isTrue="{!v.ObjectName!='Specialty_Pricing__c'}">
+                <aura:if isTrue="{!v.ObjectName!='Rebate_Guarantee__c'}">
+                    <aura:if isTrue="{!v.ObjectName!='Network_Pricing__c'}">
+                        <aura:if isTrue="{!v.ObjectName != 'Specialty_Drug_Level_Pricing__c'}">
+                            <div class="slds-p-top_large"></div>
+                            <div class="slds-p-top_large"></div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.ObjectName == 'Clinical_Solutions__c'}">
+                            <aura:if isTrue="{!(empty(v.objects))}">
+                                <div class="slds-p-bottom_xx-large"></div>
+                                <p>  No Additional Program information found.</p>
+                                <div class="slds-p-bottom_xx-large"></div>
+                                <div class="slds-p-bottom_xx-large"></div>
+                                <div class="slds-p-bottom_xx-large"></div>
+                                <div class="slds-p-bottom_xx-large"></div>
+                                <aura:set attribute="else">
+                                    <div class="slds-m-left_large">
+                                        <lightning:input class="checkboxzoom" type="checkbox" label="Include Addition Programs in PCD Grid" checked="{!v.isDiaplayAddProg}" onchange="{!c.handleAddProg}"/>
+                                        <div class="slds-p-top_large"></div>
+                                        <div class="slds-p-top_large"></div>
+                                        <aura:if isTrue="{!v.isDiaplayAddProg}">
+                                            <aura:iteration items="{!v.objects}" var="p" indexVar="index">
+                                                <c:Apttus_Grid_Child aura:id="compB" objects="{!p}" opid="{!p.Id}" isSpecialty="false" ObjectName= "{!v.ObjectName}" tableCols="{!v.tableCols}" />
+                                            </aura:iteration> 
+                                        </aura:if>
+                                    </div>
+                                </aura:set>
+                            </aura:if>
+                        </aura:if>  
+                        <aura:if isTrue="{!v.ObjectName != 'Clinical_Solutions__c'}">
+                            <aura:if isTrue="{!v.ObjectName == 'Mail_Pricing__c'}">
+                            <!-- ********************************************mail-pricing******************************************************* -->   
+                            <aura:iteration items="{!v.objects}" var="p" indexVar="index">
+                                <aura:if isTrue="{!v.multiplelob}">
+                           		 <aura:if isTrue="{!(index == 0)}">
+                                 <div class="button">
+                                 <lightning:button class="buttonmail" iconName="utility:add" label="Add Additional LOB Information" title="Add Additional LOB Information" onclick="{! c.handleLOB }"/>
+                                 </div>
+                                 <div class="slds-p-top_large"></div>
+                                 </aura:if>
+                         		</aura:if>
+                                <div class="slds-grid">
+                                <div class="" style ="margin-top: 5px;"> 
+                                    <div class="slds-grid slds-p-left_x-small">
+                                        <lightning:input type="text" aura:id="seqtext" id="{!p.Id}" name="{!p.Id}" disabled="false" value="{!p.Sequence_Number__c}"
+                                                         class="widthTextClass"  variant="label-hidden" oncommit="{!c.handleMPSeqNumberChange}"/>&nbsp;
+                                        
+                                        <aura:if isTrue="{!p.Sequence_Number__c == p.FAF_Mail_Operations__r.Mail_Min_Sequence__c}">
+                                            <lightning:buttonIcon aura:id="arrowup" class="slds-align_absolute-right icn slds-popover__body widthIcn" 
+                                                                  iconName="utility:arrowup" size="small" alternativeText="up" name="{!p.Id}"
+                                                                  onclick="{! c.handleMPUpClick }" disabled="true" />
+                                            <aura:set attribute="else">
+                                                <lightning:buttonIcon aura:id="arrowup" class="slds-align_absolute-right icn slds-popover__body widthIcn" 
+                                                                      iconName="utility:arrowup" size="small" alternativeText="up" name="{!p.Id}"
+                                                                      onclick="{! c.handleMPUpClick }"  disabled="false"/>
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!p.Sequence_Number__c == p.FAF_Mail_Operations__r.Mail_Max_Sequence__c}">
+                                            <lightning:buttonIcon aura:id="arrowdown" class="slds-align_absolute-right icn slds-popover__body " 
+                                                                  iconName="utility:arrowdown" size="small" alternativeText	="down" name="{!p.Id}"
+                                                                  onclick="{! c.handleMPDownClick }"  disabled="true"/>
+                                            <aura:set attribute="else">
+                                                <lightning:buttonIcon aura:id="arrowdown" class="slds-align_absolute-right icn slds-popover__body " 
+                                                                      iconName="utility:arrowdown" size="small" alternativeText	="down" name="{!p.Id}"
+                                                                      onclick="{! c.handleMPDownClick }" disabled="false" />
+                                            </aura:set>
+                                        </aura:if>&nbsp;
+                                        
+                                    </div>
+                                </div>
+                                <div class="slds-col "> 
+                                    <c:Apttus_Grid_Child aura:id="compB" objects="{!p}" opid="{!p.Id}" isSpecialty="false" ObjectName= "{!v.ObjectName}" 
+                                                         tableCols="{!v.tableCols}" />
+                                </div>
+                            </div>
+                       </aura:iteration>
+                            <!-- ********************************************mail-pricing******************************************************* -->     
+                            <aura:set attribute="else">
+                                <aura:if isTrue="{!v.ObjectName == 'Specialty_Drug_Level_Pricing__c'}">
+                                  <c:pcdSfsEdit aura:id="compSFS" fafId="{!v.fafid}" specOpId="{!v.sopsid}"/>
+                                <aura:set attribute="else">
+                                <aura:iteration items="{!v.objects}" var="p" indexVar="index">
+                                 <aura:if isTrue="{!v.multiplelob}">
+                            	 <aura:if isTrue="{!(index == 0)}">
+                                 <div class="button">
+                                 <lightning:button class="buttonadmin" iconName="utility:add" label="Add Additional LOB Information" title="Add Additional LOB Information" onclick="{! c.handleLOB }"/>
+                                 </div>
+                                 <div class="slds-p-top_large"></div>
+                                 </aura:if>
+                                 </aura:if>
+                                <c:Apttus_Grid_Child aura:id="compB" objects="{!p}" opid="{!p.Id}" isSpecialty="false" ObjectName= "{!v.ObjectName}" 
+                                                     tableCols="{!v.tableCols}" />
+                            </aura:iteration>
+                            </aura:set>
+                            </aura:if>
+                            </aura:set>
+                            </aura:if>    
+                        </aura:if>                        
+                    </aura:if>
+                    <aura:if isTrue="{!v.ObjectName=='Network_Pricing__c'}">
+                        <div class="slds-p-top_large"></div>
+                        <div class="slds-p-top_large"></div>
+                        <aura:iteration items="{!v.objects}" var="p" indexVar="index">
+                            <aura:if isTrue="{!v.multiplelob}">
+                            <aura:if isTrue="{!(index == 0)}">
+                            <div class="button">
+                                <lightning:button class="button" iconName="utility:add" label="Add Additional LOB Information" title="Add Additional LOB Information" onclick="{! c.handleLOB }"/>
+                            </div>
+                            <div class="slds-p-top_large"></div>
+                            </aura:if>
+                            </aura:if>
+                            <div class="slds-grid">
+                                <div class="" style ="margin-top: 5px;"> 
+                                    <div class="slds-grid slds-p-left_x-small">
+                                        <lightning:input type="text" aura:id="seqtext" id="{!p.Id}" name="{!p.Id}" disabled="false" value="{!p.Sequence_Number__c}"
+                                                         class="widthTextClass"  variant="label-hidden" oncommit="{!c.handleNPSeqNumberChange}"/>&nbsp;
+                                        
+                                        <aura:if isTrue="{!p.Sequence_Number__c == p.FAF_Network_Ops__r.Network_Pricing_Min_Seq__c}">
+                                            <lightning:buttonIcon aura:id="arrowup" class="slds-align_absolute-right icn slds-popover__body widthIcn" 
+                                                                  iconName="utility:arrowup" size="small" alternativeText="up" name="{!p.Id}"
+                                                                  onclick="{! c.handleNPUpClick }" disabled="true" />
+                                            <aura:set attribute="else">
+                                                <lightning:buttonIcon aura:id="arrowup" class="slds-align_absolute-right icn slds-popover__body widthIcn" 
+                                                                      iconName="utility:arrowup" size="small" alternativeText="up" name="{!p.Id}"
+                                                                      onclick="{! c.handleNPUpClick }"  disabled="false"/>
+                                            </aura:set>
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!p.Sequence_Number__c == p.FAF_Network_Ops__r.Network_Pricing_Max_Seq__c}">
+                                            <lightning:buttonIcon aura:id="arrowdown" class="slds-align_absolute-right icn slds-popover__body " 
+                                                                  iconName="utility:arrowdown" size="small" alternativeText	="down" name="{!p.Id}"
+                                                                  onclick="{! c.handleNPDownClick }"  disabled="true"/>
+                                            <aura:set attribute="else">
+                                                <lightning:buttonIcon aura:id="arrowdown" class="slds-align_absolute-right icn slds-popover__body " 
+                                                                      iconName="utility:arrowdown" size="small" alternativeText	="down" name="{!p.Id}"
+                                                                      onclick="{! c.handleNPDownClick }" disabled="false" />
+                                            </aura:set>
+                                        </aura:if>&nbsp;
+                                        
+                                    </div>
+                                </div>
+                                <div class="slds-col "> 
+                                    <c:Apttus_Grid_Child aura:id="compB" objects="{!p}" opid="{!p.Id}" isSpecialty="false" ObjectName= "{!v.ObjectName}" 
+                                                         tableCols="{!v.tableCols}" />
+                                </div>
+                            </div>
+                        </aura:iteration>  
+                    </aura:if>
+                </aura:if>
+                <aura:if isTrue="{!v.ObjectName =='Rebate_Guarantee__c'}">
+                    <aura:iteration items="{!v.objects}" var="p" indexVar="index">
+                          <aura:if isTrue="{!p.Grid_flag__c ==true}">
+                            <div class="slds-p-top_large"></div>
+                            <div class="slds-p-top_large"></div>
+                         </aura:if>
+                         <aura:if isTrue="{!v.multiplelob}">
+                            <aura:if isTrue="{!(index == 0)}">
+                            <div class="button">
+                                <lightning:button class="button" iconName="utility:add" label="Add Additional LOB Information" title="Add Additional LOB Information" onclick="{! c.handleLOB }"/>
+                            </div>
+                            <div class="slds-p-top_large"></div>
+                            </aura:if>
+                         </aura:if>
+                        <aura:if isTrue="{!p.UniqueCheck__c ==true}">
+                            <aura:if isTrue="{!p.Grid_flag__c ==false}">
+                            </aura:if>
+                        </aura:if>
+                        <div class="slds-grid">
+                            <aura:if isTrue="{!p.Grid_flag__c}">
+                                <div class="" style ="margin-top: 5px;"> 
+                                    <div class="slds-grid slds-p-left_x-small">
+                                        <lightning:input type="text" aura:id="seqtext" id="{!p.Id}" name="{!p.Id}" disabled="false" value="{!p.Sequence_Number__c}"
+                                                         class="widthTextClass"  variant="label-hidden" oncommit="{!c.handleRGSeqNumberChange}"/>&nbsp;
+                                        <aura:if isTrue="{!p.Sequence_Number__c == p.Rebate_Operations__r.Rebate_Min_Sequence__c}">
+                                            <lightning:buttonIcon aura:id="arrowup" class="slds-align_absolute-right icn slds-popover__body widthIcn" 
+                                                                  iconName="utility:arrowup" size="small" alternativeText="up" name="{!p.Id}"
+                                                                  onclick="{! c.handleRGUpClick }" disabled="true" />
+                                            <aura:set attribute="else">
+                                                <lightning:buttonIcon aura:id="arrowup" class="slds-align_absolute-right icn slds-popover__body widthIcn" 
+                                                                      iconName="utility:arrowup" size="small" alternativeText="up" name="{!p.Id}"
+                                                                      onclick="{! c.handleRGUpClick }"  disabled="false"/>
+                                            </aura:set>
+                                        </aura:if>
+                                        <aura:if isTrue="{!p.Sequence_Number__c == p.Rebate_Operations__r.Rebate_Max_Sequence__c}">
+                                            <lightning:buttonIcon aura:id="arrowdown" class="slds-align_absolute-right icn slds-popover__body " 
+                                                                  iconName="utility:arrowdown" size="small" alternativeText	="down" name="{!p.Id}"
+                                                                  onclick="{! c.handleRGDownClick }"  disabled="true"/>
+                                            <aura:set attribute="else">
+                                                <lightning:buttonIcon aura:id="arrowdown" class="slds-align_absolute-right icn slds-popover__body " 
+                                                                      iconName="utility:arrowdown" size="small" alternativeText	="down" name="{!p.Id}"
+                                                                      onclick="{! c.handleRGDownClick }" disabled="false" />
+                                            </aura:set>
+                                        </aura:if>&nbsp;
+                                    </div>
+                                </div>
+                                <aura:set attribute="else">
+                                    <div class="" style ="margin-left: 117px;">  </div>
+                                </aura:set>
+                            </aura:if>
+                            <div class="slds-col "> 
+                                <c:Apttus_Grid_Child aura:id="compB" objects="{!p}" opid="{!p.Id}" isSpecialty="false" ObjectName= "{!v.ObjectName}" 
+                                                     tableCols="{!v.tableCols}" />
+                            </div>
+                        </div>
+                    </aura:iteration> 
+                </aura:if>
+                <aura:if isTrue="{!(empty(v.objects))}">
+                    <div class="slds-p-bottom_xx-large"></div>
+                    <aura:if isTrue="{!v.ObjectName=='Rebate_Guarantee__c'}">
+                        <p>  No Rebate Guarantee information found.</p>
+                    </aura:if>
+                </aura:if>
+                <aura:if isTrue="{!and(empty(v.objects),empty(v.Carveobjects))}">
+                    <div class="slds-p-bottom_xx-large"></div>
+                    <aura:if isTrue="{!v.ObjectName =='Network_Pricing__c'}">
+                        <p>  No Retail Network pricing information found.</p>
+                    </aura:if>
+                    <aura:if isTrue="{!v.ObjectName =='Mail_Pricing__c'}">
+                        <p>  No Mail pricing information found.</p>
+                    </aura:if>
+                    <aura:if isTrue="{!v.ObjectName=='Billing_Admin_Fee__c'}">
+                        <p>  No Administrative Fee information found.</p>
+                    </aura:if>
+                    <!--aura:if isTrue="{!v.ObjectName=='Clinical_Solutions__c'}">
+                        <p>  No Additional Program information found.</p>
+                    </aura:if-->
+                    <div class="slds-p-bottom_xx-large"></div>
+                    <div class="slds-p-bottom_xx-large"></div>
+                    <div class="slds-p-bottom_xx-large"></div>
+                    <div class="slds-p-bottom_xx-large"></div>
+                </aura:if>
+                <aura:set attribute="else">
+                    <div class="slds-p-top_large"></div>
+                    <div class="slds-p-top_large"></div>
+                    <!--<aura:iteration items="{!v.opbjects}" var="p" indexVar="index">
+                        <c:Apttus_Grid_Child aura:id="compB" objects="{!p}" opid="{!p.Specialty_Operations__c}" isSpecialty="false" ObjectName= "{!v.ObjectName}" 
+                                             tableCols="{!v.tableCols}" />
+                    </aura:iteration>-->
+                    <aura:if isTrue="{!and(empty(v.opbjects),empty(v.Addobjects))}">
+                        <div class="slds-p-bottom_xx-large"></div>
+                        <p>  No Specialty pricing information found.</p>
+                        <div class="slds-p-bottom_xx-large"></div>
+                        <div class="slds-p-bottom_xx-large"></div>
+                        <div class="slds-p-bottom_xx-large"></div>
+                        <div class="slds-p-bottom_xx-large"></div>
+                    </aura:if>
+                </aura:set>
+            </aura:if>
+			<aura:if isTrue="{!v.ObjectName=='Specialty_Pricing__c'}">
+                    <aura:iteration items="{!v.opbjects}" var="p" indexVar="index">
+                        <aura:if isTrue="{!v.multiplelob}">
+                            <aura:if isTrue="{!(index == 0)}">
+                            <div class="button">
+                                <lightning:button class="buttonmail" iconName="utility:add" label="Add Additional LOB Information" title="Add Additional LOB Information" onclick="{! c.handleLOB }"/>
+                            </div>
+                            <div class="slds-p-top_large"></div>
+                            </aura:if>
+                         </aura:if>
+                        <div class="slds-grid">
+                                <div class="" style ="margin-top: 5px;"> 
+                                    <div class="slds-grid slds-p-left_x-small">
+                                        <lightning:input type="text" aura:id="seqtext" id="{!p.Id}" name="{!p.Id}" disabled="false" value="{!p.Sequence_Number__c}"
+                                                         class="widthTextClass"  variant="label-hidden" oncommit="{!c.handleSpecialtySeqNumberChangeHelper}"/>&nbsp;
+                                        <aura:if isTrue="{!p.Sequence_Number__c == p.Specialty_Operations__r.Specialty_MIN_Sequence__c}">
+                                            <lightning:buttonIcon aura:id="arrowup" class="slds-align_absolute-right icn slds-popover__body widthIcn" 
+                                                                  iconName="utility:arrowup" size="small" alternativeText="up" name="{!p.Id}"
+                                                                  onclick="{! c.handleSpecUpClick}" disabled="true" />
+                                            <aura:set attribute="else">
+                                                <lightning:buttonIcon aura:id="arrowup" class="slds-align_absolute-right icn slds-popover__body widthIcn" 
+                                                                      iconName="utility:arrowup" size="small" alternativeText="up" name="{!p.Id}"
+                                                                      onclick="{!c.handleSpecUpClick}"  disabled="false"/>
+                                            </aura:set>
+                                        </aura:if>
+                                        <aura:if isTrue="{!p.Sequence_Number__c == p.Specialty_Operations__r.Specialty_MAX_Sequence__c}">
+                                            <lightning:buttonIcon aura:id="arrowdown" class="slds-align_absolute-right icn slds-popover__body " 
+                                                                  iconName="utility:arrowdown" size="small" alternativeText	="down" name="{!p.Id}"
+                                                                  onclick="{! c.handleSpecDownClick}"  disabled="true"/>
+                                            <aura:set attribute="else">
+                                                <lightning:buttonIcon aura:id="arrowdown" class="slds-align_absolute-right icn slds-popover__body " 
+                                                                      iconName="utility:arrowdown" size="small" alternativeText	="down" name="{!p.Id}"
+                                                                      onclick="{! c.handleSpecDownClick}" disabled="false" />
+                                            </aura:set>
+                                        </aura:if>&nbsp;
+                                    </div>
+                                </div>
+                                <aura:set attribute="else">
+                                    <div class="" style ="margin-left: 117px;">  </div>
+                                </aura:set>
+                            
+                            <div class="slds-col "> 
+                                <c:Apttus_Grid_Child aura:id="compB" objects="{!p}" opid="{!p.Specialty_Operations__c}" isSpecialty="false" ObjectName="{!v.ObjectName}" 
+                                    tableCols="{!v.tableCols}" />
+                            </div>
+                        </div>
+                    </aura:iteration> 
+                </aura:if>
+            <!--<aura:if isTrue="{!v.isSpecialty}">
+                <aura:iteration items="{!v.Addobjects}" var="pr" indexVar="index">
+                    <c:Apttus_Grid_Child aura:id="compB" objects="{!pr}" opid="{!pr.Id}" isSpecialty="true" ObjectName= "{!v.ObjectName}" tableCols="{!v.tableCols}" />
+                </aura:iteration> 
+            </aura:if>-->
+            
+            <aura:if isTrue="{!v.isRebate}">
+                <div class="slds-p-top_large"></div>
+                <div class="slds-p-top_large"></div>
+                <aura:iteration items="{!v.Carveobjects}" var="pr" indexVar="index">
+                  <!--  <c:Apttus_Grid_Child aura:id="compB" objects="{!pr}" isRebate="false" isCarveOut="true"  ObjectName= "{!v.ObjectName}" tableCols="{!v.tableCols}" /> -->
+                </aura:iteration> 
+            </aura:if>
+        </div>
+    </lightning:card>
+</aura:component>

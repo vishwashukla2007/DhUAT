@@ -1,0 +1,47 @@
+<template>
+    <lightning-card title="Offers" style="height:20rem;width:10rem" icon-name="custom:custom85">
+        
+        <div class="slds-scrollable_y" style="width:22rem;height:20rem">
+            <template if:true={wrappers.data}>
+                <template iterator:it={wrappers.data}>
+                 <div class="slds-box slds-box_small" key={it.value.Id} style="width:20rem">
+                    
+                       <template if:true={it.first} >
+                        <div class="slds-list_horizontal slds-wrap">
+                        <lightning-input  type="checkbox" key={it.value.Id} onchange={handleChangeEvent} data-value={it.value.Id} checked ></lightning-input >
+                            <lightning-formatted-url value={it.value.PCD_Offer_link__c}  label={it.value.Name} target="_blank" onmouseout={hideData} onmouseover={showData}
+                             ></lightning-formatted-url>
+                        </div>
+                        </template>
+                       <template if:false={it.first} >
+                        <div class="slds-list_horizontal slds-wrap">
+                        <lightning-input  type="checkbox" key={it.value.Id} onchange={handleChangeEvent} data-value={it.value.Id}  ></lightning-input >
+                            <lightning-formatted-url value={it.value.PCD_Offer_link__c}  label={it.value.Name} target="_blank" onmouseout={hideData} onmouseover={showData}
+                       
+                            ></lightning-formatted-url> </div>
+                        </template>
+                    </p>    
+                        <div class="slds-box slds-box_xx-small">
+                            <b>Offer Category:</b>&nbsp;{it.value.OfferCategory__c}</br>
+                            <b>Offer Revenue:</b>&nbsp;{it.value.Offer_Revenue_PCD__c}</br>
+                           <b>Offer Grouping:</b>&nbsp;{it.value.OfferGrouping__c}</br>
+                            <b>Offer Description:</b>&nbsp;{it.value.OfferDescriptor__c}
+                        </div>
+                
+                </div>
+    
+                  
+    
+                </template>
+            </template>
+        </div>
+         <!-- popover -->
+         <div class="slds-float_left popContainer slds-hide">
+            <section class="slds-popover slds-nubbin_top-left slds-float_left slds-popover_large" role="dialog">
+                //my code here
+            </section>
+        </div>
+        <!-- end popover -->
+        
+        </lightning-card>
+    </template>

@@ -1,0 +1,4 @@
+<apex:page standardController="Client_Information__c" lightningStylesheets="true">
+    <c:FAFHeaderVC fafRecordId="{!Client_Information__c.FAF_ID__c}" objType="Client_Information__c">
+    </c:FAFHeaderVC>
+</apex:page>

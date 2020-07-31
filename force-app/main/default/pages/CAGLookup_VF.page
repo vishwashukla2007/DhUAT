@@ -1,0 +1,90 @@
+<!-- ================================================
+ * @VF Name           : CAGLookup_VF
+ * @author            : Sridevi
+ * @created date      : 09/15/2018
+ * @Last modified by  : Sridevi
+ * @Last modified date: 09/24/2018
+ * @Purpose           : This is Visualforce page for CAG lookup window 
+================================================ -->
+<apex:page controller="CAGLookupWindowController" title="Search"  showHeader="false"  sideBar="false">
+    <script type="text/javascript">  
+      function performSearchOnKeyPress(evt){  
+           var code = (evt.keyCode ? evt.keyCode : evt.which);  
+           if(code == 13){  
+                performSearch();  
+           }  
+           if (code == 13) {  
+             if (evt.preventDefault) {  
+                  evt.preventDefault();  
+             } else {  
+                  evt.returnValue = false;  
+             }  
+        }  
+      }  
+ </script>   
+    <apex:form >  
+      <apex:actionStatus id="searching" startText=" Searching ... " />  
+      <apex:actionFunction name="performSearch" action="{!performSearch}" status="searching" rerender="userResults,NewResults" />  
+      <apex:outputPanel layout="block" style="margin:5px;padding:10px;padding-top:2px;">  
+           <apex:outputPanel id="top" layout="block" style="margin:5px;padding:10px;padding-top:2px;">  
+                <apex:outputLabel value="Search" style="font-weight:Bold;padding-right:10px;" for="txtSearch"/>  
+                <apex:inputText id="txtSearch" value="{!searchString}" onkeyPress="performSearchOnKeyPress(event);" />  
+                <apex:image value="/s.gif" StyleClass="lookupIcon" style="cursor:pointer;" onclick="performSearch();"/>
+                <apex:outputpanel id="NewResults">
+                    <apex:outputpanel rendered="{!IF(PlatformName == 'RxCLAIM' || Showhide == true,false,true)}">            
+                        <apex:commandButton value="New" action="{!redirect}" rerender="userResults,NewResults"/>
+                    </apex:outputpanel>
+                    <apex:commandButton value="Apply Filter" action="{!showaccountmethod}" rendered="{!Accountcheck}" rerender="userResults,NewResults,Accountmessage"/>
+                  <apex:commandButton value="Clear Filter" action="{!hideaccountmethod}" rendered="{!!Accountcheck}" rerender="userResults,NewResults,Accountmessage"/>
+                </apex:outputpanel>     
+           </apex:outputPanel> 
+           <!-- Below change to display message on Default Account Filter  -->
+           <apex:outputpanel id="Accountmessage">
+           <apex:outputpanel style="color:red" rendered="{!!Accountcheck}" >
+                The results are by default filtered by Account on FAF. Use 'Clear Filter' button to remove the filter  and search against all existing Carriers.
+           </apex:outputpanel>
+           </apex:outputpanel>
+           <!--End of this change -->
+           <apex:outputpanel id="userResults">
+           <apex:outputPanel style="margin:10px;height:450px;overflow-Y:auto;" layout="block" rendered="{!!Showhide}">  
+           <apex:pageBlock id="searchResults" title="Search Results"> 
+           <apex:outputpanel rendered="{!IF(CagValues > 100,true,false)}" >
+               Displaying 100 out of {!CagValues} Records. You can search for the specific Carrier ID by using the Search
+           </apex:outputpanel>
+           <apex:outputpanel rendered="{!IF(cags.size > 0,true,false)}">
+            <apex:pageBlockTable value="{!cags}" var="record">  
+                <apex:column headerValue="Carrier ID">  
+                     <apex:outputLink value="javascript:top.window.opener.lookUpSelectedUser('{!record.Id}', '{!record.Carrier_ID__c}','{!record.Carrier_Name__c}');" rendered="{!NOT(ISNULL(record.Id))}">{!record.Carrier_ID__c}</apex:outputLink>   
+                </apex:column>  
+                <apex:column headerValue="Carrier Name">  
+                     {!record.Carrier_Name__c}  
+                    </apex:column> 
+            </apex:pageBlockTable> 
+            </apex:outputpanel>
+            <apex:outputpanel rendered="{!IF(cags.size == 0,true,false)}">
+                No records Found
+            </apex:outputpanel>
+           </apex:pageBlock>  
+       </apex:outputPanel> 
+             
+            <apex:outputPanel rendered="{!Showhide}" style="margin:10px;height:450px;overflow-Y:auto;" layout="block">  
+           <apex:pageBlock id="NewPage"> 
+           <apex:pageBlockSection >
+                   <apex:inputField value="{!cagRecord.Carrier_ID__c}" />
+                  
+                  <apex:outputField value="{!cagRecord.Carrier_Name__c}" />
+                               
+                  </apex:pageBlockSection>
+                  <apex:pageBlockSection >
+                             <apex:pageMessages />
+                  </apex:pageBlockSection>
+                   <apex:pageBlockButtons location="bottom">
+                     <apex:commandButton value="Save" action="{!Save}" rerender="userResults,NewResults"/>
+                     <apex:commandButton value="Cancel"  action="{!Cancel}" immediate="true"/>
+                </apex:pageBlockButtons>
+           </apex:pageBlock>  
+       </apex:outputPanel>  
+      </apex:outputPanel>  
+      </apex:outputpanel>
+ </apex:form>  
+</apex:page>

@@ -1,0 +1,6 @@
+<aura:component controller="changeDashboardAlertController" implements="force:lightningQuickAction" >
+	<aura:attribute name="agId" type="String"/>
+    <lightning:input name="input3" label="Input Agreement Id (Else job will run to all applicable agreement)" value="{!v.agId}" placeholder="type here..."/>
+    <br/>
+    <lightning:button variant="brand" label="Run" title="" onclick="{! c.handleClick }" />
+</aura:component>

@@ -1,0 +1,15 @@
+.THIS {
+  	background-color: white;
+  	zoom: 100%;
+}
+.THIS .cust-new-button {
+    position: relative;
+    right: -340px;
+}
+.THIS .margin-stops {
+    text-align: right;
+    padding-right: 1rem;
+}
+.THIS .paddingCSS{
+    padding-left: 2rem;
+}

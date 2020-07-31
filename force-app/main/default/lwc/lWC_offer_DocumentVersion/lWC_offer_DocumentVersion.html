@@ -1,0 +1,59 @@
+<template>
+    <lightning-card title="PCD Files" style="height:20rem;width:10rem" icon-name="custom:custom85">
+    <div class="slds-scrollable_y" style="width:22rem;height:20rem">
+    <template if:true={PCDName}>
+        <template for:each={PCDList} for:item="wrapper">
+        <div class="slds-box slds-box_small" key={wrapper.Id} style="width:20rem">
+            <p key={wrapper.Id}>
+             <lightning-formatted-url value={wrapper.PCD_Document_link__c}  data-value={wrapper.Id} tooltip="Go to https://my/path" label={wrapper.Name} target="_blank" onmouseover={showData} ></lightning-formatted-url></br>
+            </p>    
+            <div class="slds-box slds-box_xx-small">
+                    <b>LOB:</b>&nbsp;{wrapper.LOB_Detail__c}</br>
+                    <b>Template:</b>&nbsp;{wrapper.Template__c}</br>
+                    <b>Document Remark:</b>&nbsp;{wrapper.Description__c}</br>
+                    <b>Document Info:</b>&nbsp;{wrapper.Apttus__DocumentInfo__c}</br>
+            </div>
+        </div>
+        </template>
+    </template>
+    <template if:true={errorMessage}>
+        <center><b>{errorMessage}</b></center>
+    </template>
+    <!-- popover -->
+    
+    <template if:true={ShowPopHover}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hideData}>
+                       <lightning-icon icon-name="utility:close"
+                          alternative-text="close"
+                          variant="inverse"
+                          size="small" ></lightning-icon>
+                       <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2  class="slds-text-heading_medium slds-hyphenate">PCD Files</h2>
+                 </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                    <lightning-record-form
+                            record-id={DocuID}
+                            object-api-name="Apttus__DocumentVersionDetail__c"
+                            layout-type="Compact"
+                             columns="1"
+                            mode="readonly">
+                    <lightning-output-field field-name="Description__c"></lightning-output-field></lightning:recordForm>
+                   </lightning-record-form>
+                 </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    
+
+
+   
+    <!-- end popover -->
+</div>
+</lightning-card>
+    
+</template>

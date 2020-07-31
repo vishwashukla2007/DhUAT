@@ -1,0 +1,100 @@
+<!-- Compoenent Name: Apttus_nT_Pricing_Parent -->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,lightning:isUrlAddressable" controller="Apttus_Network_Operation" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="ntopId" type="String"/>
+    <aura:attribute name="isAccess" type="boolean"/>
+    <aura:attribute name="ntpriceid" type="String[]" />
+    <aura:attribute name="ntpricings" type="Network_Pricing__c" />
+    <aura:attribute name="year" type="String"/>
+    <aura:attribute name="clickNewModal" type="Boolean" default="false" />
+    <aura:attribute name="visible" type="Boolean" default="false" />
+    <aura:attribute name="params" type="String"/>
+    <aura:attribute name="isDeleteAlertOpen" type="Boolean" default="false" />
+    <aura:attribute name="isCreateable" type="Boolean" default="true"/>
+    <aura:attribute name="isDeletable" type="Boolean" default="true"/>
+    <aura:attribute name="isEditable" type="Boolean" default="true"/>
+    <div>
+        <aura:if isTrue="{!v.clickNewModal}">
+            <c:Apttus_Edit_Pricing_Vf aura:id="NewPricing" params="{!v.params}" />  
+        </aura:if> 
+        <div class="right-aligns slds-p-right_small" style="position: absolute;">
+            <aura:if isTrue="{!v.isAccess}">
+                <lightning:button aura:id="clickNew" value="clickNew" label="New Network Pricing"
+                                  variant="brand"
+                                  class="slds-button"
+                                  onclick="{!c.clickNew}"/>
+                <aura:if isTrue="{!v.ntpricings.length != 0}">
+                    <lightning:button aura:id="changeIt" label="Delete Network Pricing"
+                                      iconName="utility:delete"
+                                      iconPosition="right"
+                                      variant="destructive"
+                                      onclick="{!c.deleteSelected}">
+                    </lightning:button>
+                </aura:if>
+            </aura:if>
+        </div> 
+        
+        <lightning:icon iconName="standard:account" size="small" class="slds-m-left_medium" />
+        <span class="slds-form-element__label text slds-text-heading_small" style="font-weight: 800; padding-left: 15px;font-size: 21px; padding-top: -30px;"> Network Pricing and Guarantee</span>
+        <br/>
+        
+        <div>
+            <div class="text-heading--small; slds-m-left_large" verticalAlign="top"/>
+            <aura:if isTrue="{!v.ntpricings.length != 0}">
+                <div class="slds-form-element__control" style="padding-left: 15px;">
+                    <label class="slds-checkbox" style="padding-top: 18px;">
+                        <ui:inputCheckbox aura:id="cbox" change="{!c.selectAllRecords}"/>
+                        <span class="slds-checkbox--faux"></span>
+                        <span class="slds-form-element__label text slds-text-heading_small" style="font-weight: 400; padding-left: 15px; font-size: 19px;"> Select All</span>
+                    </label>
+                </div>
+            </aura:if>
+            <aura:iteration items="{!v.ntpricings}" var="ntpricing">
+                <div class="slds-card" > 
+                    <div class="slds-grid slds-p-top_x-small">
+                        <div class="slds-col" style="padding-left: 15px;">
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <ui:inputCheckbox text="{!ntpricing}" aura:id="cboxRow"  change="{!c.onCheckboxSelect}"/>				
+                                </div>
+                            </div>
+                        </div> 
+                        <div class="slds-col">
+                            <c:Apttus_NT_Pricing aura:id="NTPricing" isAccess="{!v.isAccess}"  ntpricing="{!ntpricing}" networkOperationsId ="{!v.ntopId}" />
+                        </div>
+                    </div>
+                </div>
+            </aura:iteration>
+            
+            <aura:if isTrue="{!v.ntpricings.length == 0}">
+                <ui:message title="Information" severity="info" closable="false">
+                    Retail Network Pricing not defined.
+                </ui:message>
+            </aura:if> 
+            <aura:if isTrue="{!v.isDeleteAlertOpen}">
+                <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                    <div class="slds-modal__container" style="Width: 31%;">
+                        <div class="slds-modal__header">
+                            <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                                X
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="header99" class="slds-text-heading--medium">Delete Network Pricing Record</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            <center><p>
+                                Are you sure you want to delete the selected record(s).
+                                </p> 
+                            </center>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                            <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete</lightning:button>                    
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open"></div>        
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,58 @@
+.THIS .width {
+    width: 100%;
+}
+.THIS .brbasis {
+    width: 240px;
+}
+.THIS .gbasis {
+    width: 300px;
+}
+.THIS .planyr {
+    width: 190px;
+}
+.THIS .yr {
+    width: 50px;
+}
+.THIS .plan {
+    width: 100px;
+}
+.THIS .customdes {
+    width: 200px;
+}
+.THIS .matchTo {
+    width: 75px;
+    margin-top: -17px;
+}
+.THIS .icnBLue {
+    fill: blue;
+}    
+.THIS .myCheckbox{
+  display:inline-block;
+  float: left;
+  width: 87px;
+ 
+  margin-top: 26px;
+}
+.THIS .slds-spinner_container  {
+    background-color: white;
+    height:80%;
+    width:30%;
+    top:5%;
+    left:40%;
+}
+.THIS .slds-backdrop_open {
+    opacity: 0.0 !important;
+}
+
+.THIS .slds-form-element__label {
+    font-weight: 500!important; 
+    font-size: var(--lwc-fontSize3,0.8125rem)!important;
+}
+.THIS .slds-textarea {
+    height:65px !important;
+}
+        
+.THIS .slds-checkbox_faux {
+    width: 1rem !important;
+    height: 1rem !important;     
+}

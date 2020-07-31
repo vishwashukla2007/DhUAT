@@ -1,0 +1,16 @@
+.THIS .cardstyle
+{
+  background-color: rgb(243,243,243);
+  height : 30px;
+}
+
+.THIS .card
+{
+  background-color: rgb(243,243,243);
+  font-size: 13pt;
+}
+.THIS.customCard > header.slds-card__header.slds-grid
+{
+  background-color: rgb(243,243,243);
+  font-size: 13pt;
+}

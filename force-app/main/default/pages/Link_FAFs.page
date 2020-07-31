@@ -1,0 +1,280 @@
+<apex:page lightningStylesheets="true" controller="LinkFAFVController" sidebar="False">
+<apex:pageMessages id="msgs" />
+<style type="text/css">
+ table.exceptionText td {
+
+                 font-size:16px;
+                 font-weight:bold;
+                 text-align:Left;
+                 color:red;}
+</style>
+    <script>
+    function selectAllUnticked() {
+        var checked = document.getElementById('massCheckbox').checked;
+        var chks = document.getElementsByClassName('selectHub');
+        var l = chks.length;
+        while (l--) {
+           chks[l].checked = checked;
+           console.log(chks[l].value);
+           chks[l].value = checked;
+           console.log(chks[l].value);
+        }
+    }
+    function uncheckMassCheckbox() {
+        var checked = false;
+        var chks = document.getElementsByClassName('selectHub');
+        var l = chks.length;
+        var checkCount=0;
+        var uncheckCount=0;
+        while (l--)
+           if(!chks[l].checked)
+               uncheckCount++;
+           else
+               checkCount++;
+        
+        if(chks.length == checkCount) 
+            checked=true;
+
+        document.getElementById('massCheckbox').checked = checked;
+    }
+    </script>
+    <style>
+    .First {
+     font-weight:bold;
+    }
+    .Last {
+     font-weight:bold;
+    }
+    .Next {
+     font-weight:bold;
+    }
+    .Previous {
+     font-weight:bold;
+    }
+    .Search{
+    position:fixed;
+    overflow:hidden;
+    }
+    
+    </style>
+    <style>
+        body {font-family: Arial, Helvetica, sans-serif;}
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 50%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+
+        /* Add Animation */
+        @-webkit-keyframes animatetop {
+            from {top:-300px; opacity:0} 
+            to {top:0; opacity:1}
+        }
+
+        @keyframes animatetop {
+            from {top:-300px; opacity:0}
+            to {top:0; opacity:1}
+        }
+
+        .modal-header {
+            padding: 0px;
+            height: 29px;
+            color: #ff0000;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            border-top-right-radius: .25rem;
+            border-top-left-radius: .25rem;
+            border-bottom: 2px solid rgb(221, 219, 218);
+            text-align: center;
+        }
+
+        .modal-body {
+            padding: 10px 16px;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            color: #3c3d3e;
+        }
+
+        .modal-footer {
+            padding: 5px;
+            padding-right: 4px;
+            text-align: right;   
+            color: #000000;
+            border-top: 2px solid rgb(221, 219, 218);
+            background-color: rgb(243, 242, 242);
+            border-bottom-left-radius: .25rem;
+            border-bottom-right-radius: .25rem;
+        }
+
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 1px 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 2px 2px;
+            -webkit-transition-duration: 0.4s; /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius : 20px;
+        }
+        .button2 {
+            background-color: rgba(0, 68, 135, 1.0); 
+            color: white; 
+            border: 2px solid rgba(0, 68, 135, 1.0);
+            border-radius: 5px;
+            width: 80px;
+            height: 28px;
+        }
+
+        .button2:hover {
+            background-color: #002080;
+            color: white;
+        }
+        .button5 {
+            background-color: #555555;
+            color: white;
+            border: 2px solid #555555;
+            border-radius: 5px;
+            width: 80px;
+            height: 28px;
+        }
+
+        .button5:hover {
+            background-color: #262626;
+            color: white;
+        }
+
+    </style>
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockSection columns="1" id="Search" >
+                <apex:pageBlockSectionItem labelStyle="float:left;width: 5%;" dataStyle="float:left;width: 95%;" >              
+                    <apex:outputPanel layout="block">
+                    <apex:inputtext label="FAF ID" value="{!searchstring}" /> 
+                    <apex:commandButton value="Search" action="{!searchHubList}" reRender="faf-table" /> 
+                    <apex:commandButton value="Clear" action="{!clear}" /> 
+                    </apex:outputPanel>
+                   
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem labelStyle="float:left;width: 5%;" dataStyle="float:left;width: 95%;" >              
+                    
+                    <apex:outputPanel >
+                        <apex:outputText >
+                           <b>Current FAF Status: </b> {!faf.FAF_Status__c}
+                        </apex:outputText>
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>    
+        </apex:pageBlock>       
+    </apex:form>
+    <apex:form >
+       
+        <apex:pageBlock id="faf-table">
+            <apex:pageBlock id="PB">           
+                <apex:outputText value="No records found" rendered="{!hubList.size==0}" />
+                <apex:pageBlockTable value="{!hubList}" var="h" rowClasses="odd,even" styleClass="tableClass" id="hub_table">
+                    <apex:column headervalue="" style="width:5px;" rendered="{!hubList.size!=0}">
+                        <apex:facet name="header">
+                             <input type="checkbox" id="massCheckbox" onclick="selectAllUnticked();"/>
+                        </apex:facet>
+                        <apex:inputCheckbox value="{!h.checked}" styleClass="selectHub" onclick="uncheckMassCheckbox();" />
+                    </apex:column>                                    
+                    <apex:column value="{!h.hub.Name}"/>
+                    <apex:column value="{!h.hub.Client_Name__c}"/>
+                    <apex:column value="{!h.hub.FAF_Type__c}"/>
+                    <apex:column value="{!h.hub.LOB_Subtype__c}"/>
+                    <apex:column value="{!h.hub.LOB_Descriptor__c}"/>
+                    <apex:column value="{!h.hub.FAF_Status__c}"/>
+                    <apex:column value="{!h.hub.Segment__c}"/>
+                    <apex:column value="{!h.hub.Pricing_Effective_Date__c}"/>                     
+                </apex:pageBlockTable>
+                <apex:actionFunction name="warningSave" action="{!saveOnWarning}" reRender="PB,test1" oncomplete="window.scrollTo(0, 0);" status="status">              
+            </apex:actionFunction>
+            </apex:pageBlock>
+            <apex:pageBlockButtons location="bottom" style="float:right;width:195px;" rendered="{!hubList.size!=0}">
+                <apex:commandLink action="{!first}"  styleClass="First">First </apex:commandlink>&nbsp;&nbsp;
+                <apex:commandLink action="{!previous}" styleClass="Previous" rendered="{!hasPrevious}">Previous</apex:commandlink>&nbsp;
+                <apex:commandLink action="{!next}"  styleClass="Next" rendered="{!hasNext}">Next</apex:commandlink>&nbsp;&nbsp;
+                <apex:commandLink action="{!last}" styleClass="Last">Last</apex:commandlink>                    
+            </apex:pageBlockButtons> 
+            <apex:pageBlockButtons location="bottom" rendered="{!hubList.size!=0}" >
+                <apex:actionStatus id="mySaveStatus1">
+                    <apex:facet name="stop">
+                        <apex:commandButton value="Save" oncomplete="WarningMessage();" action="{!save}" rerender="test1"  status="mySaveStatus1"/>
+                   </apex:facet>
+                   <apex:facet name="start">
+                        <apex:commandButton value="Saving..." disabled="true" status="mySaveStatus1"/>
+                   </apex:facet>
+                </apex:actionStatus>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+            </apex:pageBlockButtons>          
+        </apex:pageBlock>
+        <!-- The Modal -->
+        <div id="myModal1" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">           
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p>The FAF Status of the FAFs being linked are not the same.</p>
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button2" type="button" onclick="this.onclick=function(){return false;};WarningContinue()">Continue</button>
+              <button class="button button5" type="button" onclick="WarningCancel()">Cancel</button>              
+            </div>
+          </div>
+        </div>
+        
+         <apex:outputpanel id="test1">
+         <script>
+                function WarningMessage(){
+                var warningproceedVar = {!wraningProceed};
+                //alert('{!wraningProceed}');
+                    if(warningproceedVar == true){
+                        var modal = document.getElementById('myModal1');
+                        modal.style.display = "block";     
+                    }                                         
+                }
+                function WarningContinue(){
+                warningSave();  
+                }
+                function WarningCancel(){                    
+                var modal = document.getElementById('myModal1');
+                modal.style.display = "none";
+                }
+          </script>
+        </apex:outputpanel>
+    </apex:form>
+</apex:page>

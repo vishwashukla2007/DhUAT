@@ -1,0 +1,22 @@
+<!-- Lightning Component to open FAF Print Visual force page, This to support custom Print button for Sales user
+in FAF Lightning record page
+-->
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="message" type="String" default="ApttusLEX"/>
+    <aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="params" type="String" />
+    <aura:attribute name="lightning" type="Boolean" default="true" />
+	 <div class="demo-only" style="height: 100%;width:100%;"> 
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container" style="height: 100%;width:100%;max-width: 100%;">
+            <!-- The Visualforce page to send data to -->
+             <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">                
+             <iframe aura:id="vfFrame" scrolling= "true" style="border: 1px solid;"  src="{!'https://'+v.vfHost + '/apex/PrintFAFPage?'+v.params}" height="100%" width="100%" />    
+             
+            </div>
+    </div>
+  </section>
+</div>        
+</aura:component>

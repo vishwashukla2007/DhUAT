@@ -1,0 +1,71 @@
+<aura:component controller="Apttus_GridObjectdata" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <aura:attribute name="objects" type="Billing_Administrative_Fees__c"/>
+    <aura:attribute name="newobject" type="Billing_Administrative_Fees__c" default="{'LOB__c':'Dummy'}"/>
+    <aura:attribute name="adminobjects" type="Billing_Administrative_Fees__c"/>
+    <aura:attribute name="admindupobjects" type="Billing_Administrative_Fees__c[]"/>
+    <aura:attribute name="admincheck" type="Billing_Administrative_Fees__c"/>
+    <aura:attribute name="duplicates" type="Boolean" />
+    <aura:attribute name="fafid" type="String" default="" />
+    <aura:attribute name="loboptions" type="String" default="" />
+    <aura:attribute name="lob" type="String" default="" />
+    <aura:attribute name="readonly" type="Boolean" default="false" />
+    <aura:attribute name="descrequired" type="Boolean" default="false" />
+    <aura:attribute name="descreadonly" type="Boolean" default="false" /> 
+    <aura:attribute name="typereadonly" type="Boolean" default="false" /> 
+    <aura:attribute name="disablebtn" type="Boolean" default="false" /> 
+    <aura:attribute name="DisplaySpinner" type="Boolean" default="false" />
+    <aura:attribute name="pricingcount" type="Integer" default="" />
+    <aura:attribute name="yearcount" type="Integer" default="" />
+    <aura:attribute name="recordcount" type="Integer" default="" />
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Notify_Save_Event" action="{!c.handleSaveVerify}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Notify_Error_Event" action="{!c.handleError}"/>
+    <aura:registerEvent name="savecomplete" type="c:Apttus_Grid_NT_Close_Event"/>
+    <aura:registerEvent name="duplicateEvent" type="c:Apttus_Grid_Duplicate_Event"/>
+    <aura:handler event="c:Apttus_Grid_NT_Save_Event" action="{!c.handleSave}"/>
+    <aura:handler event="c:Apttus_Grid_Refresh_Parent_Event" action="{!c.doInit}"/>
+    <aura:handler event="c:Apttus_Grid_Inactive_Parent_Event" action="{!c.displayspinner}"/>
+    <aura:handler event="c:Apttus_Delete_Verify_Event" action="{!c.deletecount}"/>
+    <lightning:card  class="container slds-card_boundary">
+    <lightning:layout>
+        <aura:if isTrue="{!v.DisplaySpinner}">
+  			<lightning:spinner alternativeText="Saving" variant="brand" size="medium" class="slds-spinner_container"/>
+        <div class="slds-backdrop_open"></div>
+	</aura:if>   
+    </lightning:layout>
+       <div class="paddingleft"><p><b>Electronic Claim</b></p> </div> 
+        <div class="slds-p-bottom_small"></div>
+        <aura:if isTrue="{!(v.pricingcount > 0)}">
+        <lightning:layout  class="width paddingleft">
+        <div class="slds-scrollable">
+        <table style="table-layout: unset !important;" class="slds-table slds-table_bordered inner">
+            <thead>
+                <tr class="slds-text-heading_label slds-line-height_reset">
+                    <th scope="col"><div class="" title=""></div></th>
+                    <th scope="col"><div class="yr" title="Year">Year</div></th>
+                    <th scope="col"><div class="planyr"  title="Plan Year">Plan Year</div></th>
+                    <th scope="col"><div class="lob"  title="LOB">LOB</div></th>
+                    <th scope="col"><div class="admtype"  title="LOB">Admin Fee Type</div></th>
+                    <th class="col"><div class="base" title="Base $">Base Amount $</div></th>
+                    <th class="col"><div class="base" title="Broker $">Broker Amount $</div></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Use the Apex model and controller to fetch server side data -->
+                <aura:iteration items="{!v.adminobjects}" var="p" indexVar="index">
+                        <c:Apttus_Grid_Edit_Electronic_AdminFees_Child aura:id="compB"  yearcount="{!v.yearcount}" lob="{!v.lob}" objects="{!p}"/>
+                </aura:iteration> 
+                
+            </tbody>
+        </table>   
+        </div>
+       </lightning:layout>
+       </aura:if>
+       <lightning:layout class="paddingleft">
+        <lightning:layoutitem>
+        <div class="slds-p-top_x-small"></div>
+        <lightning:button label="Add Year"  iconName="utility:add" iconPosition="left" class="slds-button" onclick="{!c.create}"/>
+        </lightning:layoutitem>
+       </lightning:layout>
+    </lightning:card>   
+</aura:component>

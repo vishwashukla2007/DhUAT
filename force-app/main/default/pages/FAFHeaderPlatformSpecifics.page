@@ -1,0 +1,4 @@
+<apex:page standardController="Platform_Specifics__c" lightningStylesheets="true">
+    <c:FAFHeaderVC fafRecordId="{!Platform_Specifics__c.FAF_ID__c}" objType="Platform_Specifics__c">
+    </c:FAFHeaderVC>
+</apex:page>

@@ -1,0 +1,6 @@
+<!--c:aeEvent-->
+<aura:event type="APPLICATION">
+    <aura:attribute name="nonspec" type="String"/>
+    <aura:attribute name="spec" type="String"/>
+    <aura:attribute name="checked" type="Boolean"/>
+</aura:event>

@@ -1,0 +1,29 @@
+<aura:component  controller="pbmRequestWrapper" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable" access="global"> 
+    <aura:handler name="init" value="{!this}" action="{!c.onPageReferenceChange}"/>
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.onPageReferenceChange}"/>
+	<aura:attribute name="FAFName" type="String"/>
+    <aura:attribute name="FAFId" type="String"/>
+    <aura:attribute name="SrecordId" type="String"/>
+    <aura:attribute name="addMode" type="Boolean"/>
+    <aura:attribute name="editMode" type="Boolean"/>
+    <aura:attribute name="viewMode" type="Boolean"/>
+    <aura:attribute name="requestSubmitted" type="Boolean"/>
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <!-- 
+    @api recordId;
+    @api objectApiName;
+    @api FAFId;
+    @api FAFName;
+	@api addMode;
+	@api editMode;
+    @api viewMode;
+	@api requestSubmitted;
+	-->
+	
+    <aura:if isTrue="{!v.IsSpinner}">
+        <lightning:spinner variant="brand"  size="large" />
+    </aura:if>
+    
+    <c:pbmRequestForm addMode="{!v.addMode}" editMode="{!v.editMode}" viewMode="{!v.viewMode}" requestSubmitted="{!v.requestSubmitted}" recordId="{!v.SrecordId}" FAFId="{!v.FAFId}" FAFName="{!v.FAFName}" objectApiName = "{!v.sObjectName}" />
+</aura:component>

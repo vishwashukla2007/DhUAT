@@ -1,0 +1,20 @@
+<aura:component controller="CRFAuraController" implements="flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction,force:hasSObjectName" access="global" >
+  <aura:html tag="style">    
+     .slds-modal{
+     	visibility:hidden;
+        display:none;
+     }
+     .slds-backdrop{
+     	display:none;
+     }
+     .toastMessage.forceActionsText{
+     	white-space:pre-line !important;
+     }
+ </aura:html>
+    
+ <aura:attribute name="crfAuraWrapper" type="Object"/>
+ <aura:attribute name="sobjecttype" type="String" default="{!v.sObjectName}"/>
+ <lightning:navigation aura:id="navService"/> 
+ <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+</aura:component>

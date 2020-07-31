@@ -1,0 +1,128 @@
+<!--
+ * Name      :NewRetireeDrugsubsidyPage.vfp
+ * Controller: NewRetireeDrugSubsidy_Controller
+-->
+<apex:page standardController="Retiree_Drug_Subsidy__c" extensions="NewRetireeDrugSubsidy_Cntrlr" lightningStylesheets="true">
+
+   <!-- <apex:outputpanel layout="block" styleclass="customPopup" > -->
+    <apex:form >
+
+        <div class="slds-size_2-of-6">
+            <apex:messages />
+            <apex:pageBlock title="Retiree Drug Subsidy Edit" >
+                <apex:pageBlockButtons location="both"> 
+                    <apex:commandButton value="Save" action="{!saveRetireeDrugSubsidy}"  />
+                    <apex:commandButton value="Cancel" action="{!Cancel}"/>
+                </apex:pageBlockButtons>
+                
+                <apex:pageBlockSection title="Retiree Drug Subsidy" columns="2" >
+                     <apex:pageBlockSectionItem rendered="{! and(rds.Id != null , rds.Id != '') }">
+                        <apex:outputLabel value="Created By" for="crtdBy"/>
+                        <apex:outputField value="{!rds.CreatedById}" id="crtdBy"/> 
+                    </apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem rendered="{! and(rds.Id != null , rds.Id != '')  }">
+                        <apex:outputLabel value="LastModified By" for="modifyBy"/>
+                        <apex:outputField value="{!rds.LastModifiedById}" id="modifyBy"/> 
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="FAF ID" for="fafId"/>
+                        <apex:outputField value="{!rds.FAF_ID__c}" id="fafId"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="srvc" value="Fee Services"/>
+                        <apex:outputField style="margin-top:3px;" id="srvc" value="{!rds.Fee_Services__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="Addservvc" value="Additional Services"/>
+                        <apex:OutputField style="margin-top:3px;" id="Addservvc" value="{!rds.Additional_Service__c}"/>
+                    </apex:pageBlockSectionItem>                  
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection title="Additional Information" columns="2">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Election" for="ele"/>
+                        <apex:inputField value="{!rds.Election__c}" style="margin-top:3px;" id="ele"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Fee" for="amt"/>
+                        <apex:inputField value="{!rds.Amount__c}" style="margin-top:3px;" id="amt" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem rendered="{! !adSerRdnly }">
+                        <!--<apex:outputLabel value="Service" for="ser"/>-->
+                        <apex:outputpanel >
+                        <apex:outputLabel value="Service" for="ser"/>
+                        <!--<c:helpttext helpText="{!helpTextMessage}" showHelpIcon="{!showHelptext}"/>-->
+                        </apex:outputPanel>
+                        <apex:inputField value="{!rds.Service__c}" style="margin-top:3px;" id="ser" />
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem rendered="{! adSerRdnly   }" >
+                        
+                         <apex:outputpanel >
+                        <apex:outputLabel value="Service" for="ser1"/>
+                        <!--<c:helpttext helpText="{!helpTextMessage}" showHelpIcon="{!showHelptext}"/>-->
+                        </apex:outputPanel>
+                        <apex:outputField value="{!rds.Service__c}" style="margin-top:3px;" id="ser1" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Basis" for="bas"/>
+                        <apex:inputField value="{!rds.Basis2__c}" style="margin-top:3px;" id="bas" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Service Effective Date" for="sed"/>
+                        <apex:inputField value="{!rds.Service_Effective_Date__c}" style="margin-top:3px;" id="sed" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Last Modified Date" for="lmd"/>
+                        <apex:inputField value="{!rds.Last_Date_Modified__c}" style="margin-top:3px;" id="lmd" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Notes" for="note"/>
+                        <apex:inputField value="{!rds.Notes__c}" style="margin-top:3px;" id="note"/> 
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="FAF Component" for="fafcomp"/>
+                        <apex:inputField value="{!rds.FAF_Component__c}" style="margin-top:3px;" id="fafcomp"/> 
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection title="Service Details" columns="2" >
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Service Description" for="servdesc"/>
+                        <apex:outputField value="{!rds.Service_Description2__c}" style="margin-top:3px;" id="servdesc"/> 
+                    </apex:pageBlockSectionItem>
+                 </apex:pageBlockSection>
+                                                
+            </apex:pageBlock>   
+        </div>    
+        
+    </apex:form>
+    <style type="text/css">
+        .customPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: ;
+        /*z-index: 9999;*/
+        /*left: 40%;*/
+          padding:5px;
+          
+        /*position: absolute;*/
+            width: 100%;
+        /*margin-left: -250px;*/
+            top:30px;
+        }
+        .popupBackground{
+            background-color:#fafafa;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+    </style>
+
+
+</apex:page>

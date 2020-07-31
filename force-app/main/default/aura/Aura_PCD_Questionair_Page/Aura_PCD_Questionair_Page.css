@@ -1,0 +1,7 @@
+.THIS.slds-spinner_container {  
+  z-index: 10000;
+  position: relative;   
+}
+.THIS.toggle {
+display: none;
+}

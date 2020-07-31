@@ -1,0 +1,561 @@
+.THIS.outer {
+  display: flex !important; /* displays flex-items (children) inline */
+  overflow-x: auto !important;
+} 
+
+.THIS .headerWordWrap
+{
+    white-space:normal !important;
+}
+
+.THIS .inner {
+  flex: 0 0 25% !important; /* doesn't grow nor shrink, initial width set to 25% of the parent's */
+  height: 1em !important; /* just for demo */
+  width : 325rem;
+}
+.THIS .color_grey,
+.THIS .color_grey:active,
+.THIS .color_grey:hover {
+ background-color: rgb(250,250,249)  !important;
+}
+
+
+.THIS .scroll
+{
+ width: 103.5rem;
+ Height:27rem;    
+}
+.THIS .checkbox
+{
+ width:80px;
+ left:0px;
+ padding-left:10px; 
+ margin-top:16px;
+ margin-bottom:5px;
+ background-color: rgb(250,250,249);
+ z-index: 10000;
+}
+.THIS .checkboxedit
+{
+ width:45px;
+ left:0px;
+ padding-left:10px; 
+ margin-top:16px;
+ margin-bottom:5px;
+ background-color: rgb(250,250,249);
+ z-index: 10000;
+}
+
+.THIS .link
+{
+ width: 177px; 
+ left:75px;
+ margin-top:16px;
+ margin-bottom:5px;
+ background-color: rgb(250,250,249);
+ z-index: 10000;
+}
+.THIS .linkedit
+{
+ width: 100px; 
+ left:60px;
+ margin-top:16px;
+ margin-bottom:5px;
+ background-color: rgb(250,250,249);
+ z-index: 10000;
+}
+.THIS .platform
+{
+ width: 140px;
+ margin-left:6px;  
+ left: 220px;
+ margin-top:16px;
+ margin-bottom:5px;
+ background-color: rgb(250,250,249);
+ z-index: 10000;
+}
+.THIS .platformedit
+{
+ width: 60px;
+ margin-left:6px;  
+ left: 75px;
+ margin-top:16px;
+ margin-bottom:5px;
+ background-color: rgb(250,250,249);
+ z-index: 10000;
+}
+.THIS .lob
+{
+ width:130px;
+ left:340px;
+ margin-top:16px;
+ margin-bottom:5px;
+ margin-left:15px; 
+ z-index: 10000; 
+}
+.THIS .lobedit
+{
+ width:70px;
+ left:1400px;
+ margin-top:16px;
+ margin-bottom:5px;
+ margin-left:15px; 
+ z-index: 10000; 
+}
+.THIS .instruction
+{
+ width: 165px;
+ margin-left:15px;
+ left:450px;
+ margin-top:16px;
+ margin-bottom:5px;
+ z-index: 10000;
+}
+.THIS .instructionedit
+{
+ width: 70px;
+ margin-left:15px;
+ left:180px;
+ margin-top:16px;
+ margin-bottom:5px;
+ z-index: 10000;
+}
+.THIS .level1id
+{
+ width: 250px;
+ margin-left:5px;
+ margin-top:13px;
+ padding-bottom:7px;
+ left:610px;
+ z-index: 10000;
+}
+.THIS .level1idedit
+{
+ width: 230px; /*230*/
+ margin-left:5px;
+ margin-top:16px;
+ padding-top:16px;
+ padding-bottom:7px;
+ left:470px;
+ z-index: 10000;
+}
+
+.THIS .level1name
+{
+ width: 170px; /*170*/
+ left:835px; /*835*/
+ margin-top:16px;
+ margin-bottom:5px;
+ z-index: 10000;
+}
+.THIS .level1nameedit
+{
+ width: 120px; /*120*/
+ left:750px;
+ margin-top:16px;
+ margin-bottom:5px;
+ padding-left:20px;
+ z-index: 10000;
+}
+.THIS .level2id
+{
+ width: 190px;
+ margin-left:0px;
+ left:1020px; /*1020*/
+ margin-top:16px;
+ margin-bottom:5px;
+}
+.THIS .level2idedit
+{
+ width: 180px;
+ margin-left:0px;
+ left: 0px; /*60*/
+ padding-top:14px;
+ /*padding-left:10px;*/
+ margin-bottom:5px;
+}
+.THIS .level3id
+{
+ width: 180px;
+ margin-left:0px;
+ left:1000px; /*1040*/
+ margin-top:16px;
+ margin-bottom:5px;
+}
+.THIS .level3idedit
+{
+ width: 190px;
+ margin-left:0px;
+ left:0px; /*60*/
+ margin-top:24px;
+ padding-top:14px;
+ padding-left:0px;
+ margin-bottom:5px;
+}
+.THIS .effectivedate
+{
+ width: 200px;
+ margin-left:0px;
+ left:1040px;
+ margin-top:14px;
+ margin-bottom:5px;
+}
+.THIS .effectivedateedit
+{
+ width: 140px;
+ margin-left:0px;
+ left:75px;
+ margin-top:14px;
+  padding-left:40px;
+ margin-bottom:5px;
+}
+.THIS .editdetails
+{
+ width: 170px;
+ margin-left:0px;
+ left:1185px;
+ margin-top:14px;
+ margin-bottom:5px;
+}
+.THIS .editdetailsedit
+{
+ width: 60px;
+ margin-left:0px;
+ left:70px;
+ margin-top:14px;
+ margin-bottom:5px;
+}
+.THIS .billingrate
+{
+ width: 130px;
+ margin-left:0px;
+ left: 750px;
+ margin-top:14px;
+ margin-bottom:5px;
+}
+.THIS .materialcode
+{
+ width: 100px;
+ margin-left:0px;
+ left: 720px;
+ margin-top:14px;
+ margin-bottom:5px;
+}
+.THIS .billingadmineffdate
+{
+ width: 215px;
+ margin-left:0px;
+ left: 720px;
+ margin-top:14px;
+ margin-bottom:5px;
+}
+
+.THIS .termed
+{
+ width: 100px;
+ left:700px; /*710*/
+ margin-top:14px;
+ margin-left:0px;
+ margin-bottom:5px;
+
+}
+.THIS .termededit
+{
+ width: 100px;
+ left:40px;
+ margin-top:14px;
+ margin-left:0px;
+ padding-left:50px; /*60*/
+ margin-bottom:5px;
+
+}
+.THIS .termeddate
+{
+ width: 110px;
+ left:660px;
+ margin-top:14px;
+ margin-left:0px;
+ margin-bottom:5px;
+ 
+}
+.THIS .termeddateedit
+{
+ width: 80px;
+ left:50px;
+ margin-top:14px;
+ margin-left:0px;
+ padding-left:40px; /*60*/
+ margin-bottom:5px;
+
+}
+.THIS .specialtypharmacy
+{
+ width: 250px;
+ left:620px;
+ margin-top:14px;
+ margin-left:0px;
+ margin-bottom:5px;
+}
+.THIS .specialtypharmacyedit
+{
+ width: 260px;
+ left:620px;
+ margin-top:14px;
+ margin-left:0px;
+ margin-bottom:5px;
+}
+.THIS .differentgstp
+{
+ width: 210px;
+ left:480px;
+ margin-top:14px;
+ margin-left:0px;
+ margin-bottom:5px;
+}
+.THIS .differentgstpedit
+{
+ width: 170px;
+ left:380px;
+ margin-top:14px;
+ margin-left:0px;
+ padding-left:0px;
+ margin-bottom:5px;
+}
+.THIS .nonspecialtyformalry
+{
+ width: 200px;
+ left:380px;
+ margin-top:14px;
+ margin-left:0px;
+ margin-bottom:5px;
+}
+.THIS .nonspecialtyformalryedit
+{
+ width: 160px;
+ left:400px;
+ margin-top:14px;
+ margin-left:0px;
+ padding-left:50px;
+ margin-bottom:5px;
+}
+.THIS .nonspecialtyformularyeffdate
+{
+ width: 270px;
+ left:320px; 
+ margin-top:14px;
+ margin-left:0px;
+ margin-right:0px;
+ margin-bottom:5px;
+}
+.THIS .nonspecialtyformularyeffdateedit
+{
+ width: 180px;
+ left:200px; 
+ margin-top:14px;
+ margin-left:0px;
+ margin-right:0px;
+ margin-bottom:5px;
+}
+.THIS .nonspecialtyenddate
+{
+ width: 250px;
+ left:150px; 
+ margin-top:14px;
+ margin-left:0px;
+ margin-bottom:5px;
+}
+.THIS .nonspecialtyenddatewidth
+{
+ width: 275px;
+}
+.THIS .changewidth
+{
+ width: 325px;
+}
+.THIS .termedwidth
+{
+ width: 150px;
+}
+.THIS .nonspecialtyenddateedit
+{
+ width: 200px;
+ left:150px; 
+ margin-top:14px;
+ margin-left:0px;
+ margin-bottom:5px;
+}
+.THIS .gstpchoice
+{
+ width: 150px;
+ left:30px; 
+ margin-top:14px;
+ margin-left:0px;
+ margin-bottom:5px;
+}
+.THIS .gstpchoiceedit
+{
+ width:220px;
+ left:0px; 
+ margin-top:14px;
+ margin-left:0px;
+ padding-left:20px;
+ margin-bottom:5px;
+}
+
+.THIS .gstpeffdate
+{
+ width: 150px;
+ left:60px; 
+ margin-top:14px;
+ margin-left:0px;
+ margin-bottom:5px;
+}
+.THIS .gstpeffdateedit
+{
+ width: 250px;
+ left:60px; 
+ margin-top:14px;
+ margin-left:0px;
+  padding-left:20px;
+ margin-bottom:5px;
+}
+.THIS .gstpenddate
+{
+ width: 150px;
+ left:120px; 
+ margin-top:14px;
+ margin-left:0px;
+ padding-left:20px;
+ margin-bottom:5px;
+}
+.THIS .gstpenddateedit
+{
+ width: 150px;
+ left:120px; 
+ margin-top:14px;
+ margin-left:0px;
+ margin-bottom:5px;
+}
+
+.THIS .specialtyformulachoice
+{
+ width: 200px;
+ left:140px; 
+ margin-top:14px;
+ margin-left:0px;
+ padding-left:35px;
+ text-align:right;
+ margin-bottom:5px;
+}
+.THIS .specialtyformulachoiceedit
+{
+ width: 200px;
+ left:140px; 
+ margin-top:14px;
+ margin-left:0px;
+ padding-left:30px;
+ text-align:right;
+ margin-bottom:5px;
+}
+.THIS .specialtyformulaeffdate
+{
+ width: 250px;
+ left:130px; 
+ margin-top:14px;
+ margin-left:0px;
+ text-align:right;
+ margin-bottom:5px;
+}
+.THIS .specialtyformulaeffdateedit
+{
+ width: 250px;
+ left:130px; 
+ margin-top:14px;
+ margin-left:0px;
+ margin-bottom:5px;
+ text-align:right;
+}
+.THIS .specialtyenddate
+{
+ width: 200px;
+ left:5px; 
+ margin-top:14px;
+ margin-left:0px;
+ margin-bottom:5px;
+}
+.THIS .specialtyenddateedit
+{
+ width: 200px;
+ left:5px; 
+ margin-top:14px;
+ margin-left:0px;
+ margin-bottom:5px;
+}
+.THIS .scrollerSize {
+    height: 100%;
+    width : 325rem;
+    overflow-x : scroll;
+    border-radius: 1px;
+}
+
+
+.THIS .columnheader 
+{
+    height: 4rem;
+}
+
+
+.THIS .body
+{
+    height:27rem;
+    width:325rem;
+}
+.THIS .table
+{
+  
+}
+.THIS .outer-container
+{
+    background-color:white;
+    position: absolute;
+    width:100%;
+    overflow: visible;
+}
+
+.THIS .inner-container
+{
+    max-height:27rem;
+    width:100%;
+    position: relative;
+}
+
+.THIS .table-header
+{   overflow:hidden;
+    float:left;
+    width:100%;
+    height:60px;
+    background-color: rgb(250,250,249)  !important;
+}
+.THIS .table-body
+{   float:left;
+    width:100%;
+    max-height:24rem;
+    overflow-x: scroll;
+    overflow-y: scroll;
+    padding-right: 16px;
+}
+.THIS .table-bodyinner
+{   
+    width:325rem;
+}
+.THIS .table-headerinner
+{   
+    width:325rem;
+}
+
+
+.THIS
+{
+    padding: 0;
+    margin: 0;
+}

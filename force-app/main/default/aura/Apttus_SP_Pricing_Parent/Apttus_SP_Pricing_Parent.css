@@ -1,0 +1,10 @@
+.THIS {
+  background-color: white;
+  zoom: 67%;
+}
+.THIS .slds-modal__container .slds-truncate{
+    font-weight: 600 !important;
+}
+.THIS .slds-modal__container h2{
+    font-weight: 600 !important;
+}

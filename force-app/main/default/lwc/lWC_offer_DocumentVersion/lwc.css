@@ -1,0 +1,7 @@
+:host .anchor {
+    position: relative;
+    display: block;
+}
+:host .slds-popover {
+    position: fixed;
+}

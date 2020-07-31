@@ -1,0 +1,955 @@
+<aura:component controller="Apttus_GridObjectdata" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    <aura:attribute name="objects" type="Object" />
+    <aura:attribute name="isSpecialty" type="Boolean"/>
+    <aura:attribute name="AddGridSpec" type="Boolean"/>
+    <aura:attribute name="AddGridElectronic" type="Boolean"/>
+    <aura:attribute name="AddGridManual" type="Boolean"/>
+    <aura:attribute name="AddGridM340B" type="Boolean"/>
+    <aura:attribute name="tableCols" type="List" />
+    <aura:attribute name="coldisplay" type="Boolean" default="true"/>
+    <aura:attribute name="indexvar" type="Integer"/>
+    <aura:attribute name="display" type="Boolean" default="true"/>
+    <aura:attribute name="Edit" type="Boolean" default="false"/>
+    <aura:attribute name="isNetwork" type="Boolean" default="false"/>
+    <aura:attribute name="isDeleteAlertOpen" type="Boolean" default="false"/>
+    <aura:attribute name="DisplaySpinner" type="Boolean" default="false"/>
+    <aura:attribute name="isMail" type="Boolean" default="false"/>
+    <aura:attribute name="isSpecialtyPrice" type="Boolean" default="false"/>
+    <aura:attribute name="isCarveOut" type="Boolean" default="false"/>
+    <aura:attribute name="isRebate" type="Boolean" default="false"/>
+    <aura:attribute name="isNONSpecialtyGrid" type="Boolean" default="true"/>
+	<aura:attribute name="isGrid" type="Boolean" default="false"/>
+    <aura:attribute name="isRebateEdit" type="Boolean" default="false"/>
+    <aura:attribute name="isAddProgram" type="Boolean" default="false"/>
+    <aura:attribute name="isClinical" type="Boolean" default="false"/>
+    <aura:attribute name="ObjectName" type="String" Default="Network_Pricing__c"/>
+    <aura:attribute name="opid" type="String" />
+    <aura:attribute name="params" type="String"/>
+    <aura:attribute name="Col1" type="String" />
+    <aura:attribute name="Col2" type="String" />
+    <aura:attribute name="Row1Col1" type="String"/>
+    <aura:attribute name="Row1Col2" type="String"/>
+    <aura:attribute name="Row2Col1" type="String"/>
+    <aura:attribute name="Row2Col2" type="String"/>
+    <aura:attribute name="Row3Col1" type="String"/>
+    <aura:attribute name="Row3Col2" type="String"/>
+    <aura:attribute name="Row4Col1" type="String"/>
+    <aura:attribute name="Row4Col2" type="String"/>
+    <aura:attribute name="Row5Col1" type="String"/>
+    <aura:attribute name="Row5Col2" type="String"/>
+    <aura:attribute name="Row6Col1" type="String"/>
+    <aura:attribute name="Row6Col2" type="String"/>
+    <aura:attribute name="Row7Col1" type="String"/>
+    <aura:attribute name="Row7Col2" type="String"/>
+    <aura:attribute name="Row8Col1" type="String"/>
+    <aura:attribute name="Row8Col2" type="String"/>
+    <aura:attribute name="Row9Col1" type="String"/>
+    <aura:attribute name="Row9Col2" type="String"/>
+    <aura:attribute name="Row10Col1" type="String"/>
+    <aura:attribute name="Row10Col2" type="String"/>
+    <aura:attribute name="Row11Col1" type="String"/>
+    <aura:attribute name="Row11Col2" type="String"/>
+    <aura:attribute name="Row14Col2" type="String"/>
+    <aura:attribute name="Row14Col1" type="String"/>
+     <aura:attribute name="Row13Col1" type="String"/>
+    <aura:attribute name="Row1Display" type="Boolean"/>
+    <aura:attribute name="Row2Display" type="Boolean"/>
+    <aura:attribute name="Row3Display" type="Boolean"/>
+    <aura:attribute name="Row4Display" type="Boolean"/>
+    <aura:attribute name="Row5Display" type="Boolean"/>
+    <aura:attribute name="Row6Display" type="Boolean"/>
+    <aura:attribute name="Row7Display" type="Boolean" />
+    <aura:attribute name="Row8Display" type="Boolean" />
+    <aura:attribute name="Row9Display" type="Boolean" />
+    <aura:attribute name="Row10Display" type="Boolean" />
+    <aura:attribute name="Row11Display" type="Boolean" />
+    <aura:attribute name="Row12Display" type="Boolean" />
+    <aura:attribute name="Row13Display" type="Boolean" />
+     <aura:attribute name="Row14Display" type="Boolean" />
+    
+    <aura:attribute name="is2TQAvailable" type="Boolean" Default="false"/>
+    <aura:attribute name="is3TQAvailable" type="Boolean" Default="false"/>
+    <aura:attribute name="is3TNQAvailable" type="Boolean" Default="false"/>
+    <aura:attribute name="isClosedAvailable" type="Boolean" Default="false"/>
+    <aura:attribute name="isSpecAvailable" type="Boolean" Default="false"/>
+    
+    <aura:attribute name="is2TQSaved" type="Boolean" Default="false"/>
+    <aura:attribute name="is3TQSaved" type="Boolean" Default="false"/>
+    <aura:attribute name="is3TNQSaved" type="Boolean" Default="false"/>
+    <aura:attribute name="isClosedSaved" type="Boolean" Default="false"/>
+    <aura:attribute name="isSpecSaved" type="Boolean" Default="false"/>
+    
+    <aura:attribute name="isSavedAndClose" type="Boolean" Default="true"/>
+    
+    <aura:attribute name="fafId" type="Id" />
+    <aura:attribute name="clickNewModal" type="Boolean" default="false" />
+    
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler event="c:Apttus_Grid_Name_Event" action="{!c.doInit}"/> 
+    
+    <aura:handler event="c:Apttus_Grid_NT_Close_Event" action="{!c.handleCloseEdit}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Notify_Error_Event" action="{!c.handleError}"/>
+    <aura:handler event="c:Apttus_NT_Grid_Modal_Close_Event" action="{!c.doInit}"/> 
+    <aura:handler event="c:Apttus_Grid_Cancel_Parent_Event" action="{!c.handleCloseEdit}"/>
+    <aura:handler event="c:Apttus_Grid_Rebate_SectionAvailableEvent" action="{!c.handleRebateSection}"/>
+    <aura:handler event="c:Apttus_Grid_NT_Save_Event" action="{!c.handleSave}"/>
+    <aura:handler event="c:Apttus_Grid_Refresh_Parent_Event" action="{!c.doInit}"/> 
+    
+    <aura:registerEvent name="saveCloseEvent" type="c:Apttus_RebateSaveAndCloseEvent"/>
+    <aura:registerEvent name="saveEvent" type="c:Apttus_Grid_NT_Save_Event"/>
+    <aura:registerEvent name="openModal" type="c:Apttus_Grid_NT_Open_Event"/>
+    <aura:registerEvent name="cancelEvent" type="c:Apttus_Grid_Cancel_Event"/>
+    <aura:registerEvent name="GridNameEvent" type="c:Apttus_Grid_Name_Event"/>
+    <ltng:require styles="{!$Resource.multilinetoastmessage}" />
+    <!-- Component -->
+    <lightning:card aura:id="card" class="container header.slds-card__header.slds-grid">
+        <lightning:layout>
+            <aura:if isTrue="{!v.DisplaySpinner}">
+                <lightning:spinner alternativeText="Saving" variant="brand" size="medium" class="slds-spinner_container"/>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </aura:if>   
+            <aura:if isTrue="{!v.isDeleteAlertOpen}">
+                <aura:if isTrue="{!v.isNetwork}">
+                    <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                        <div class="slds-modal__container" style="Width: 31%;">
+                            <div class="slds-modal__header">
+                                <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                                    X
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="header99" class="slds-text-heading--medium">Delete Network Pricing Grid</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around--medium">
+                                <center><p>
+                                    Are you sure you want to delete Network Pricing Grid record(s)?
+                                    </p> 
+                                </center>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                                <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete</lightning:button>                    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-backdrop slds-backdrop--open"></div>        
+                </aura:if>
+                
+                <aura:if isTrue="{!v.isMail}">
+                    <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                        <div class="slds-modal__container" style="Width: 31%;">
+                            <div class="slds-modal__header">
+                                <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                                    X
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="header99" class="slds-text-heading--medium">Delete Mail Pricing Grid</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around--medium">
+                                <center><p>
+                                    Are you sure you want to delete Mail Pricing Grid record(s)?
+                                    </p> 
+                                </center>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                                <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete</lightning:button>                    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-backdrop slds-backdrop--open"></div>        
+                </aura:if>
+                
+                <aura:if isTrue="{!v.isRebate}">
+                    <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                        <div class="slds-modal__container" style="Width: 31%;">
+                            <div class="slds-modal__header">
+                                <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                                    X
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="header99" class="slds-text-heading--medium">Delete Rebate Guarantee Grid</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around--medium">
+                                <center><p>
+                                    Are you sure you want to delete Rebate Guarantee Grid record(s)?
+                                    </p> 
+                                </center>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                                <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete</lightning:button>                    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-backdrop slds-backdrop--open"></div>        
+                </aura:if>
+                
+                <aura:if isTrue="{!v.isSpecialtyPrice}">
+                    <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                        <div class="slds-modal__container" style="Width: 31%;">
+                            <div class="slds-modal__header">
+                                <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                                    X
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="header99" class="slds-text-heading--medium">Delete Specialty Pricing Grid</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around--medium">
+                                <center><p>
+                                    Are you sure you want to delete Specialty Pricing Grid record(s)?
+                                    </p> 
+                                </center>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                                <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete</lightning:button>                    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-backdrop slds-backdrop--open"></div>        
+                </aura:if>
+                
+                <aura:if isTrue="{!v.isClinical}">
+                    <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                        <div class="slds-modal__container" style="Width: 31%;">
+                            <div class="slds-modal__header">
+                                <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                                    X
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="header99" class="slds-text-heading--medium">Delete Additional Programs Grid</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around--medium">
+                                <center><p>
+                                    Are you sure you want to delete Additional Programs Grid record(s)?
+                                    </p> 
+                                </center>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                                <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete</lightning:button>                    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-backdrop slds-backdrop--open"></div>        
+                </aura:if>
+                
+                 <aura:if isTrue="{!v.isAddProgram}">
+                    <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                        <div class="slds-modal__container" style="Width: 31%;">
+                            <div class="slds-modal__header">
+                                <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                                    X
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="header99" class="slds-text-heading--medium">Delete Administrative Fee Grid</h2>
+                            </div>
+                            <div class="slds-modal__content slds-p-around--medium">
+                                <center><p>
+                                    Are you sure you want to delete Administrative Fee Grid record(s)?
+                                    </p> 
+                                </center>
+                            </div>
+                            <div class="slds-modal__footer">
+                                <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                                <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete</lightning:button>                    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-backdrop slds-backdrop--open"></div>        
+                </aura:if>
+                
+                
+            </aura:if>
+        </lightning:layout>
+        
+        <aura:if isTrue="{!v.clickNewModal}">
+            <!--  <c:Apttus_Copy_NT_Grid aura:id="NewPricing" display="{!v.display}" params="{!v.params}"/>  -->
+            <aura:if isTrue="{!v.isNetwork}">
+                <div class="demo-only" style="height: 100%;width:90%;"> 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" style="height: 100%;width:90%;max-width: 90%;">
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Copy Network Pricing</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                                <c:Apttus_Grid_Copy_NP aura:id="compmod" objects="{!v.objects}" fafid="{!v.objects.FAF_ID__c}" networkname="{!v.objects.Network_Name__c}"  networktype="{!v.objects.Network_Type__c}" desc="{!v.objects.Custom_Network_Description__c}" lob="{!v.objects.LOB__c}"/>
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                                <button type="button" class="slds-button slds-button_brand" onclick="{!c.updatepricing}">Save  &amp; Close</button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if> 
+            <!--Rebate Copy Grid-->
+            <aura:if isTrue="{!v.isRebate}">
+                <div class="demo-only" style="height: 100%;width:90%;"> 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" style="height: 100%;width:98%;max-width: 98%;">
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Copy Rebate Guarantee</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                                <c:Apttus_Grid_Copy_Rebate_Parent aura:id="compmod" objects="{!v.objects}" fafid="{!v.objects.FAF__c}" 
+                                                           plan="{!v.objects.Plan_Design__c}" basis="{!v.objects.Basis__c}" 
+                                                           nonspecForm="{!v.objects.Non_Specialty_Formulary__c}" 
+                                                           specForm="{!v.objects.Specialty_Formulary__c}" 
+                                                           year="{!v.objects.Year__c}" 
+                                                           showInSpec="{!v.objects.Show_in_Non_Specialty_Grid__c}" 
+                                                           gstp="{!v.objects.GSTP__c}" 
+                                                           percentageCheck="{!v.objects.Percentage_Check__c}" 
+                                                           lob="{!v.objects.LOB__c}"/>
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                                <button type="button" class="slds-button slds-button_brand" onclick="{!c.updatepricingSave}">Save</button>
+                                <button type="button" class="slds-button slds-button_brand" onclick="{!c.updatepricing}">Save &amp; Close</button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if>  
+        </aura:if>
+        
+        <aura:if isTrue="{!v.Edit}">
+            <aura:if isTrue="{!v.isNetwork}">
+                <div class="demo-only" style="height: 100%;width:90%;"> 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" style="height: 100%;width:90%;max-width: 90%;">
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Edit Network Pricing</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                                <c:Apttus_Grid_Edit_NP aura:id="compmod" objects="{!v.objects}" fafid="{!v.objects.FAF_ID__c}" networkname="{!v.objects.Network_Name__c}"  networktype="{!v.objects.Network_Type__c}" custdesc="{!v.objects.Custom_Description__c}"/>
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                                <button type="button" class="slds-button slds-button_brand" onclick="{!c.updatepricing}">Save  &amp; Close</button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if>
+            
+            <aura:if isTrue="{!v.isMail}">
+                <div class="demo-only" style="height: 100%;width:90%;"> 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" style="height: 100%;width:90%;max-width: 90%;">
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Edit Mail Pricing</h2>
+                            </header>
+                            
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+							    
+                                <c:Apttus_Grid_Edit_MP aura:id="compmod" objects="{!v.objects}" fafid="{!v.objects.FAF_ID__c}" desc="{!v.objects.Custom_Description__c}"/>
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                                <button type="button" class="slds-button slds-button_brand" onclick="{!c.updatepricing}">Save  &amp; Close</button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if>
+            <!-- Billing Admin Fee -->
+            
+            <aura:if isTrue="{!v.isAddProgram}">
+                <div class="demo-only" style="height: 100%;width:90%;"> 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" style="height: 100%;width:90%;max-width: 90%;">
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Edit Administrative Fees</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                                <c:Apttus_Grid_Edit_AdminFees_Parent aura:id="compadminmod" objects="{!v.objects}" fafid="{!v.opid}" customdesc="{!v.objects.Custom_Description__c}" />
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                                <button type="button" class="slds-button slds-button_brand" onclick="{!c.updatepricing}">Save  &amp; Close</button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if>
+            
+            <!--Rebate Grid Edit-->
+            <aura:if isTrue="{!v.isRebate}">
+                
+                <div class="demo-only" style="height:100%;width:170%;"> 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" style="height:100%;width:98%;max-width:98%;">
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Edit Formulary Options  </h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                                <!--anvesh-->
+                                <!--c:Apttus_Grid_edit_Rebate aura:id="compmod" objects="{!v.objects}" fafid="{!v.objects.FAF_ID__c}" 
+                                                           plan="{!v.objects.Plan_Design__c}" basis="{!v.objects.Basis__c}" 
+                                                           nonspecForm="{!v.objects.Non_Specialty_Formulary_2__c}" 
+                                                           specForm="{!v.objects.Specialty_Formulary__c}" 
+                                                           year="{!v.objects.Year__c}" 
+                                                           showInSpec="{!v.objects.Show_in_Non_Specialty_Grid__c}" 
+                                                           gstp="{!v.objects.GSTP__c}" 
+                                                           percentageCheck="{!v.objects.Percentage_Check__c}" 
+                                                           lob="{!v.objects.LOB2__c}"/-->
+								<c:Apttus_Grid_Edit_NonSpecialty_Parent aura:id="compmod" objects="{!v.objects}" fafid="{!v.objects.FAF__c}" 
+                                                           plan="{!v.objects.Plan_Design__c}" basis="{!v.objects.Basis__c}" 
+                                                           nonspecForm="{!v.objects.Non_Specialty_Formulary__c}" 
+                                                           specForm="{!v.objects.Specialty_Formulary__c}" 
+                                                           year="{!v.objects.Year__c}" 
+                                                           showInSpec="{!v.objects.Show_in_Non_Specialty_Grid__c}" 
+                                                           gstp="{!v.objects.GSTP__c}" 
+                                                           percentageCheck="{!v.objects.Percentage_Check__c}" 
+                                                           lob="{!v.objects.LOB__c}"/>
+                                <!--anvesh-->
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                                <button type="button" class="slds-button slds-button_brand" onclick="{!c.updatepricingSave}">Save</button>
+                                <button type="button" class="slds-button slds-button_brand" onclick="{!c.updatepricing}">Save &amp; Close</button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+                
+            </aura:if> 
+            
+            <aura:if isTrue="{!v.isSpecialtyPrice}">
+                <div class="demo-only" style="height: 100%;width:90%;"> 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" style="height: 100%;width:90%;max-width: 90%;">
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Edit Specialty Pricing</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                                <c:Apttus_Grid_Edit_SP aura:id="compmod" objects="{!v.objects}" fafid="{!v.objects.FAF_ID__c}" opid="{!v.opid}"
+                                                       pharmacyBenefit="{!v.objects.Pharmacy_Benefit__c}" desc="{!v.objects.Custom_Description__c}"/>
+                                
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                                <button type="button" class="slds-button slds-button_brand" onclick="{!c.updatepricing}">Save  &amp; Close</button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if>
+            
+            <aura:if isTrue="{!v.isClinical}">
+                <div class="demo-only" style="height: 100%;width:90%;"> 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container" style="height: 100%;width:90%;max-width: 90%;">
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close">
+                                    <span class="slds-assistive-text">Close</span>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Edit Additional Programs </h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="height:100%;">
+                                
+                                <c:Apptus_Grid_Edit_AddProgramParent aura:id="compmod" objects="{!v.objects}" fafid="{!v.objects.FAF_ID__c}" opid="{!v.objects.Clinical_Operations__c}" customdesc="{!v.objects.Custom_Description__c}"/>
+                                
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <button type="button" class="slds-button slds-button_neutral" onclick="{!c.cancel}">Cancel</button>
+                                <button type="button" class="slds-button slds-button_brand" onclick="{!c.updatepricing}">Save  &amp; Close</button>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </div>
+            </aura:if>
+            
+        </aura:if>    
+        
+        <div class="slds-border_top slds-border_right slds-border_bottom slds-border_left"></div>
+        <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered slds-table_col-bordered slds-border_left slds-border_right" style="width:95%;">
+            <thead>
+                <aura:if isTrue="{!v.isRebate}">
+                    <aura:if isTrue="{!v.isNONSpecialtyGrid}">
+						<tr class=" red layoutheightCustom">
+							<th class="red slds-border_right slds-size_1-of-4 layoutheightCustom" scope="col">
+								<div class="slds-truncate red slds-cell-wrap slds-grid slds-grid--vertical-align-center slds-align_absolute-left layoutheightCustom" style="height:100%;" title="{!v.Col1}">{!v.Col1}</div>
+							</th>
+							<th class="red slds-border_left slds-size_3-of-4 layoutheightCustom" scope="col">
+								<lightning:layout class="layoutheight">
+									<lightning:layoutItem class="slds-align_absolute-center" >
+										<div class="slds-p-top_x-small"  ></div>
+										<div class=" red slds-grid slds-cell-wrap slds-align_absolute-center " style="height:200%;" title="{!v.Col2}">{!v.Col2}</div>
+									</lightning:layoutItem>
+									<lightning:layoutItem class="slds-align_absolute-right">
+                                        <div class="slds-p-top_small"  ></div>
+										<div class="slds-align_absolute-right">
+											
+											<!--Edit Icon-->
+											<aura:if isTrue="{!v.isNetwork}">
+												<lightning:icon aura:id="edit" class="slds-align_absolute-right icn slds-popover__body" variant="Inverse" 
+                                                                iconName="utility:edit"  onclick="{!c.openEdit}" size="small" alternativeText	="Edit" />
+											</aura:if>
+											<aura:if isTrue="{!v.isMail}">
+												<lightning:icon aura:id="edit" class="slds-align_absolute-right icn slds-popover__body" variant="Inverse" 
+                                                                iconName="utility:edit"  onclick="{!c.openEdit}" size="small" alternativeText	="Edit" />
+											</aura:if>
+											<aura:if isTrue="{!v.isAddProgram}">
+												<lightning:icon aura:id="edit" class="slds-align_absolute-right icn slds-popover__body" variant="Inverse" 
+                                                                iconName="utility:edit"  onclick="{!c.openEdit}" size="small" alternativeText	="Edit" />
+											</aura:if>
+											<aura:if isTrue="{!v.isSpecialtyPrice}">
+												<aura:if isTrue="{!v.isSpecialty == false}">
+													<lightning:icon aura:id="edit" class="slds-align_absolute-right icn slds-popover__body" variant="Inverse" 
+                                                                    iconName="utility:edit"  onclick="{!c.openEdit}" size="small" alternativeText	="Edit" />
+												</aura:if>
+											</aura:if>
+                                            
+                                            <aura:if isTrue="{!v.isClinical}">
+												<lightning:icon aura:id="edit" class="slds-align_absolute-right icn slds-popover__body" variant="Inverse" 
+                                                                iconName="utility:edit"  onclick="{!c.openEdit}" size="small" alternativeText	="Edit" />
+											</aura:if>
+											<aura:if isTrue="{!v.isRebate}">
+												<aura:if isTrue="{!v.isCarveOut == false}">
+												<aura:if isTrue="{!v.isGrid}">
+													<lightning:icon aura:id="edit" class="slds-align_absolute-right icn slds-popover__body" variant="Inverse" 
+                                                                    iconName="utility:edit"  onclick="{!c.openEdit}" size="small" alternativeText="Edit" />
+												</aura:if>
+												 </aura:if>
+												<aura:if isTrue="{!v.isCarveOut}">
+													<lightning:icon aura:id="edit" class="slds-align_absolute-right icn slds-popover__body" variant="Inverse" 
+                                                                    iconName=""  onclick="" size="small" alternativeText="" />
+												</aura:if>
+											</aura:if>
+											
+											<!--Copy Icon-->
+											<aura:if isTrue="{!v.isNetwork}">
+												<lightning:icon class="icn" iconName="utility:add" variant="Inverse" onclick="{!c.openCopy}" size="small" 
+                                                                alternativeText="Clone" />
+											</aura:if>
+											
+											<aura:if isTrue="{!v.isRebate}">
+												<aura:if isTrue="{!v.isCarveOut == false}">
+													<aura:if isTrue="{!v.isGrid}">
+													<lightning:icon class="icn" iconName="utility:add" variant="Inverse" onclick="{!c.openCopy}" size="small" alternativeText="Clone" />
+													</aura:if>
+												</aura:if>
+											</aura:if>
+											<!--Delete Icon-->
+											
+											<aura:if isTrue="{!v.isRebate}">
+												<aura:if isTrue="{!v.isCarveOut == false}">
+												 <aura:if isTrue="{!v.isGrid}">
+													<lightning:icon class="icn" iconName="utility:delete" variant="Inverse" onclick="{!c.deletepricing}" size="small" alternativeText="Delete" />
+												</aura:if>
+												</aura:if>
+											</aura:if>
+											
+											<aura:if isTrue="{!v.isNetwork}">
+												<lightning:icon class="icn" iconName="utility:delete" variant="Inverse" onclick="{!c.deletepricing}" size="small" alternativeText="Delete" />
+											</aura:if>
+											
+											<aura:if isTrue="{!v.isSpecialtyPrice}">
+												<aura:if isTrue="{!v.isSpecialty == false}">
+													<lightning:icon class="icn" iconName="utility:delete" variant="Inverse" onclick="{!c.deletepricing}" size="small" alternativeText="Delete" />
+												</aura:if>
+											</aura:if>
+											
+											<aura:if isTrue="{!v.isClinical}">
+												<lightning:icon class="icn" iconName="utility:delete" variant="Inverse" onclick="{!c.deletepricing}" size="small" alternativeText="Delete" />
+											</aura:if>
+                                            
+											<aura:if isTrue="{!v.isMail}">
+												<lightning:icon class="icn" iconName="utility:delete" variant="Inverse" onclick="{!c.deletepricing}" size="small" alternativeText="Delete" />
+											</aura:if>
+											
+											<aura:if isTrue="{!v.isAddProgram}">
+												<lightning:icon class="icn" iconName="utility:delete" variant="Inverse" onclick="{!c.deletepricing}" size="small" alternativeText="Delete" />
+											</aura:if>
+											
+											
+										</div>
+									</lightning:layoutItem>
+								</lightning:layout>
+							</th>
+						</tr>
+						
+					   </aura:if>
+					   
+                    <aura:if isTrue="{!v.isRebate}">
+                      <aura:if isTrue="{!(v.isNONSpecialtyGrid == false)}">
+						<tr class=" red layoutheightCustom">
+							<th class="red slds-border_right slds-size_1-of-4 layoutheightCustom" scope="col">
+								<div class="slds-truncate red slds-cell-wrap slds-grid slds-grid--vertical-align-center" style="height:100%;" title="{!v.Col1}">{!v.Col1}</div>
+							</th>
+							<th class="red slds-border_left slds-size_3-of-4 layoutheightCustom" scope="col">
+								<lightning:layout class="layoutheightCustom">
+									<lightning:layoutItem class="slds-align_absolute-center" >
+										<div class="slds-p-top_x-small"  ></div>
+										<div class=" red slds-grid slds-cell-wrap" title="{!v.Col2}">{!v.Col2}</div>
+									</lightning:layoutItem>
+								</lightning:layout>
+							</th>
+						</tr>
+                      </aura:if>
+                    </aura:if>
+                    
+                    
+					 <!--  <aura:if isTrue="{!v.isNONSpecialtyGrid==false}">
+							<tr class=" red">
+							  <td colspan="2">
+								<th class="red  slds-size_4-of-4" scope="col">
+									<lightning:layout class="layoutheight">
+										<lightning:layoutItem class="slds-align_absolute-left" >
+											
+											<div class="red  slds-align_absolute-left slds-truncate slds-cell-wrap" title="{!v.Row13Col1}">{!v.Row13Col1}</div>
+										</lightning:layoutItem>
+									</lightning:layout>
+								</th>
+								</td>
+							</tr>
+					   
+					    </aura:if> -->
+                </aura:if>
+                <aura:if isTrue="{!v.isRebate==false}">
+                   <aura:if isTrue="{!v.coldisplay}">
+                    <tr class="slds-line-height_reset red">
+                        <th class="red slds-border_right slds-size_1-of-4 layoutheight" scope="col">
+                            <div class="slds-truncate red" style="height:100%;" title="{!v.Col1}">{!v.Col1}</div>
+                        </th>
+                        <th class="red slds-border_left slds-size_3-of-4 layoutheight" scope="col">
+                            <lightning:layout class="layoutheight">
+                                <lightning:layoutItem class="slds-align_absolute-center" >
+                                    <div class="slds-p-top_x-small"  ></div>
+                                    <div class="slds-truncate red" title="{!v.Col2}">{!v.Col2}</div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem class="slds-align_absolute-right">
+                                    <div class="slds-align_absolute-right">
+                                        
+                                        <!--Edit Icon-->
+                                        <aura:if isTrue="{!v.isNetwork}">
+                                            <lightning:icon aura:id="edit" class="slds-align_absolute-right icn slds-popover__body" variant="Inverse" iconName="utility:edit"  onclick="{!c.openEdit}" size="small" alternativeText	="Edit" />
+                                        </aura:if>
+                                        <aura:if isTrue="{!v.isMail}">
+                                            <lightning:icon aura:id="edit" class="slds-align_absolute-right icn slds-popover__body" variant="Inverse" iconName="utility:edit"  onclick="{!c.openEdit}" size="small" alternativeText	="Edit" />
+                                        </aura:if>
+                                        <aura:if isTrue="{!v.isAddProgram}">
+                                            <lightning:icon aura:id="edit" class="slds-align_absolute-right icn slds-popover__body" variant="Inverse" iconName="utility:edit"  onclick="{!c.openEdit}" size="small" alternativeText	="Edit" />
+                                        </aura:if>
+                                        <aura:if isTrue="{!v.isSpecialtyPrice}">
+                                            <aura:if isTrue="{!v.isSpecialty == false}">
+                                                <lightning:icon aura:id="edit" class="slds-align_absolute-right icn slds-popover__body" variant="Inverse" 
+                                                                iconName="utility:edit"  onclick="{!c.openEdit}" size="small" alternativeText	="Edit" />
+                                            </aura:if>
+                                        </aura:if>
+                                        <aura:if isTrue="{!v.isClinical}">
+                                            <lightning:icon aura:id="edit" class="slds-align_absolute-right icn slds-popover__body" variant="Inverse" 
+                                                            iconName="utility:edit"  onclick="{!c.openEdit}" size="small" alternativeText	="Edit" />
+                                        </aura:if>
+                                        <aura:if isTrue="{!v.isRebate}">
+                                            <aura:if isTrue="{!v.isCarveOut == false}">
+												<aura:if isTrue="{!v.isGrid}">
+                                                     <lightning:icon aura:id="edit" class="slds-align_absolute-right icn slds-popover__body" variant="Inverse" iconName="utility:edit"  onclick="{!c.openEdit}" size="small" alternativeText="Edit" />
+												</aura:if>
+                                            </aura:if>
+                                        </aura:if>
+                                        
+                                        <!--Copy Icon-->
+                                        <aura:if isTrue="{!v.isNetwork}">
+                                            <lightning:icon class="icn" iconName="utility:add" variant="Inverse" onclick="{!c.openCopy}" size="small" alternativeText="Clone" />
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!v.isRebate}">
+                                            <aura:if isTrue="{!v.isCarveOut == false}">
+											    <aura:if isTrue="{!v.isGrid}">
+                                                <lightning:icon class="icn" iconName="utility:add" variant="Inverse" onclick="{!c.openCopy}" size="small" alternativeText="Clone" />
+												</aura:if>
+                                            </aura:if>
+                                        </aura:if>
+                                        <!--Delete Icon-->
+                                        
+                                        <aura:if isTrue="{!v.isRebate}">
+                                            <aura:if isTrue="{!v.isCarveOut==false}">
+											 <aura:if isTrue="{!v.isGrid}">
+                                                   <lightning:icon class="icn" iconName="utility:delete" variant="Inverse" onclick="{!c.deletepricing}" size="small" alternativeText="Delete"/>
+                                            
+											    </aura:if>
+											</aura:if>
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!v.isNetwork}">
+                                            <lightning:icon class="icn" iconName="utility:delete" variant="Inverse" onclick="{!c.deletepricing}" size="small" alternativeText="Delete" />
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!v.isSpecialtyPrice}">
+                                            <aura:if isTrue="{!v.isSpecialty == false}">
+                                                <lightning:icon class="icn" iconName="utility:delete" variant="Inverse" onclick="{!c.deletepricing}" size="small" alternativeText="Delete" />
+                                            </aura:if>
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!v.isMail}">
+                                            <lightning:icon class="icn" iconName="utility:delete" variant="Inverse" onclick="{!c.deletepricing}" size="small" alternativeText="Delete" />
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!v.isClinical}">
+                                            <lightning:icon class="icn" iconName="utility:delete" variant="Inverse" onclick="{!c.deletepricing}" size="small" alternativeText="Delete" />
+                                        </aura:if>
+                                        
+                                        <aura:if isTrue="{!v.isAddProgram}">
+                                            <lightning:icon class="icn" iconName="utility:delete" variant="Inverse" onclick="{!c.deletepricing}" size="small" alternativeText="Delete" />
+                                        </aura:if>
+                                        
+                                        
+                                    </div>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </th>
+                    </tr>
+                   </aura:if>
+                </aura:if>
+            </thead>
+            <tbody>
+                <aura:if isTrue="{!v.Row1Display}">
+                    <tr class="slds-hint-parent slds-border_right">
+                        <td data-label="{!v.Row1Col1}">
+                            <lightning:formattedText value="{!v.Row1Col1}"/>
+                        </td>
+                        <td data-label="{!v.Row1Col2}">
+                            <lightning:layout class="layoutheight">
+                                <lightning:layoutItem class="slds-align_absolute-center">
+                                    <lightning:formattedText value="{!v.Row1Col2}"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </td>
+                    </tr>
+                </aura:if>
+                <aura:if isTrue="{!v.Row2Display}">
+                    <tr class="slds-hint-parent slds-border_left">
+                        <td data-label="{!v.Row2Col1}">
+                            <div class="slds-truncate" title="{!v.Row2Col1}">{!v.Row2Col1}</div>
+                        </td>
+                        <td data-label="{!v.Row2Col2}">
+                            <lightning:layout class="layoutheight">
+                                <lightning:layoutItem class="slds-align_absolute-center">
+                                    <lightning:formattedText value="{!v.Row2Col2}"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </td>
+                    </tr>
+                </aura:if>
+                <aura:if isTrue="{!v.Row3Display}">
+                    <tr class="slds-hint-parent slds-border_left">
+                        <td data-label="{!v.Row3Col1}">
+                            <div class="slds-truncate" title="{!v.Row3Col1}">{!v.Row3Col1}</div>
+                        </td>
+                        <td data-label="{!v.Row3Col2}">
+                            <lightning:layout class="layoutheight">
+                                <lightning:layoutItem class="slds-align_absolute-center">
+                                    <lightning:formattedText value="{!v.Row3Col2}"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </td>
+                    </tr>
+                </aura:if>
+                <aura:if isTrue="{!v.Row4Display}">
+                    <tr class="slds-hint-parent slds-border_left">
+                        <td data-label="{!v.Row4Col1}">
+                            <div class="slds-truncate" title="{!v.Row4Col1}">{!v.Row4Col1}</div>
+                        </td>
+                        <td data-label="{!v.Row4Col2}">
+                            <lightning:layout class="layoutheight">
+                                <lightning:layoutItem class="slds-align_absolute-center">
+                                    <lightning:formattedText value="{!v.Row4Col2}"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </td>
+                    </tr>
+                </aura:if>
+                <aura:if isTrue="{!v.Row5Display}">
+                    <tr class="slds-hint-parent slds-border_left">
+                        <td data-label="{!v.Row5Col1}">
+                            <div class="slds-truncate" title="{!v.Row5Col1}">{!v.Row5Col1}</div>
+                        </td>
+                        <td data-label="{!v.Row5Col2}">
+                            <lightning:layout class="layoutheight">
+                                <lightning:layoutItem class="slds-align_absolute-center">
+                                    <lightning:formattedText value="{!v.Row5Col2}"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </td>
+                    </tr>
+                </aura:if>
+                <aura:if isTrue="{!v.Row6Display}">
+                    <tr class="slds-hint-parent slds-border_left">
+                        <td data-label="{!v.Row6Col1}">
+                            <div class="slds-truncate" title="{!v.Row6Col1}">{!v.Row6Col1}</div>
+                        </td>
+                        <td data-label="{!v.Row6Col2}">
+                            <lightning:layout class="layoutheight">
+                                <lightning:layoutItem class="slds-align_absolute-center">
+                                    <lightning:formattedText value="{!v.Row6Col2}"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </td>
+                    </tr>
+                </aura:if>
+                
+                <aura:if isTrue="{!v.Row7Display}">
+                    <tr class="slds-hint-parent slds-border_left">
+                        <td data-label="{!v.Row7Col1}">
+                            <div class="slds-truncate" title="{!v.Row7Col1}">{!v.Row7Col1}</div>
+                        </td>
+                        <td data-label="{!v.Row7Col2}">
+                            <lightning:layout class="layoutheight">
+                                <lightning:layoutItem class="slds-align_absolute-center">
+                                    <lightning:formattedText value="{!v.Row7Col2}"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </td>
+                    </tr>
+                </aura:if>
+                
+                <aura:if isTrue="{!v.Row8Display}">
+                    <tr class="slds-hint-parent slds-border_left">
+                        <td data-label="{!v.Row8Col1}">
+                            <div class="slds-truncate" title="{!v.Row8Col1}">{!v.Row8Col1}</div>
+                        </td>
+                        <td data-label="{!v.Row8Col2}">
+                            <lightning:layout class="layoutheight">
+                                <lightning:layoutItem class="slds-align_absolute-center">
+                                    <lightning:formattedText value="{!v.Row8Col2}"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </td>
+                    </tr>
+                </aura:if>
+                
+                <aura:if isTrue="{!v.Row9Display}">
+                    <tr class="slds-hint-parent slds-border_left">
+                        <td data-label="{!v.Row9Col1}">
+                            <div class="slds-truncate" title="{!v.Row9Col1}">{!v.Row9Col1}</div>
+                        </td>
+                        <td data-label="{!v.Row9Col2}">
+                            <lightning:layout class="layoutheight">
+                                <lightning:layoutItem class="slds-align_absolute-center">
+                                    <lightning:formattedText value="{!v.Row9Col2}"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </td>
+                    </tr>
+                </aura:if> 
+                
+                <aura:if isTrue="{!v.Row10Display}">
+
+                      <tr class="slds-line-height_reset red layoutheightCustom">
+                        <td class="red layoutheightCustom" data-label="{!v.Row10Col1}">
+                            <div class="red layoutheightCustom slds-grid slds-grid--vertical-align-center">
+                                <thead>
+                                    <!--<th class="red"  scope="col">-->
+                                    <div class="slds-truncate red slds-cell-wrap slds-grid slds-grid--vertical-align-center" style="height:100%;" title="{!v.Row10Col1}"><b>{!v.Row10Col1}</b>
+                                        
+                                        
+                                    </div>
+                                    <!--</th>-->
+                                </thead>
+                            </div> 
+                        </td>
+                          
+                       <td class="red layoutheightCustom" data-label="{!v.Row10Col2}">
+                            <div class="slds-truncate red slds-align_absolute-center layoutheightCustom slds-grid slds-grid--vertical-align-center">
+                                <thead>
+                                    <!--<th class="red"  scope="col">-->
+                                    <div class="layoutheightCustom"  title="{!v.Row10Col2}"><b></b>
+                                         <lightning:icon class="icn" iconName="" variant="Inverse" onclick="" size="small" alternativeText="" />
+                                         <lightning:icon class="icn" iconName="" variant="Inverse" onclick="" size="small" alternativeText="" />
+                                        <lightning:icon class="icn" iconName="" variant="Inverse" onclick="" size="small" alternativeText="" />
+                                        
+                                    </div>
+                                    <!--</th>-->
+                                </thead>
+                            </div> 
+                        </td>    
+                          
+                      </tr>
+                    
+                    
+                </aura:if> 
+                <aura:if isTrue="{!v.Row11Display}">
+                    <tr class="slds-hint-parent slds-border_left">
+                        <td data-label="{!v.Row11Col1}">
+                            <div class="slds-truncate" title="{!v.Row11Col1}">{!v.Row11Col1}
+                                <lightning:icon class="icn" iconName="" variant="Inverse" onclick="" size="small" alternativeText="" /></div>
+                        </td>
+                        <td data-label="{!v.Row11Col2}">
+                            <lightning:layout class="layoutheight">
+                                <lightning:layoutItem class="slds-align_absolute-center">
+                                    <lightning:formattedText value="{!v.Row11Col2}"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </td>
+                    </tr>
+                </aura:if>
+                <aura:if isTrue="{!v.Row12Display}">
+                    <tr class="slds-hint-parent slds-border_left" >
+                        <td colspan="2">
+                            <Span><center>*Therapy level guarantees are excluded from the "Specialty at CVS Specialty" guarantees and will be priced according to the pricing chart above.</center></Span>
+                        </td>
+                    </tr>
+                </aura:if>
+                <!--<aura:if isTrue="{!v.Row13Display}">
+                   
+                     <tr class="red slds-line-height_reset red slds-hint-parent slds-border_left">
+                        <td colspan="2">
+                        
+						 <th class="red slds-border_right slds-size_1-of-4 layoutheight" scope="col">
+                            <div class="slds-truncate red slds-cell-wrap" style="height:100%;" title="{!v.Row13Col1}">{!v.Row13Col1}</div>
+                        </th>
+						</td>
+                    </tr>
+                </aura:if>-->
+                <aura:if isTrue="{!v.Row14Display}">
+                    <tr class="slds-hint-parent slds-border_left">
+                        <td data-label="{!v.Row14Col1}">
+                            <div class="slds-truncate" title="{!v.Row14Col1}">{!v.Row14Col1}
+                                <lightning:icon class="icn" iconName="" variant="Inverse" onclick="" size="small" alternativeText="" /></div>
+                        </td>
+                        <td data-label="{!v.Row14Col2}">
+                            <lightning:layout class="layoutheight">
+                                <lightning:layoutItem class="slds-align_absolute-center">
+                                    <lightning:formattedText value="{!v.Row14Col2}"/>
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </td>
+                    </tr>
+                </aura:if>
+                
+            </tbody>
+        </table>
+    </lightning:card>
+</aura:component>

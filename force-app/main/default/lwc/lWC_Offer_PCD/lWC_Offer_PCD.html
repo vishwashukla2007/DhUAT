@@ -1,0 +1,128 @@
+<template>
+   <lightning-card title="PCD Record" icon-name="custom:custom85" style="height:20rem;width:10rem">
+       <div class="slds-scrollable_y" style="width:22rem;height:20rem">
+	     
+			<template if:true={PCDName} >
+            <div class="slds-box slds-box_small">
+				   <template if:true={Pending} >
+						   <lightning-formatted-url value={recordlink} tooltip=" Go to Agreement detail page" label={PCDName} target="_blank" ></lightning-formatted-url>
+					   </br>
+					   <div class="slds-box slds-box_xx-small">
+					   <b>Task/Offer/LOB:</b>&nbsp;{Task}</br>
+					   <b>Status:</b> &nbsp;{Status}</br>
+					   <b>Alert/Warning:</b> &nbsp;{Alertmsg}</br>
+					   <b>Generate PCD:</b> &nbsp;{GeneratePCD}</br>
+					   </div>
+				   </template>
+				   <template if:true={NotPending} >
+					   <lightning-formatted-url value={recordlink} tooltip=" Go to Agreement detail page" label={PCDName} target="_blank" ></lightning-formatted-url>
+					   </br>
+					   <div class="slds-box slds-box_xx-small">
+					   <b>Task/Offer/LOB:</b>&nbsp;{Task}</br>
+					   <b>Status:</b>&nbsp;{Status}</br>
+					   <b>Alert/Warning:</b> &nbsp;{Alertmsg}</br></br>
+					   <b>Generate PCD</b> &nbsp;<a class="slds-button slds-button_brand" href={urlRef} target="_self" taget="_blank" >Start</a></br>
+		   
+					   </div>
+               </template>
+            </div>
+			   </template>
+        
+      <template if:true={errorMessage}>
+         <div style="margin-left:3%;">
+            <lightning-button variant="brand" label="Create New PCD" title="Primary action with lighter look" onclick={openModal} class="slds-m-left_x-small" ></lightning-button>
+      
+         </div></br>
+         <center><b>{errorMessage}</b></center>
+       </template>
+       </div>
+       <template if:true={bShowModal}>
+           <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+              <div class="slds-modal__container">
+                 <!-- modal header start -->
+                 <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                       <lightning-icon icon-name="utility:close"
+                          alternative-text="close"
+                          variant="inverse"
+                          size="small" ></lightning-icon>
+                       <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create PCD Record</h2>
+                 </header>
+                 <!-- modal body start -->
+                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning-record-edit-form
+                      id="recordViewForm"
+                      record-id={recordId1}
+                      
+                      oncancel={closeModal}
+                      onsuccess={updateAccount}
+                      object-api-name="Offer__c"
+                    >
+                      <lightning-messages></lightning-messages>
+                      <div class="slds-grid">
+                     <div class="slds-col">
+                      <span><lightning-input-field field-name="Alert_Acknowledgement__c"> </lightning-input-field></span>
+                     </div>
+                     <div class="slds-col">
+                        <span><lightning-output-field field-name="CreatePCDMsg__c"></lightning-output-field></span>
+                     </div>
+                  </div>
+                     <br/>
+                      <lightning-output-field field-name="Alert_Message__c"></lightning-output-field>
+                     
+                      <lightning-button type="submit" label="Save" class="slds-m-top_medium slds-float_right" variant="Brand"></lightning-button><div></div>
+                      <lightning-button type="cancel" label="Cancel" class="slds-m-top_medium slds-float_right"  disabled={disableCancelButton}></lightning-button>
+                       
+                      
+                     <!--<footer class="slds-modal__footer"></footer>-->
+                     
+                    </lightning-record-edit-form>
+                 </div>
+                 
+                 
+               
+                 
+              </div>
+              <template if:true={isLoaded}>
+               <lightning-spinner variant="brand" size="medium" alternative-text="Loading..." class="slds-align_absolute-center"></lightning-spinner></template>
+           </section>
+           
+           <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+       
+      
+      <template if:true={bShowModal1}>
+           <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+              <div class="slds-modal__container">
+                 <!-- modal header start -->
+                 <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal1}>
+                       <lightning-icon icon-name="utility:close"
+                          alternative-text="close"
+                          variant="inverse"
+                          size="small" ></lightning-icon>
+                       <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2  class="slds-text-heading_medium slds-hyphenate">PCD Record Created Sucessfully</h2>
+                 </header>
+                 <!-- modal body start -->
+                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                  <center><b>PCD has been created for Selected Offer</b></center>
+                  
+                 </div>
+                 <!-- modal footer start-->
+                 <footer class="slds-modal__footer">
+                      <lightning-button class="slds-float_right" onclick={handleRedirect} variant="Brand" label="Continue"></lightning-button>
+                 </footer>
+                 
+              </div>
+           </section>
+           <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+       
+   </lightning-card>
+   
+   </template>

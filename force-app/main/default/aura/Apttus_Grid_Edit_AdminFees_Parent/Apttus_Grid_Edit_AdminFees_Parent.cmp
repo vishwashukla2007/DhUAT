@@ -1,0 +1,23 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+<aura:attribute name="fafid" type="String" />
+<aura:attribute name="desc" type="String"/>
+<aura:attribute name="customdesc" type="String"/>
+<aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+<aura:attribute name="objects" type="Object" />  
+<aura:registerEvent name="Apttus_Grid_Copy_Event" type="c:Apttus_Grid_Copy_Event"/>
+<aura:registerEvent name="Apttus_Grid_Edit_Admin_Custom_Des_Event" type="c:Apttus_Grid_Edit_Admin_Custom_Des_Event"/>
+<aura:registerEvent name="errornotifyEvent" type="c:Apttus_Grid_NT_Notify_Error_Event"/>
+<aura:handler event="c:Apttus_Grid_NT_Save_Event" action="{!c.handleSave}"/>
+<lightning:card>
+    <lightning:layout class="text-label--large" horizontalAlign="left" multipleRows="false">
+	    <lightning:layoutItem>
+             <lightning:input type="text"  required="true" aura:id="Desc" name="Administrative Fees Display Name" value="{!v.desc}" label="Administrative Fees Display Name"  onchange="{!c.updatedesc}" class="field-title">
+    		</lightning:input>
+        </lightning:layoutItem>
+    </lightning:layout>
+    <br/> <br/>
+    <c:Apttus_Grid_Edit_Electronic_AdminFees_Parent fafid="{!v.fafid}" />
+    <c:Apttus_Grid_Edit_Manual_AdminFees_Parent fafid="{!v.fafid}"/>
+    <c:Apttus_Grid_Edit_340B_AdminFees_Parent fafid="{!v.fafid}"/>
+</lightning:card>
+</aura:component>

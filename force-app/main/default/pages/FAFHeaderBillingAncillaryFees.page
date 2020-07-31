@@ -1,0 +1,3 @@
+<apex:page standardController="Billing_Ancillary_Fee__c" lightningStylesheets="true">
+    <c:FAFHeaderVC fafRecordId="{!Billing_Ancillary_Fee__c.FAF_ID__c}"></c:FAFHeaderVC>
+</apex:page>

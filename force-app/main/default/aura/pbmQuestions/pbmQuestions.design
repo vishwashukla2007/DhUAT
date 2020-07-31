@@ -1,0 +1,6 @@
+<design:component>
+	<design:attribute name="mydata_custom1" label="Collection - PBM Questions"/>
+    <design:attribute name="insertedQuestAnsId" label="Collection - Inserted Question/Answer Ids"/>
+    <design:attribute name="insertedpbmQuestAnsList" label="Collection - Inserted Question/Answer List Ids"/>
+    <design:attribute name="fafId" label="fafid"/>
+</design:component>

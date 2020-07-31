@@ -1,0 +1,84 @@
+<apex:page standardController="Specialty_Guarantee__c" extensions="SpecialtyGuaranteeNewEditClass"  Title="Specialty Guarantee Edit" id="pg" lightningStylesheets="true"> 
+   <apex:form id="frm">
+        <apex:pagemessages id="pmsg"></apex:pagemessages> 
+            <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel id="scriptId" >
+             <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+            <script>
+                function sendToParent(save) {
+                    var lexOrigin = 'https://{!$Label.EV_URL}';
+                    var lightning = {!redirect};
+                    var msg = (save==true)?document.getElementById('{!$Component.frm.pmsg}').textContent:'';
+                    
+                    if(lightning && msg=='') {
+                        var message = 'success';
+                        parent.postMessage(message, lexOrigin);
+                    }
+                }
+                function callSave() {
+                    saveUpdateSpecGuarantee();
+                }
+                function callCancel() {
+                    cancel();
+                }
+        </script>
+        <script>
+            function setFocusOnLoad() {
+                document.getElementById('{!$Component.pg.frm.PB.PBS2.TYPEID}').focus();
+            }   
+        </script> 
+        </apex:outputpanel>
+        <apex:pageBlock title="Specialty Guarantee Edit" id="PB">
+            <apex:pageBlockSection title="Specialty Guarantee Detail" id="PBS1">
+                <apex:outputField value="{!specGuaranteeObj.FAF_ID__c}" />
+                <apex:outputField value="{!specGuaranteeObj.Specialty_Pricing__c}"/>
+             </apex:pageBlockSection>
+                 
+             <apex:pageBlockSection title="Specialty Guarantee" id="PBS2">
+               <apex:inputField value="{!specGuaranteeObj.Type__c}" id="TYPEID" required="true"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!specGuaranteeObj.Subtype__c}" required="true"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!specGuaranteeObj.Rate__c}" required="true"/>
+               <apex:outputLabel />
+            </apex:pageBlockSection> 
+            
+            <apex:pageBlockSection title="Specialty Guarantee Exclusions" id="PBS3">
+               <apex:inputField value="{!specGuaranteeObj.ZBD__c}" required="true"/>
+               <apex:inputField value="{!specGuaranteeObj.LDD__c}" required="true"/>              
+               <apex:inputField value="{!specGuaranteeObj.SSG__c}" required="true"/>
+               <apex:inputField value="{!specGuaranteeObj.LDD_Exclusion_Option__c}" required="true"/>
+               <apex:inputField value="{!specGuaranteeObj.New_to_Market_Brands__c}" required="true"/>
+               <apex:inputField value="{!specGuaranteeObj.Biosimilars__c}" required="true"/>
+               <apex:inputField value="{!specGuaranteeObj.New_to_Market_Generics__c}" required="true"/>
+               <apex:inputField value="{!specGuaranteeObj.OTC__c}" required="true"/>
+               <apex:inputField value="{!specGuaranteeObj.X340B__c}" required="true"/>
+               <apex:inputField value="{!specGuaranteeObj.Compound__c}" required="true"/>
+               <apex:inputField value="{!specGuaranteeObj.X340B_Exclusion_Option__c}" required="true"/>
+               <apex:inputField value="{!specGuaranteeObj.Vaccine__c}" required="true"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!specGuaranteeObj.Paper__c}" required="true"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!specGuaranteeObj.COB__c}" required="true"/>
+               <apex:inputHidden id="redirect" value="{!redirect}"/>
+            </apex:pageBlockSection>
+                <apex:actionFunction name="saveUpdateSpecGuarantee" action="{!saveUpdateSpecGuarantee}" reRender="frm" oncomplete="sendToParent(true);" />
+                <apex:actionFunction name="cancel" action="{!cancel}"  reRender="redirect" oncomplete="sendToParent(false);" />
+            <apex:pageBlockButtons >
+                <apex:outputLink styleClass="btn" rendered="{!redirect}" value="javascript:void(0);" onclick="this.onclick=function(){return false;};callSave();return false;">Save</apex:outputLink>
+                <apex:outputLink styleClass="btn" rendered="{!redirect}" value="javascript:void(0);" onclick="callCancel();return false;">Cancel</apex:outputLink>
+                <apex:commandButton rendered="{!!redirect}" action="{!saveUpdateSpecGuarantee}" title="Save" value="Save" reRender="pmsg,PB,scriptId" oncomplete="window.scrollTo(0, 0);sendToParent();" status="status"/>
+                <apex:commandButton rendered="{!!redirect}" action="{!cancel}" title="Cancel" value="Cancel" immediate="true" oncomplete="sendToParent();"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>    
+</apex:page>

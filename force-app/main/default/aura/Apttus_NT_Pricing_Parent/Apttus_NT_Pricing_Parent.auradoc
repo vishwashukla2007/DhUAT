@@ -1,0 +1,6 @@
+<aura:documentation>
+	<aura:description>Documentation</aura:description>
+	<aura:example name="NetworkPricingExpandedView" ref="NetworkPricing" label="NetworkPricing">
+		Network pricing Expanded View
+	</aura:example>
+</aura:documentation>

@@ -1,0 +1,95 @@
+<apex:page standardController="Billing_Other_Fees__c" extensions="NewBillingOtherFeesController"
+           lightningStylesheets="true">
+    <apex:form >
+        <apex:actionFunction name="PaidAmount" action="{!hidePaidAmount}" rerender="BillingOtherFee"/>
+        <div class="slds-size_2-of-6">
+            <apex:pagemessages id="pmsg"></apex:pagemessages>
+            <apex:pageBlock id="BillingOtherFee" title="Billing Other Fee" >
+                <apex:pageBlockButtons location="both"> 
+                    <apex:commandButton value="Save" action="{!saveBillingOtherFee}"  />
+                    <apex:commandButton value="Cancel" action="{!Cancel}"/>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection id="BillingOtherFee" title="Billing Other Fee" columns="2" >
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="bop" value="Billing Operations"/>
+                        <apex:OutputField html-disabled="true"  style="margin-top:3px;" id="bop" value="{!bof.Billing_Operations__c}"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="faf" value="FAF ID"/>
+                        <apex:OutputField html-disabled="true"  style="margin-top:3px;" id="faf" value="{!bof.FAF__c}"/>
+                    </apex:pageBlockSectionItem>
+                    
+                     <!--<apex:pageBlockSectionItem >
+                        <apex:outputLabel for="year" value="Year"/>
+                        <apex:inputField style="margin-top:3px;" id="year" value="{!bof.Service_Effective_Date__c}"/>
+                    </apex:pageBlockSectionItem>
+                   
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="lob" value="LOB"/>
+                        <apex:inputField style="margin-top:3px;" id="lob" value="{!bof.LOB__c}"/>
+                    </apex:pageBlockSectionItem>-->
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="otherfee" value="Other Fee Type"/>
+                        <apex:inputField style="margin-top:3px;" id="otherfee" value="{!bof.Other_Fee_Type__c}"/>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem rendered="{!IF(ISNULL(bof.PBM_Services__c), true , false)}">
+                        <apex:outputText >
+                            <div class="requiredBlockCust">Basis</div>
+                        </apex:outputText>
+                        <!--<apex:outputLabel for="bas" value="Basis"/>-->
+                        <apex:inputField style="margin-top:3px;" id="bas" value="{!bof.Basis__c}" />
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem rendered="{!IF(ISNULL(bof.PBM_Services__c), false , true)}" >
+                        <apex:outputText >
+                            <div class="requiredBlockCust">Basis</div>
+                        </apex:outputText>
+                        <!--<apex:outputLabel for="bas2" value="Basis"/>-->
+                        <apex:inputField style="margin-top:3px;" id="bas2" value="{!bof.Basis__c}" />
+                    </apex:pageBlockSectionItem>
+
+                   <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="otherfd" value="Other Fee Description"/>
+                       <apex:inputField style="margin-top:3px;" id="otherfd" value="{!bof.Other_Fee_Description__c}" >
+                       		<apex:actionSupport event="onchange" action="{!hidePaidAmount}" reRender="BillingOtherFee"  />
+                       </apex:inputField>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem rendered="{!!flag}">
+                        <apex:outputLabel for="paidAmt" value="Paid Amount"/>
+                        <apex:inputField style="margin-top:3px;" id="paidAmtd" value="{!bof.Paid_Amount__c}" html-disabled="true" />
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem rendered="{!flag}">
+                        <apex:outputText >
+                            <div class="requiredBlockCust">Paid Amount</div>
+                        </apex:outputText>
+                        <apex:inputField style="margin-top:3px;" id="paidAmt" value="{!bof.Paid_Amount__c}" />
+                    </apex:pageBlockSectionItem>
+                   
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="fa" value="Fee Amount"></apex:outputLabel>
+                        <apex:inputField style="margin-top:3px;" id="fa" value="{!bof.Fee_Amount__c}"/>
+                    </apex:pageBlockSectionItem>
+                    
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="sed" value="Service Effective Date"/>
+                        <apex:inputField style="margin-top:3px;" id="sed" value="{!bof.Service_Effective_Date__c}"/>
+                    </apex:pageBlockSectionItem>
+                    
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </div>
+    </apex:form>
+    <style>
+    	.requiredBlockCust:after{
+            color: rgb(194, 57, 52);
+            content: "*";
+            position: absolute;
+            right: -0.3rem;
+    		top: .225rem;
+        }
+    </style>
+</apex:page>

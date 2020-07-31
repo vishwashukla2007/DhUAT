@@ -1,0 +1,24 @@
+<aura:component  controller="CreatePCDQuestionAnswerRecord" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:isUrlAddressable" access="global" >
+    <aura:attribute name="accountName" type="String"/>
+    <aura:attribute name="accountid" type="String"/>
+    <aura:attribute name="taskid" type="String"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="ahrefvalue" type="String"/>
+    <aura:attribute name="vfHost" type="String" default="{!$Label.c.EV_URL}"/>
+    <aura:registerEvent name="appEvent" type="c:Apttus_Grid_AccountId_Event"/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />	
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.reInit}" />
+    
+    <lightning:card aura:id="card" variant="base"  class="card">
+         <lightning:layout>
+             <div class="slds-p-left_small"/>
+           <lightning:layoutitem>
+                <img style="width: 34px;height: 30px;" src="{!$Resource.FAF_icon}"/>
+           </lightning:layoutitem>
+             <div class="slds-p-left_small"/>
+           <lightning:layoutitem class="card"> 
+             <a href="{!'https://'+ v.vfHost + '/lightning/r/Account/' + v.accountid + '/view'}" style="color:black"><b>Client HUB -  {!v.accountName}</b></a>
+           </lightning:layoutitem> 
+         </lightning:layout>    
+    </lightning:card>
+</aura:component>

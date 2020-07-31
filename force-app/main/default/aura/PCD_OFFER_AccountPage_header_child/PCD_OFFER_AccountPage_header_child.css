@@ -1,0 +1,31 @@
+.THIS .cardstyle
+{
+  background-color: rgb(243,243,243);
+  height : 30px;
+  margin-top: 0px;
+  margin: 0px;
+}
+
+.THIS .card
+{
+  height : 40px;
+  background-color: rgb(243,243,243);
+  font-size: 13pt;
+  margin-top: 0px;
+  margin: 0px;
+}
+.THIS .slds-card__header{
+  background-color: rgb(243,243,243);
+  margin-top: 0px;
+  margin: 0px;
+}
+.THIS .slds-card__body{
+  background-color: rgb(243,243,243);
+  margin-top: 0px;
+  margin: 0px;
+}
+.THIS .slds-card__footer{
+   background-color: rgb(243,243,243);
+  margin-top: 0px;
+  margin: 0px;
+}

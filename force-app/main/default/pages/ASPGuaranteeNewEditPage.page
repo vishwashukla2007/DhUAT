@@ -1,0 +1,60 @@
+<apex:page standardController="Gnc_Guarantee__c" extensions="ASPGuaranteeNewEditClass" Title="Gnc Guarantee Edit" id="pg" lightningStylesheets="true"> 
+<apex:form id="frm">
+       <script>
+            function setFocusOnLoad() {
+                document.getElementById('{!$Component.pg:frm:PB:PBS2:PBSI1:year}').focus();
+            }   
+        </script>     
+         
+            <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+             <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+        <apex:pageBlock title="Gnc Guarantee Edit" id="PB" >     
+        <apex:pagemessages id="pmsg"></apex:pagemessages>    
+            <apex:pageBlockSection title="Gnc Guarantee Detail" id="PBS1" rendered="{!!hasDefaultErrors}">
+                <apex:outputField value="{!ASPGuaranteeObj.FAF_ID__c}" />
+                <apex:outputField value="{!ASPGuaranteeObj.Guarantee_Information__c}"/>
+             </apex:pageBlockSection>
+                 
+             <apex:pageBlockSection title="Gnc Guarantee Detail Information" id="PBS2" rendered="{!!hasDefaultErrors}">
+               <!--apex:inputField value="{!ASPGuaranteeObj.Year__c}" required="true"/-->
+               <apex:pageBlockSectionItem id="PBSI1">
+                   <apex:outputLabel for="yearPnl" value="Year" />
+                   <apex:outputPanel id="yearPnl">
+                      <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                       
+                       <apex:selectList value="{!ASPGuaranteeObj.Year__c}"  required="true" label="Year" id="year" size="1" onchange="changeYearVal(this.value);">
+                       <apex:selectOptions value="{!yearList}" />
+                        </apex:selectList>
+                         </div> 
+                   </apex:outputPanel>
+               </apex:pageBlockSectionItem>
+               <apex:outputLabel />
+               <apex:inputField value="{!ASPGuaranteeObj.LOB__c}" required="true"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!ASPGuaranteeObj.Channel__c}" required="true"/>
+               <apex:outputLabel />
+               <apex:inputField value="{!ASPGuaranteeObj.Per_Claim__c}" required="true"/>
+               <apex:outputLabel />
+            </apex:pageBlockSection> 
+            <apex:actionFunction name="changeYearVal" action="{!changeYearMeth}" reRender="PB" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!yearval}" value="" />
+            </apex:actionFunction>
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!saveUpdateASPGuaranteeObj}" title="Save" value="Save" reRender="pmsg, PB" rendered="{!!hasDefaultErrors}" oncomplete="window.scrollTo(0, 0);" status="status"/>
+                <apex:commandButton action="{!Cancel}" title="Cancel" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>    
+</apex:page>

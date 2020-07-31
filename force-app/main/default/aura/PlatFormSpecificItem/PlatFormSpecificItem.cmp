@@ -1,0 +1,358 @@
+<!-- PlatformSpecificItem is child component of PlatformSpecificManagement.It uses Lightning Data table to show
+platform records. It handels both Edit and View mode based on Boolean variable and in markup using auraif
+It also holds child components of three Lookups which display Carrier , Account and Group information Dynamically
+Lookup 1 displays Carrier information, It filters with Platform and FAF Account level
+Lookup 2 displays Account information, It filters with Platform, FAF Account and Carrier information
+Lookup 3 displays Group information, It filters with Platform, FAF Account, Carrier and Account information
+Lookup 2 is dependent on Lookup 1 and Lookup 3 deprends on 1, 2. It enables based on selection of parent lookup
+
+Child Components : Level1_Custom_Lookup , Level2_Custom_Lookup, Level3_Custom_Lookup
+Parent Component : PlatformSpecificManagement
+Server Controller : PlatformSpecificManagement
+Date : 10/01/2018
+
+-->
+<aura:component controller="PlatformSpecificManagement" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+    <aura:attribute name="pItem" type="Object"/>
+    <aura:attribute name="platFormValue" type="String" />
+    <aura:attribute name="highlighted" type="String" />
+    <aura:attribute name="duplicaterow" type="Integer" default="0"/>
+    <aura:attribute name="platFormItemvalu" type="Platform_Specifics__c[]"  default="{'sobjectType' : 'Platform_Specifics__c'}"/>
+    <aura:attribute name="platFormItemvaluo" type="Platform_Specifics__c[]" />
+    <aura:attribute name="recordIdentify" type="String" default=""/>
+    <aura:attribute name="AccountId" type="String" />
+    <aura:attribute name="FAFID" type="String" />
+    <aura:attribute name="isEditMode" type="Boolean" default="false"/>
+    <aura:attribute name="isDisplay" type="Boolean" default="false"/>
+    <aura:attribute name="isNew" type="Boolean" default="false"/>
+    <aura:attribute name="isEditModeParent" type="Boolean" default="false"/>
+    <aura:attribute name="isEditable" type="Boolean" />
+    
+     <aura:attribute name="nsfSectionRequired" type="Boolean" default="false"/>
+    <aura:attribute name="gstpSectionRequired" type="Boolean" default="false"/>
+    <aura:attribute name="sfSectionRequired" type="Boolean" default="false"/>
+    
+    <!-- Added to cater functionality to indentify individual record  -->
+    <aura:attribute name="indexPlatValue" type="Integer" />
+    <!--Added to perform operation during rendering of this component  -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:registerEvent name="RequiredField" type="c:Required_Field"/>
+    <aura:registerEvent name="LobRequired" type="c:LOB_Required"/>
+    <aura:registerEvent name="NotifySuccess" type="c:Required_Highlight"/>
+    <aura:registerEvent name="Duplicatecheck" type="c:Level_Duplicate_Validation"/>
+    <aura:registerEvent name="lookupvisibility" type="c:LevelLookupVisibilityPlatformChange"/>
+
+    <!--declare events hendlers for Level 1-->  
+    <aura:handler  event="c:Level_Save_ChangeValue" action="{!c.saveValue}"/>
+    <aura:handler name="change" value="{!v.isEditMode}" action="{!c.handleEditModeChange}"/> 
+    <aura:handler event="c:PlaformSpecificNewAction_Event" action="{!c.handleNewModeChange}"/>
+    <aura:handler event="c:PlatformSpecific_OnFocus_Event" action="{!c.onfocus}"/>
+    <aura:handler event="c:PlatformSpecific_OFFFocus_Event" action="{!c.offfocus}"/>
+    <!-- <aura:handler name="change" value="{!v.isEditMode}" action="{!c.handleEditModeChange}"/>  --> 
+    <aura:handler  event="c:Level1_Custom_CarrierAdd_Select" action="{!c.handleCarrierEvent}"/>
+    <aura:handler  event="c:Level1_Custom_CarrierAdd_WSelect" action="{!c.handleCarrierWEvent}"/>
+    <aura:handler  event="c:Level1_Custom_Lookup_SelectedRecords" action="{!c.handleComponentEvent}"/>
+    <aura:handler  event="c:Level1_Clear_SelectedValue" action="{!c.removeCarrierEvent}"/>
+     <!--declare events hendlers for Level 2-->  
+    <aura:handler  event="c:Level2_Custom_CarrierAdd_Select" action="{!c.handleCarrierEventlevel2}"/>
+    <aura:handler  event="c:Level2_Custom_CarrierAdd_Wselect" action="{!c.handleCarrierWEventlevel2}"/>
+    <aura:handler  event="c:Level2_Custom_Lookup_SelectedRecords" action="{!c.handleComponentEventlevel2}"/>
+    <aura:handler  event="c:Level2_Clear_SelectedValue" action="{!c.removeCarrierEventlevel2}"/>
+    <!--declare events hendlers for Level 3-->  
+    <aura:handler  event="c:Level3_Custom_CarrierAdd_Select" action="{!c.handleCarrierEventlevel3}"/>
+    <aura:handler  event="c:Level3_Custom_CarrierAdd_WSelect" action="{!c.handleCarrierWEventlevel3}"/>
+    <aura:handler  event="c:Level3_Custom_Lookup_SelectedRecords" action="{!c.handleComponentEventlevel3}"/>
+    <aura:handler  event="c:Level3_Clear_SelectedValue" action="{!c.removeCarrierEventlevel3}"/>
+    <aura:method name="sampleMethod" action="{!c.selectAllUnTicked}" description="Sample method with parameters">
+    <aura:attribute name="checked" type="Boolean" />
+    </aura:method>  
+    
+    <!--Added for GFRI button-->    
+    <aura:attribute name="checkboxGFRI" type="Boolean"  default="false"/>
+    <!--Added for GFRI button-->    
+    
+    <aura:if isTrue="{! !v.pItem.isNewDelete}">
+        <tr class="{!v.duplicaterow == '1' ? 'slds-is-selected highlight padding' : 'Red padding'}"  >
+            <td aura:id="checkbox" class="padding checkboxleft">
+                <aura:if isTrue="{!v.pItem.platformSpecific.Id==null}">
+                    <div>
+                        <a onclick="{!c.removeItem}" >Cancel</a>
+                    </div>
+                    <aura:set attribute="else">
+                        <div>
+                            <ui:inputCheckbox class="myCheckbox" aura:id="checkboxLeads" value="{!v.pItem.isSelected}" change="{!c.onChangeOfSelection}" />                           
+                        </div>      
+                    </aura:set>  
+                </aura:if>
+            </td>
+            <td aura:id="link" class="padding linkleft">
+                <aura:if isTrue="{!v.pItem.platformSpecific.Id!=null}">
+                    <div class="" title="">
+                        <a onclick="{!c.openPlatformSpecific}" data-attrId="{!v.pItem.platformSpecific.Id}" >{!v.pItem.platformSpecific.FAF_Client_Information__r.FAF_ID__r.Name}-{!v.pItem.platformSpecific.FAF_Client_Information__r.Name}-{!v.pItem.platformSpecific.Name}</a>
+                    </div>
+                     </aura:if>
+            </td>
+            <td aura:id="platform" class="padding platformleft">
+                <aura:if isTrue="{!v.pItem.platformSpecific.Id==null}">
+                    <ui:inputSelect class="widthAuto" aura:id="platformSelectOption" change="{!c.platFormChange}">
+                        <aura:iteration items="{!v.pItem.platformOptions}" var="item">
+                            <ui:inputSelectOption text="{!item.label}" label="{!item.label}"/>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!v.isEditMode}">
+                            <ui:inputSelect class="widthAuto" aura:id="editPlatformSelectOption" change="{!c.editPlatFormChange}">
+                                <aura:iteration items="{!v.pItem.platformOptions}" var="item">
+                                    <ui:inputSelectOption text="{!item.label}" label="{!item.label}"/>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                            <aura:set attribute="else">
+                                <div  class="" title="{!v.pItem.platformSpecific.Platform__c}">
+                                    {!v.pItem.platformSpecific.Platform__c}
+                                </div>
+                            </aura:set>  
+                        </aura:if>
+                    </aura:set>  
+                </aura:if>
+            </td>
+            <td aura:id="lob" class="padding lob">
+                <aura:if isTrue="{!v.pItem.platformSpecific.Id==null}">
+                    <ui:inputSelect class="widthAuto" aura:id="lobSelectOption" change="{!c.lobChange}">
+                        <aura:iteration items="{!v.pItem.lobOptions}" var="item">
+                            <ui:inputSelectOption text="{!item.label}" label="{!item.label}"/>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!v.isEditMode}">
+                            <ui:inputSelect class="widthAuto" aura:id="editlobSelectOption" change="{!c.editLobChange}">
+                                <aura:iteration items="{!v.pItem.lobOptions}" var="item">
+                                    <ui:inputSelectOption text="{!item.label}" label="{!item.label}"/>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                            <aura:set attribute="else">
+                                <div class="" title="{!v.pItem.platformSpecific.LOB__c}">
+                                    {!v.pItem.platformSpecific.LOB__c}
+                                </div>
+                            </aura:set>  
+                        </aura:if>
+                    </aura:set>  
+                </aura:if>
+            </td>
+            <td aura:id="instruction" class="padding instruction">
+                <aura:if isTrue="{!v.pItem.platformSpecific.Id==null}">
+                    <ui:inputSelect class="datewidth" aura:id="instructionSelectOption" value="{!v.pItem.platformSpecific.Instruction__c}" change="{!c.instructionsChange}">
+                        <aura:iteration items="{!v.pItem.instructionOptions}" var="item">
+                            <ui:inputSelectOption class="" text="{!item.label}" label="{!item.label}"/>
+                        </aura:iteration>
+                    </ui:inputSelect>
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!v.isEditMode}">
+                            <ui:inputSelect class="datewidth" aura:id="editInstructionSelectOption" value="{!v.pItem.platformSpecific.Instruction__c}" change="{!c.editInstructionsChange}">
+                                <aura:iteration items="{!v.pItem.instructionOptions}" var="item">
+                                    <ui:inputSelectOption text="{!item.label}" label="{!item.label}"/>
+                                </aura:iteration>
+                            </ui:inputSelect>
+                            <aura:set attribute="else">
+                                <div  title="{!v.pItem.platformSpecific.Instruction__c}">
+                                    {!v.pItem.platformSpecific.Instruction__c}
+                                </div>
+                            </aura:set>  
+                        </aura:if>
+                    </aura:set>  
+                </aura:if>
+            </td>
+            <td aura:id="level1id" class="padding level1id">
+                <div  title="{!v.pItem.platformSpecific.Level_1_ID__c}">
+                    <aura:if isTrue= "{!v.pItem.platformSpecific.Id==null}" >
+                       <div class="widthAuto" style="background-color: rgb(239,250,255)  !important;">
+                           <!--passing index vlaue to child component  -->
+                             <c:Level1_Custom_Lookup aura:id="ulk_NLevelOne" vAdd="{!v.pItem.platformSpecific.Platform__c == 'RxCLAIM' ? 'false' : 'true'}" 
+                                                   platform="{!v.pItem.platformSpecific.Platform__c}" lob= "{!v.pItem.platformSpecific.LOB__c}" 
+                                                   fafid = "{!v.pItem.platformSpecific.FAF_ID__c}" SelectedCarrier="{!v.pItem.platformSpecific.Level_1_Record_ID__r.Carrier_ID__c}"
+                                                   AccountId = "{!v.AccountId}" isLevelrequired="{!v.pItem.isLevelrequired}"  isnewpill ="true" recordIdentify = "{!v.recordIdentify}" indexValue="{!v.indexPlatValue}"
+                                                   />
+                           
+
+                       </div>
+                        <aura:set attribute="else">
+                            <aura:if isTrue="{!v.isEditMode}">
+                                <div  class="widthAuto" style="background-color: rgb(239,250,255)  !important;">
+                                  <c:Level1_Custom_Lookup aura:id="ulk_NLevelOne" vAdd="{!v.pItem.platformSpecific.Platform__c == 'RxCLAIM' ? 'false' : 'true'}"    
+                                                   SelectedCarrier ="{!v.pItem.platformSpecific.Level_1_Record_ID__r.Carrier_ID__c}" platform="{!v.pItem.platformSpecific.Platform__c}" lob= "{!v.pItem.platformSpecific.Level_2_ID__c}"  
+                                                   platformId="{!v.pItem.platformSpecific.Id}" fafid = "{!v.pItem.platformSpecific.FAF_ID__c}"
+                                                   AccountId = "{!v.AccountId}" iseditpill ="true" isLevelrequired="{!v.pItem.isLevelrequired}"  recordIdentify = "{!v.recordIdentify}"
+                                                   />
+                                 </div> 
+                                <aura:set attribute="else">
+                                    <div class="" title="" >
+                                        {!v.pItem.platformSpecific.Level_1_Record_ID__r.Carrier_ID__c}
+                                    </div>
+                                </aura:set>  
+                            </aura:if>
+                        </aura:set>  
+                    </aura:if>
+                </div> 
+            </td>
+            <td aura:id="level1name" class="padding level1name"><div title="{!v.pItem.platformSpecific.Level1_Name__c}">{!v.pItem.platformSpecific.Level1_Name__c}</div></td> 
+            <td class="padding level2id">
+                <div  title="{!v.pItem.platformSpecific.Level_2_ID__c}">
+                    <aura:if isTrue="{!v.pItem.platformSpecific.Id==null}">
+                        <div class="widthAuto" >
+                         		 <c:Level2_Custom_Lookup aura:id="ulk_NLevelTwo" vAdd="{!v.pItem.platformSpecific.Platform__c == 'RxCLAIM' ? 'false' : 'true'}"
+                                                   isLevel2Visible = "{!v.pItem.platformSpecific.Level_1_Record_ID__c != null ? 'false' : 'true'}"
+                                                   platform="{!v.pItem.platformSpecific.Platform__c}" lob= "{!v.pItem.platformSpecific.LOB__c}" 
+                                                   fafid = "{!v.pItem.platformSpecific.FAF_ID__c}" SelectedCarrier="{!v.pItem.platformSpecific.Level_1_Record_ID__r.Carrier_ID__c}"
+                                                   AccountId = "{!v.AccountId}" isnewpill ="true" CarrierId = "{!v.pItem.platformSpecific.Level_1_Record_ID__c}"
+                                                   recordIdentify = "{!v.recordIdentify}" indexValue="{!v.indexPlatValue}" SelectedAccount ="{!v.pItem.platformSpecific.Level_2_ID__c}"/>
+                       </div>
+                        <aura:set attribute="else">
+                            <aura:if isTrue="{!v.isEditMode}">
+                                <div class="widthAuto">
+                                  <c:Level2_Custom_Lookup aura:id="ulk_NLevelTwo" vAdd="{!v.pItem.platformSpecific.Platform__c == 'RxCLAIM' ? 'false' : 'true'}"    
+                                                   isLevel2Visible = "{!v.pItem.platformSpecific.Level_1_Record_ID__c != null ? 'false' : 'true'}"
+                                                   SelectedCarrier ="{!v.pItem.platformSpecific.Level_1_Record_ID__r.Carrier_ID__c}" platform="{!v.pItem.platformSpecific.Platform__c}" lob= "{!v.pItem.platformSpecific.LOB__c}"  
+                                                   platformId="{!v.pItem.platformSpecific.Id}" fafid = "{!v.pItem.platformSpecific.FAF_ID__c}" CarrierId = "{!v.pItem.platformSpecific.Level_1_Record_ID__c}"
+                                                   recordIdentify = "{!v.recordIdentify}" indexValue="{!v.indexPlatValue}" AccountId = "{!v.AccountId}" iseditpill ="true" SelectedAccount ="{!v.pItem.platformSpecific.Level_2_ID__c}"
+                                                   />
+                              </div> 
+                                <aura:set attribute="else">
+                                    <div title="">
+                                        {!v.pItem.platformSpecific.Level_2_ID__c}
+                                    </div>
+                                </aura:set>  
+                            </aura:if>
+                        </aura:set>  
+                    </aura:if> 
+                </div>
+            </td>
+            <td class="padding level3id" >
+                <div  title="{!v.pItem.platformSpecific.Level_3_ID__c}" >
+                    <aura:if isTrue="{!v.pItem.platformSpecific.Id==null}">
+                         <div class="widthAuto" style="z-index: 20000;">
+                             <c:Level3_Custom_LookUp aura:id="ulk_NLevelThree" vAdd="{!v.pItem.platformSpecific.Platform__c == 'RxCLAIM' ? 'false' : 'true'}"    
+                                                   isLevel3Visible = "{!v.pItem.platformSpecific.Level_2_record_ID__c != null ? 'false' : 'true'}"
+                                                   SelectedCarrier ="{!v.pItem.platformSpecific.Level_1_Record_ID__r.Carrier_ID__c}" SelectedCarrierName ="{!v.pItem.platformSpecific.Level_1_Record_ID__r.Carrier_Name__c}" 
+                                                   SelectedAccount ="{!v.pItem.platformSpecific.Level_2_ID__c}" SelectedAccountName ="{!v.pItem.platformSpecific.Level_1_Record_ID__r.Account_Name__c}" 
+                                                   platform="{!v.pItem.platformSpecific.Platform__c}" lob= "{!v.pItem.platformSpecific.LOB__c}"  
+                                                   platformId="{!v.pItem.platformSpecific.Id}" fafid = "{!v.pItem.platformSpecific.FAF_ID__c}" CarrierrowId = "{!v.pItem.platformSpecific.Level_1_Record_ID__c}" AccountrowId = "{!v.pItem.platformSpecific.Level_2_record_ID__c}"
+                                                   recordIdentify = "{!v.recordIdentify}" indexValue="{!v.indexPlatValue}" AccountId = "{!v.AccountId}" iseditpill ="true" SelectedGroup ="{!v.pItem.platformSpecific.Level_3_ID__c}"
+                                                   /> 
+
+                       </div>
+                        <aura:set attribute="else">
+                            <aura:if isTrue="{!v.isEditMode}">
+                                <div class="widthAuto height" style="z-index: 20000;">
+                           			  <c:Level3_Custom_LookUp aura:id="ulk_NLevelThree" vAdd="{!v.pItem.platformSpecific.Platform__c == 'RxCLAIM' ? 'false' : 'true'}"    
+                                                   isLevel3Visible = "{!v.pItem.platformSpecific.Level_2_record_ID__c != null ? 'false' : 'true'}"
+                                                   SelectedCarrier ="{!v.pItem.platformSpecific.Level_1_Record_ID__r.Carrier_ID__c}" SelectedCarrierName ="{!v.pItem.platformSpecific.Level_1_Record_ID__r.Carrier_Name__c}" 
+                                                   SelectedAccount ="{!v.pItem.platformSpecific.Level_2_ID__c}" SelectedAccountName ="{!v.pItem.platformSpecific.Level_1_Record_ID__r.Account_Name__c}" 
+                                                   platform="{!v.pItem.platformSpecific.Platform__c}" lob= "{!v.pItem.platformSpecific.LOB__c}"  
+                                                   platformId="{!v.pItem.platformSpecific.Id}" fafid = "{!v.pItem.platformSpecific.FAF_ID__c}" CarrierrowId = "{!v.pItem.platformSpecific.Level_1_Record_ID__c}" AccountrowId = "{!v.pItem.platformSpecific.Level_2_record_ID__c}"
+                                                   recordIdentify = "{!v.recordIdentify}" indexValue="{!v.indexPlatValue}" AccountId = "{!v.AccountId}" iseditpill ="true" SelectedGroup ="{!v.pItem.platformSpecific.Level_3_ID__c}"
+                                                   /> 
+                              </div> 
+                                <aura:set attribute="else">
+                                    <div title="">
+                                        {!v.pItem.platformSpecific.Level_3_ID__c}
+                                    </div>
+                                </aura:set>  
+                            </aura:if>
+                        </aura:set>  
+                    </aura:if>
+                </div>
+            </td>
+            <td class="padding effectivedate">
+                <aura:if isTrue="{!v.pItem.platformSpecific.Id==null}">
+                    <div>
+                        <ui:inputDate displayDatePicker="true"  change="{!c.handleDateChange}" format="MM-dd-yyyy"  disabled="{!v.pItem.disableEffectiveDate}" class="datewidth" value="{!v.pItem.platformSpecific.EffectiveDate__c}"/>
+                        <span class="eDateMsg" >{!v.pItem.isInvalidEffectiveDateMsg}</span>
+                    </div>
+                    
+                    <aura:set attribute="else">
+                        <aura:if isTrue="{!v.isEditMode}">
+                            <div>
+                                <ui:inputDate  displayDatePicker="true" change="{!c.handleDateChange}"  format="MM-dd-yyyy" disabled="{!v.pItem.disableEffectiveDate}"  class="datewidth" value="{!v.pItem.platformSpecific.EffectiveDate__c}"/>
+                            	<span class="eDateMsg" >{!v.pItem.isInvalidEffectiveDateMsg}</span>
+                            </div>
+                            <aura:set attribute="else">
+                                <div title="{!v.pItem.platformSpecific.EffectiveDate__c}">
+                                    <ui:outputDate class="widthAuto effectivedate" value="{!v.pItem.platformSpecific.EffectiveDate__c}" format="MM-dd-yyyy"/>
+                                </div>
+                            </aura:set>  
+                        </aura:if>
+                    </aura:set>  
+                </aura:if>
+            </td>
+            <td class="padding effectivedate" >
+            <aura:if isTrue="{!v.isEditable}"> 
+                <div aura:id="overlayLibdiv"  title=""> 
+                   
+                    <aura:if isTrue="{!v.pItem.platformSpecific.Id!= null}"> 
+                    	<a onclick="{!c.editDetails}" data-attriVal="{!v.pItem.platformSpecific.Id}" >Edit Details</a>     
+                    </aura:if>
+               </div> 
+
+            </aura:if>
+            </td>
+           
+            <td class="padding termed"><div class="" title="{!v.pItem.platformSpecific.Termed__c}">
+                <ui:outputCheckbox value="{!v.pItem.platformSpecific.Termed__c}"/>
+                </div></td>
+            <td class="padding termeddate"><div class="" title="{!v.pItem.platformSpecific.Termed_Date__c}">
+                	<ui:outputDate value="{!v.pItem.platformSpecific.Termed_Date__c}" format="MM-dd-yyyy"/>
+                </div></td>
+            <td class="padding specialtypharmacy"><div class="" title="{!v.pItem.platformSpecific.Specialty_Pharmacy_Benefit_Price_List__c}">{!v.pItem.platformSpecific.Specialty_Pharmacy_Benefit_Price_List__c}</div></td>
+           <!-- <td><div class="" title="{!v.pItem.platformSpecific.Specialty_Price_List__c}">{!v.pItem.platformSpecific.Specialty_Price_List__c}</div></td> -->
+            <td class="padding differentgstp"><div class="" title="{!v.pItem.platformSpecific.DifferentGSTPFormularyEffectiveDates__c}">
+                <ui:outputCheckbox value="{!v.pItem.platformSpecific.DifferentGSTPFormularyEffectiveDates__c}"/>
+                </div></td>
+            <td class="padding nonspecialtyformulary">
+                <aura:if isTrue="{!v.pItem.platformSpecific.Non_Specialty_Formulary_Choice__c!='Client Choice'}">
+                    <div class="" title="{!v.pItem.platformSpecific.Non_Specialty_Formulary_Choice__c}" style="color:gray">{!v.pItem.platformSpecific.Non_Specialty_Formulary_Choice__c}</div>
+                </aura:if>
+                <aura:if isTrue="{!v.pItem.platformSpecific.Non_Specialty_Formulary_Choice__c=='Client Choice'}">
+                        <div class="" title="{!v.pItem.platformSpecific.Non_Specialty_Formulary_Choice__c}">{!v.pItem.platformSpecific.Non_Specialty_Formulary_Choice__c}</div>
+                </aura:if>
+            </td>
+            <td class="padding nonspecialtyformularyeffdate"><div class="" title="{!v.pItem.platformSpecific.NonSpecialtyFormularyEffectiveDate__c}">
+                	<ui:outputDate value="{!v.pItem.platformSpecific.NonSpecialtyFormularyEffectiveDate__c}" format="MM-dd-yyyy"/>
+                </div>
+            </td>
+            <td class="padding nonspecialtyenddate"><div class="" title="{!v.pItem.platformSpecific.NonSpecialtyFormularyRebateEndDate__c}">
+                	<ui:outputDate value="{!v.pItem.platformSpecific.NonSpecialtyFormularyRebateEndDate__c}" format="MM-dd-yyyy"/>
+                </div>
+            </td>
+            <td class="padding textfields">
+                <aura:if isTrue="{!v.pItem.platformSpecific.GSTP_Choice__c!='Choice'}">
+                    <div class="" title="{!v.pItem.platformSpecific.GSTP_Choice__c}" style="color:gray">{!v.pItem.platformSpecific.GSTP_Choice__c}</div>
+                </aura:if>
+                <aura:if isTrue="{!v.pItem.platformSpecific.GSTP_Choice__c=='Choice'}">
+                        <div class="" title="{!v.pItem.platformSpecific.GSTP_Choice__c}">{!v.pItem.platformSpecific.GSTP_Choice__c}</div>
+                </aura:if>
+            </td>
+            <td class="padding textfields"><div class="" title="{!v.pItem.platformSpecific.GSTPEffectiveDate__c}">
+                	<ui:outputDate value="{!v.pItem.platformSpecific.GSTPEffectiveDate__c}" format="MM-dd-yyyy"/>
+                </div>
+            </td>
+            <td class="padding textfields"><div class="" title="{!v.pItem.platformSpecific.GSTPEndDate__c}">
+                	<ui:outputDate value="{!v.pItem.platformSpecific.GSTPEndDate__c}" format="MM-dd-yyyy"/>
+                </div></td>
+              <td class="padding textfields">
+                <aura:if isTrue="{!v.pItem.platformSpecific.Specialty_Formulary_Choice__c!='Client Choice'}">
+                    <div class="" title="{!v.pItem.platformSpecific.Specialty_Formulary_Choice__c}" style="color:gray">{!v.pItem.platformSpecific.Specialty_Formulary_Choice__c}</div>
+                </aura:if>
+                <aura:if isTrue="{!v.pItem.platformSpecific.Specialty_Formulary_Choice__c=='Cleint Choice'}">
+                        <div class="" title="{!v.pItem.platformSpecific.Specialty_Formulary_Choice__c}">{!v.pItem.platformSpecific.Specialty_Formulary_Choice__c}</div>
+                </aura:if>
+            </td>
+            <td class="padding textfields"><div class="" title="{!v.pItem.platformSpecific.SpecialtyFormularyEffectiveDate__c}">
+                	<ui:outputDate value="{!v.pItem.platformSpecific.SpecialtyFormularyEffectiveDate__c}" format="MM-dd-yyyy"/>
+                </div>
+            </td>
+            <td class="padding textfields"><div class="" title="{!v.pItem.platformSpecific.SpecialtyFormularyEndDate__c}">
+                	<ui:outputDate value="{!v.pItem.platformSpecific.SpecialtyFormularyEndDate__c}" format="MM-dd-yyyy"/>
+                </div>
+            </td>
+        </tr>
+    </aura:if>
+</aura:component>

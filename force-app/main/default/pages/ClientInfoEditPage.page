@@ -1,0 +1,728 @@
+<apex:page id="pg" standardController="Client_Information__c" extensions="clientInfomationDetails" title="Client Information Edit" lightningStylesheets="true"> 
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" />
+    <style>
+        #NewId{
+            display:none;
+        }
+    </style>
+    <style> 
+        div.hideCurrDate span.dateInput span.dateFormat{
+            display:none;
+        }
+        html, body {
+                overflow: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+    </style>     
+  <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        /* The Modal (background) */
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        /* Modal Content */
+        
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 50%;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+        /* Add Animation */
+        
+        @-webkit-keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0
+            }
+            to {
+                top: 0;
+                opacity: 1
+            }
+        }
+        
+        @keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0
+            }
+            to {
+                top: 0;
+                opacity: 1
+            }
+        }
+        
+        .modal-header {
+            padding: 0px;
+            height: 29px;
+            color: #ff0000;
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+            border-top-right-radius: .25rem;
+            border-top-left-radius: .25rem;
+            border-bottom: 2px solid rgb(221, 219, 218);
+            text-align: center;
+        }
+        
+        .modal-body {
+            padding: 10px 16px;
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+            color: #3c3d3e;
+        }
+        
+        .modal-footer {
+            padding: 5px;
+            padding-right: 4px;
+            text-align: right;
+            color: #000000;
+            border-top: 2px solid rgb(221, 219, 218);
+            background-color: rgb(243, 242, 242);
+            border-bottom-left-radius: .25rem;
+            border-bottom-right-radius: .25rem;
+        }
+        
+        .button {
+            background-color: #4CAF50;
+            /* Green */
+            border: none;
+            color: white;
+            padding: 1px 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 2px 2px;
+            -webkit-transition-duration: 0.4s;
+            /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius: 20px;
+        }
+        
+        .button2 {
+            background-color: rgba(0, 68, 135, 1.0);
+            color: white;
+            border: 2px solid rgba(0, 68, 135, 1.0);
+            border-radius: 5px;
+            width: 70px;
+            height: 28px;
+        }
+        
+        .button2:hover {
+            background-color: #002080;
+            color: white;
+        }
+        
+        .button5 {
+            background-color: #555555;
+            color: white;
+            border: 2px solid #555555;
+            border-radius: 5px;
+            width: 62px;
+            height: 33px;
+        }
+        
+        .button5:hover {
+            background-color: #262626;
+            color: white;
+        }
+
+    </style>
+        <style type="text/css">
+.myClass2{
+ background-color: rgba(0, 68, 135, 1.0) !important;
+            color: white !important;
+            border: 2px solid rgba(0, 68, 135, 1.0) !important;
+            border-radius: 5px;
+            width: 80px;
+            height: 32px;
+            text-align: center !important;
+}
+.myClass2:hover{
+     background-color: #262626 !important;
+            color: white !important;
+             text-align: center !important;
+.myClass5{
+ background-color: #555555 !important;
+            color: white !important;
+            border: 2px solid #555555 !important;
+            border-radius: 5px;
+            width: 80px;
+            height: 34px;
+            text-align: center !important;
+}
+.myClass5:hover{
+     background-color: #262626 !important;
+            color: white !important;
+             text-align: center !important;
+}
+</style>
+    <script>
+    function openEscalatingPriceSelectedWaring(escalatingPrice){
+            //console.log('test'); 
+            var checkBoxValue = document.getElementById(escalatingPrice);
+            //console.log(checkBoxValue.checked);
+            if(!checkBoxValue.checked){
+                //alert('here');
+                var notificationMessageDiv = $("[id$='myModal1']");
+                //console.log('here' + notificationMessageDiv);
+                notificationMessageDiv.show();     
+            }
+            else{
+                callEscalatingPricingSelectedFunction();
+            }
+        }
+        function closeEscalatingSelectedWaring(){                     
+            //document.getElementById(('{!$Component.pg.frm.PB.PBS2.admFeeType}')).checked = true;
+            var notificationMessageDiv = $("[id$='myModal1']");
+            notificationMessageDiv.hide();                    
+        }
+        function validateEndDate(YR1END){
+            var endDateElement = document.getElementById(YR1END);
+            var endDateValue = endDateElement.value;
+            console.log('end date value ' + endDateValue);
+            if(endDateValue != null && endDateValue != ''){
+                var endDateDateValue = new Date(endDateValue);
+                var compareDateValue = new Date(endDateDateValue.getFullYear(), endDateDateValue.getMonth() + 1, 0);
+                if(endDateDateValue.getDate() != compareDateValue.getDate()){
+                    var notificationMessageDiv = $("[id$='endDateModel']");
+                    notificationMessageDiv.show();
+                }
+            }
+        }
+        function validateStartDate(YR1BG){
+            var startDateElement = document.getElementById(YR1BG);
+            var startDateValue = startDateElement.value;
+            console.log('start date value ' + startDateValue);
+            if(startDateValue != null && startDateValue != ''){
+                var startDateDateValue = new Date(startDateValue);
+                if(startDateDateValue.getDate() != 1 ){
+                    var notificationMessageDiv = $("[id$='startDateModel']");
+                    notificationMessageDiv.show();
+                }
+            }
+        }
+        function validateEndDate2(YR2END){
+            var endDateElement = document.getElementById(YR2END);
+            var endDateValue = endDateElement.value;
+             console.log('end date value ' + endDateValue);
+            if(endDateValue != null && endDateValue != ''){
+                var endDateDateValue = new Date(endDateValue);
+                var compareDateValue = new Date(endDateDateValue.getFullYear(), endDateDateValue.getMonth() + 1, 0);
+                if(endDateDateValue.getDate() != compareDateValue.getDate()){
+                    var notificationMessageDiv = $("[id$='endDateModel']");
+                    notificationMessageDiv.show();
+                }
+            }
+        }
+        function validateStartDate2(YR2BG){
+            var startDateElement = document.getElementById(YR2BG);
+            var startDateValue = startDateElement.value;
+             console.log('start date value ' + startDateValue);
+            if(startDateValue != null && startDateValue != ''){
+                var startDateDateValue = new Date(startDateValue);
+                if(startDateDateValue.getDate() != 1){
+                    var notificationMessageDiv = $("[id$='startDateModel']");
+                    notificationMessageDiv.show();
+                }
+            }
+        }
+         function validateEndDate3(YR3END){
+            var endDateElement = document.getElementById(YR3END);
+            var endDateValue = endDateElement.value;
+            console.log('end date value ' + endDateValue);
+            if(endDateValue != null && endDateValue != ''){
+                var endDateDateValue = new Date(endDateValue);
+                var compareDateValue = new Date(endDateDateValue.getFullYear(), endDateDateValue.getMonth() + 1, 0);
+                if(endDateDateValue.getDate() != compareDateValue.getDate()){
+                    var notificationMessageDiv = $("[id$='endDateModel']");
+                    notificationMessageDiv.show();
+                }
+            }
+        }
+        function validateStartDate3(YR3BG){
+            var startDateElement = document.getElementById(YR3BG);
+            var startDateValue = startDateElement.value;
+             console.log('start date value ' + startDateValue);
+            if(startDateValue != null && startDateValue != ''){
+                var startDateDateValue = new Date(startDateValue);
+                if(startDateDateValue.getDate() != 1){
+                    var notificationMessageDiv = $("[id$='startDateModel']");
+                    notificationMessageDiv.show();
+                }
+            }
+        }
+         function validateEndDate4(YR4END){
+            var endDateElement = document.getElementById(YR4END);
+            var endDateValue = endDateElement.value;
+             console.log('end date value ' + endDateValue);
+            if(endDateValue != null && endDateValue != ''){
+                var endDateDateValue = new Date(endDateValue);
+                var compareDateValue = new Date(endDateDateValue.getFullYear(), endDateDateValue.getMonth() + 1, 0);
+                if(endDateDateValue.getDate() != compareDateValue.getDate()){
+                    var notificationMessageDiv = $("[id$='endDateModel']");
+                    notificationMessageDiv.show();
+                }
+            }
+        }
+        function validateStartDate4(YR4BG){
+            var startDateElement = document.getElementById(YR4BG);
+            var startDateValue = startDateElement.value;
+             console.log('start date value ' + startDateValue);
+            if(startDateValue != null && startDateValue != ''){
+                var startDateDateValue = new Date(startDateValue);
+                if(startDateDateValue.getDate() != 1){
+                    var notificationMessageDiv = $("[id$='startDateModel']");
+                    notificationMessageDiv.show();
+                }
+            }
+        }
+         function validateEndDate5(YR5END){
+            var endDateElement = document.getElementById(YR5END);
+            var endDateValue = endDateElement.value;
+             console.log('end date value ' + endDateValue);
+            if(endDateValue != null && endDateValue != ''){
+                var endDateDateValue = new Date(endDateValue);
+                var compareDateValue = new Date(endDateDateValue.getFullYear(), endDateDateValue.getMonth() + 1, 0);
+                if(endDateDateValue.getDate() != compareDateValue.getDate()){
+                    var notificationMessageDiv = $("[id$='endDateModel']");
+                    notificationMessageDiv.show();
+                }
+            }
+        }
+        function validateStartDate5(YR5BG){
+            var startDateElement = document.getElementById(YR5BG);
+            var startDateValue = startDateElement.value;
+             console.log('start date value ' + startDateValue);
+            if(startDateValue != null && startDateValue != ''){
+                var startDateDateValue = new Date(startDateValue);
+                if(startDateDateValue.getDate() != 1){
+                    var notificationMessageDiv = $("[id$='startDateModel']");
+                    notificationMessageDiv.show();
+                }
+            }
+        }
+         function validateContractEnd(ContractEnd){
+            var endDateElement = document.getElementById(ContractEnd);
+            var endDateValue = endDateElement.value;
+             console.log('end date value ' + endDateValue);
+            if(endDateValue != null && endDateValue != ''){
+                var endDateDateValue = new Date(endDateValue);
+                var compareDateValue = new Date(endDateDateValue.getFullYear(), endDateDateValue.getMonth() + 1, 0);
+                if(endDateDateValue.getDate() != compareDateValue.getDate()){
+                    var notificationMessageDiv = $("[id$='ContractEndModel']");
+                    notificationMessageDiv.show();
+                }
+            }
+        }
+        function validateContractEff(ContractEff){
+            var startDateElement = document.getElementById(ContractEff);
+            var startDateValue = startDateElement.value;
+             console.log('start date value ' + startDateValue);
+            if(startDateValue != null && startDateValue != ''){
+                var startDateDateValue = new Date(startDateValue);
+                if(startDateDateValue.getDate() != 1){
+                    var notificationMessageDiv = $("[id$='ContractEffModel']");
+                    notificationMessageDiv.show();
+                }
+            }
+        }
+        function validatePricingtEff(pricingEffectiveDate){
+            var startDateElement = document.getElementById(pricingEffectiveDate);
+            var startDateValue = startDateElement.value;
+            console.log('start date value ' + startDateValue);
+            if(startDateValue != null && startDateValue != ''){
+                var startDateDateValue = new Date(startDateValue);
+                if(startDateDateValue.getDate() != 1){
+                    var notificationMessageDiv = $("[id$='PricingEffModel']");
+                    notificationMessageDiv.show();
+                }
+            }
+        }
+        function validatePricingEffectiveDate(PricingEffectiveDate, RebateEffectiveDate){
+            var PricingEffectiveDateElement = document.getElementById(PricingEffectiveDate);
+            var PricingEffectiveDateValue = PricingEffectiveDateElement.value;
+            
+            var RebateEffectiveDateElement = document.getElementById(RebateEffectiveDate);
+            var RebateEffectiveDateValue = RebateEffectiveDateElement.value;
+            if(PricingEffectiveDateValue != RebateEffectiveDateValue && RebateEffectiveDateValue != '' ){
+                var RebateEffectiveDateValueToDate = new Date(RebateEffectiveDateValue);
+                var PricingEffectiveDateValueToDate = new Date(PricingEffectiveDateValue);
+                var quarter = Math.floor((PricingEffectiveDateValueToDate.getMonth() / 3));
+                
+                if(RebateEffectiveDateValueToDate.getDate() != 1){
+                    var notificationMessageDiv = $("[id$='dateModel']");
+                    notificationMessageDiv.show();
+                }
+                else if(RebateEffectiveDateValueToDate.getFullYear() < PricingEffectiveDateValueToDate.getFullYear()){
+                    var notificationMessageDiv = $("[id$='dateModel']");
+                    notificationMessageDiv.show();
+                }
+                else if(RebateEffectiveDateValueToDate.getFullYear() ==  PricingEffectiveDateValueToDate.getFullYear() && quarter * 3 >= RebateEffectiveDateValueToDate.getMonth()){
+                    var notificationMessageDiv = $("[id$='dateModel']");
+                    notificationMessageDiv.show();
+                }
+                else if(RebateEffectiveDateValueToDate.getDate() == 1 && RebateEffectiveDateValueToDate.getMonth() != 0 && RebateEffectiveDateValueToDate.getMonth() != 3 && RebateEffectiveDateValueToDate.getMonth() != 6 && RebateEffectiveDateValueToDate.getMonth() != 9){
+                    var notificationMessageDiv = $("[id$='dateModel']");
+                    notificationMessageDiv.show();
+                }
+                /**
+                var quarterFirstDate = new Date(PricingEffectiveDateValueToDate.getFullYear(), quarter * 3, 1);
+                if(quarterFirstDate.getFullYear() != RebateEffectiveDateValueToDate.getFullYear() || quarterFirstDate.getMonth() != RebateEffectiveDateValueToDate.getMonth() || quarterFirstDate.getDate() != RebateEffectiveDateValueToDate.getDate()){
+                    var notificationMessageDiv = $("[id$='dateModel']");
+                    notificationMessageDiv.show();
+                }**/
+            }
+            /**var RebateEffectiveDateElement = document.getElementById(RebateEffectiveDate);
+            var RebateEffectiveDateValue = RebateEffectiveDateElement.value;
+            console.log('PricingEffectiveDateValue' + PricingEffectiveDateValue);
+            console.log('RebateEffectiveDate' + RebateEffectiveDate);
+            if(PricingEffectiveDateValue != RebateEffectiveDateValue){
+                var RebateEffectiveDateValueToDate = new Date(RebateEffectiveDateValue);
+                var PricingEffectiveDateValueToDate = new Date(PricingEffectiveDateValue);
+                var quarter = Math.floor((RebateEffectiveDateValueToDate.getMonth() / 3));
+                var quarterFirstDate = new Date(RebateEffectiveDateValueToDate.getFullYear(), quarter * 3, 1);
+                if(quarterFirstDate.getFullYear() != PricingEffectiveDateValueToDate.getFullYear() || quarterFirstDate.getMonth() != PricingEffectiveDateValueToDate.getMonth() || quarterFirstDate.getDate() != PricingEffectiveDateValueToDate.getDate()){
+                    var notificationMessageDiv = $("[id$='dateModel']");
+                    notificationMessageDiv.show();
+                }
+            }**/
+        }
+        function closevalidatePricingEffectiveDateWaring(){                  
+            //document.getElementById(('{!$Component.pg.frm.PB.PBS2.admFeeType}')).checked = true;
+            var notificationMessageDiv = $("[id$='dateModel']");
+            notificationMessageDiv.hide();  
+            var notificationMessageDiv = $("[id$='endDateModel']");
+            notificationMessageDiv.hide();
+            var notificationMessageDiv = $("[id$='startDateModel']");
+            notificationMessageDiv.hide();  
+            var notificationMessageDiv = $("[id$='ContractEffModel']");
+            notificationMessageDiv.hide();     
+            var notificationMessageDiv = $("[id$='ContractEndModel']");
+            notificationMessageDiv.hide();   
+            var notificationMessageDiv = $("[id$='PricingEffModel']");
+            notificationMessageDiv.hide(); 
+        }
+    
+    
+        function spinnerOnFunc(){
+            document.getElementById("NewId").style.display = "block";
+        }
+        function spinnerOffFunc(){
+            document.getElementById("NewId").style.display = "none";
+        }
+        function openEscalatingPopUp(){
+            document.getElementById("escalatingPopUp").className = document.getElementById("escalatingPopUp").className.replace( /(?:^|\s)slds-fade-in-closed(?!\S)/g ,' slds-fade-in-open')
+            return true;
+        }
+    </script>
+    <apex:outputPanel rendered="{!isInValid }">
+        <apex:form >
+        <apex:pageBlock >
+           <font size="3">Sales user can edit Client Information when Client Subtype is Coalition Master, TPA Master, and Health Plan Master Only</font> 
+       
+         <apex:pageBlockButtons location="bottom" >
+                <apex:commandButton value="Ok" action="{!cancel}"/>
+         </apex:pageBlockButtons>
+         </apex:pageBlock>
+       </apex:form>
+    </apex:outputPanel>
+     <apex:outputPanel rendered="{!isPriv }">
+        <apex:form >
+        <apex:pageBlock >
+           <font size="3">{!$Label.Apttus_priv_message}</font>    
+         <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="OK" action="{!cancel}"/>
+         </apex:pageBlockButtons>
+         </apex:pageBlock>
+       </apex:form>
+    </apex:outputPanel>
+    <apex:outputPanel rendered="{!!OR(isInValid,isPriv)}">
+    <c:CustomLookupScriptVC objectName="Consulting_Firm__c" />
+    <div class="slds-spinner_container" id="NewId" >
+        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div>
+    <apex:form id="theForm" >
+    <apex:pagemessages id="pmsg"></apex:pagemessages>
+    
+        <apex:actionFunction name="methodOneInJavascript" action="{!rebateEffectiveDate}" rerender="block1" oncomplete="spinnerOffFunc()"/>
+        <apex:actionFunction action="{!escalatingPriceSelected}" name="callEscalatingPricingSelectedFunction" reRender="epPBSPanel"/>
+        <!-- <apex:actionFunction name="escalatingPrc" action="{!escalatingPricing}" reRender="epPBSPanel"/> -->
+        <apex:pagemessages escape="false"/> 
+         <div class="modal" id="myModal1" style="height: 100%;display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><center>WARNING</center></h2>
+                </div>
+                <div class="modal-body">
+                        <p>
+                        <center>
+                          Are you sure you want to delete the Escalating Pricing Information?   
+                          </center>                      
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <apex:commandButton styleClass="button myClass2" value="Continue" action="{!yesDeleteEscaltingPrice}" oncomplete="closeEscalatingSelectedWaring()" rerender="block1,epPBSPanel"/>
+                        <apex:commandButton styleClass="button button5" value="Cancel" action="{!cancelPopUp}" oncomplete="closeEscalatingSelectedWaring()" rerender="block1"/>                    
+                     </div>
+            </div>
+         </div>
+        <div class="modal" id="dateModel" style="height: 100%;display: none;">
+           <div class="modal-content">
+                <div class="modal-header">
+                    <h2><center>WARNING</center></h2>
+                </div>
+                <div class="modal-body">
+                        <p>
+                         <center>
+                          The Rebate Effective Date is not same as Pricing Effective Date or the first date of a following quarter
+                         </center>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <apex:commandButton styleClass="button myClass2" value="OK" onclick="closevalidatePricingEffectiveDateWaring()" rerender="dummy"/>
+                     </div>
+            </div>
+         </div>
+        <div class="modal" id="endDateModel" style="height: 100%;display: none;">
+           <div class="modal-content">
+                <div class="modal-header">
+                    <h2><center>WARNING</center></h2>
+                </div>
+                <div class="modal-body">
+                        <p>
+                         <center>
+                          Entered Escalating Pricing End Date is not the last date of the month.
+                         </center>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <apex:commandButton styleClass="button myClass2" value="OK" onclick="closevalidatePricingEffectiveDateWaring()" rerender="dummy"/>
+                       </div>
+            </div>
+         </div>
+        <div class="modal" id="startDateModel" style="height: 100%;display: none;">
+           <div class="modal-content">
+                <div class="modal-header">
+                    <h2><center>WARNING</center></h2>
+                </div>
+                <div class="modal-body">
+                        <p>
+                         <center>
+                          Entered Escalating Pricing Begin Date is not the first date of the month.
+                         </center>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <apex:commandButton styleClass="button myClass2" value="OK" onclick="closevalidatePricingEffectiveDateWaring()" rerender="dummy"/>
+                       </div>
+            </div>
+         </div>  
+        <div class="modal" id="ContractEffModel" style="height: 100%;display: none;">
+           <div class="modal-content">
+                <div class="modal-header">
+                    <h2><center>WARNING</center></h2>
+                </div>
+                <div class="modal-body">
+                        <p>
+                         <center>
+                          Entered Contract Effective Date is not the first date of the month.
+                         </center>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <!--<apex:commandButton styleClass="button myClass2" value="OK" onclick="closevalidatePricingEffectiveDateWaring()" rerender="dummy"/>-->
+                       
+                        <button class="button button5" type="button" rerender="dummy" onclick="closevalidatePricingEffectiveDateWaring()">OK</button>
+                        </div>
+            </div>
+         </div>   
+        <div class="modal" id="ContractEndModel" style="height: 100%;display: none;">
+           <div class="modal-content">
+                <div class="modal-header">
+                    <h2><center>WARNING</center></h2>
+                </div>
+                <div class="modal-body">
+                        <p>
+                         <center>
+                          Entered Contract End Date is not the last date of the month.
+                         </center>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <apex:commandButton styleClass="button myClass2" value="OK" onclick="closevalidatePricingEffectiveDateWaring()" rerender="dummy"/>
+                       </div>
+            </div>
+         </div>  
+        <div class="modal" id="PricingEffModel" style="height: 100%;display: none;">
+           <div class="modal-content">
+                <div class="modal-header">
+                    <h2><center>WARNING</center></h2>
+                </div>
+                <div class="modal-body">
+                        <p>
+                         <center>
+                          Entered Pricing Effective Date is not the first date of the month.
+                         </center>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <apex:commandButton styleClass="button myClass2" value="OK" onclick="closevalidatePricingEffectiveDateWaring()" rerender="dummy"/>
+                       </div>
+            </div>
+         </div>  
+        <div class="hideCurrDate">
+         <apex:pageBlock title="Client Information Edit" id="block1">
+            <apex:pageBlockSection title="Client Information Edit" collapsible="false">
+                <!--<apex:outputText value="{!clientInfo.CreatedBy.Name}"  label="CreatedBy"/> -->
+                <apex:inputField value="{!clientInfo.FAF_ID__c}" required="true"/>
+                <apex:inputField value="{!clientInfo.Consultant_Name__c}" id="lookup_Consulting"/> 
+             <!--   <apex:inputField value="{!clientInfo.AccountTriggerFlag__c}"/> -->
+                 
+                
+                <apex:inputField value="{!clientInfo.Master_Client_Name__c}" rendered="{!hideClientName}"/>
+                <apex:outputField value="{!clientInfo.Master_Client_Name__c}" rendered="{!!hideClientName}"/>
+                <apex:inputField value="{!clientInfo.Release_FAF__c}"/>              
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="FAF Contract Information" collapsible="false">
+                <apex:inputField value="{!clientInfo.Contract_Effective_Date__c}" onchange="validateContractEff('{!$Component.ContractEff}');" id="ContractEff"/>
+                <apex:inputField value="{!clientInfo.Pricing_Effective_Date__c}" onchange="validatePricingtEff('{!$Component.pricingEffectiveDate}');methodOneInJavascript();spinnerOnFunc()" id="pricingEffectiveDate" rendered="{!hidePricingEffective}"/> 
+                <apex:pageBlockSectionItem rendered="{!!hidePricingEffective}">
+                    <apex:outputLabel value="Pricing Effective Date"/>
+                    <apex:outputText value="{0,date,MM/dd/YYYY}">
+                        <apex:param value="{!clientInfo.Pricing_Effective_Date__c}"/>
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!clientInfo.Contract_End_Date__c}" onchange="validateContractEnd('{!$Component.ContractEnd}');" id="ContractEnd"/>
+                <apex:inputField value="{!clientInfo.Rebate_Effective_Date__c}" onchange="validatePricingEffectiveDate('{!$Component.pricingEffectiveDate}', '{!$Component.RebateEffectiveDate}');" id="RebateEffectiveDate" rendered="{!hidePricingEffective}"/> 
+
+                <apex:pageBlockSectionItem rendered="{!!hidePricingEffective}">
+                    <apex:outputLabel value="Rebate Effective Date"/>
+                    <apex:outputText value="{0,date,MM/dd/YYYY}">
+                        <apex:param value="{!clientInfo.Rebate_Effective_Date__c}"/>
+                    </apex:outputText>
+                </apex:pageBlockSectionItem>                
+                <apex:inputField value="{!clientInfo.Early_Pricing__c}"/>
+                <apex:inputField value="{!clientInfo.Escalating_Pricing__c}" onchange="openEscalatingPriceSelectedWaring('{!$Component.EscalatingPricing}')" id="EscalatingPricing">
+                </apex:inputField>
+            </apex:pageBlockSection>
+             
+            <apex:outputPanel id="epPBSPanel">
+                <apex:pageBlockSection title="Escalating Pricing" collapsible="false" id="epPBS" rendered="{!dispEscalatingPrice}">          
+                    <apex:inputField value="{!clientInfo.Year_1__c}"/>
+                    <apex:inputField value="{!clientInfo.Year_1_Begin_Date__c}" onchange="validateStartDate('{!$Component.YR1BG}');" id="YR1BG"/>
+                    <apex:outputLabel />
+                    <apex:inputField value="{!clientInfo.Year_1_End_Date__c}" onchange="validateEndDate('{!$Component.YR1END}');" id="YR1END"/>
+        
+                    <apex:inputField value="{!clientInfo.Year_2__c}"/>
+                    <apex:inputField value="{!clientInfo.Year_2_Begin_Date__c}" onchange="validateStartDate2('{!$Component.YR2BG}');" id="YR2BG"/>
+                    <apex:outputLabel />
+                    <apex:inputField value="{!clientInfo.Year_2_End_Date__c}" onchange="validateEndDate2('{!$Component.YR2END}');" id="YR2END"/>
+              
+                    <apex:inputField value="{!clientInfo.Year_3__c}"/>
+                    <apex:inputField value="{!clientInfo.Year_3_Begin_Date__c}" onchange="validateStartDate3('{!$Component.YR3BG}');" id="YR3BG"/>
+                    <apex:outputLabel />
+                    <apex:inputField value="{!clientInfo.Year_3_End_Date__c}" onchange="validateEndDate3('{!$Component.YR3END}');" id="YR3END"/> 
+                    
+                    <apex:inputField value="{!clientInfo.Year_4__c}"/>
+                    <apex:inputField value="{!clientInfo.Year_4_Begin_Date__c}" onchange="validateStartDate4('{!$Component.YR4BG}');" id="YR4BG"/>
+                    <apex:outputLabel />
+                    <apex:inputField value="{!clientInfo.Year_4_End_Date__c}" onchange="validateEndDate4('{!$Component.YR4END}');" id="YR4END"/>
+                    
+                    <apex:inputField value="{!clientInfo.Year_5__c}"/>
+                    <apex:inputField value="{!clientInfo.Year_5_Begin_Date__c}" onchange="validateStartDate5('{!$Component.YR5BG}');" id="YR5BG"/>
+                    <apex:outputLabel />
+                    <apex:inputField value="{!clientInfo.Year_5_End_Date__c}" onchange="validateEndDate5('{!$Component.YR5END}');" id="YR5END"/>
+                </apex:pageBlockSection>
+            </apex:outputPanel>
+            <apex:pageBlockSection title="Additional Information" collapsible="false">
+                <apex:inputField value="{!clientInfo.Additional_Client_Info__c }" style="width:800px"/>
+              <!--  <apex:inputField value="{!clientInfo.Approval_Option__c}"/> -->
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!save1}" reRender="pmsg, popupMsgonSave"/>
+                <apex:commandButton value="Cancel" action="{!cancel}"/>
+            </apex:pageBlockButtons>
+            
+            <apex:actionFunction name="deleteRecords" action="{!deleteRecordsAction}" reRender="pmsg" oncomplete="" status="status">
+                <apex:param name="param1" assignTo="{!popupActionValue}" value="" />
+            </apex:actionFunction> 
+        </apex:pageBlock>
+        <!-- The Modal -->
+        <div id="myPopModal1" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2 style="font-size: 1.5em;font-weight: bold;" ><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p>Records were identified with specific Escalating Pricing Years which have been removed on Client Information. Do you want to go ahead and delete those existing records utilizing the removed Escalating Pricing Years information?</p>
+              
+            </div>
+            
+            <div class="modal-footer">              
+              <button class="button button2" style="color : white;" type="button" onclick="popupContinue()">Continue</button>
+              <button class="button button5" style="color : white;" type="button" onclick="popupCancel()">Cancel</button>
+            </div>
+          </div>
+
+        </div>
+        <apex:outputpanel id="popupMsgonSave">
+        <script>
+            //var popUpBoolVar = {!popupBool};
+            var valueChangeBoolVar = {!valueChangeBool};
+            
+            if(valueChangeBoolVar){
+                
+                //alert(popUpBoolVar);
+                //alert(valueChangeBoolVar);
+                //here add your popup
+                var modal = document.getElementById('myPopModal1');
+                modal.style.display = "block";
+            
+            }
+            
+            function popupContinue(){
+            
+                deleteRecords('Continue');
+                var modal = document.getElementById('myPopModal1');
+                modal.style.display = "none"; 
+            }
+            function popupCancel(){
+                //deleteRecords('Cancel');
+                var modal = document.getElementById('myPopModal1');
+                modal.style.display = "none";           
+            }
+        </script>
+        </apex:outputpanel>
+       </div>
+    </apex:form>
+    </apex:outputpanel>
+</apex:page>

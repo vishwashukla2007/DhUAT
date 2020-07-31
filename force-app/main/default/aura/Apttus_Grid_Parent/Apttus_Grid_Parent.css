@@ -1,0 +1,86 @@
+.THIS .container {
+    width : 100%;
+}
+.THIS .slds-modal__container{
+	width: 80% !important;
+	max-width: 80% !important;
+}
+.THIS .right-align {
+    text-align: right;
+}
+
+.THIS .left-align {
+    text-align: left;
+}
+.THIS .right-align {
+    text-align: right;
+}
+.THIS .initheight {
+    height: 50%;
+    width:90%;
+    max-width: 90%;
+}
+.THIS .finalheight {
+    height: 100%;
+    width:90%;
+    max-width: 90%;
+}
+
+.THIS .slds-spinner_container  {
+    background-color: white;
+    height:25%;
+    width:30%;
+    top:20%;
+    left:50%;
+}
+.THIS .xyz {
+    display: none;
+}
+.THIS .uiInput--checkbox {
+    display: inline-block !important;
+}
+.THIS .slds-form-element__label {
+    font-weight: 800!important; 
+    font-size: var(--lwc-fontSize6,0.8125rem)!important;
+}
+  
+ .THIS .slds-checkbox_faux 
+{
+     
+} 
+.THIS .checkboxzoom 
+{
+   Zoom: 150%;
+}
+.THIS .widthIcn {
+    width:8px;
+}
+
+.THIS .widthTextClass {
+    width:39px;
+    padding: 0px;
+}
+.THIS .slds-spinner_container  {
+    background-color: white;
+    height:25%;
+    width:30%;
+    top:40%;
+    left:50%;
+}
+.THIS .button {
+    width:1370px!important;
+    height:60px!important;
+    left:110px!important;
+    font-size: 1rem !important;
+}
+.THIS .buttonmail {
+    width:1370px!important;
+    height:60px!important;
+    left:110px!important;
+    font-size: 1rem !important;
+}   
+.THIS .buttonadmin {
+    width:1480px!important;
+    height:60px!important;
+    font-size: 1rem !important;
+}

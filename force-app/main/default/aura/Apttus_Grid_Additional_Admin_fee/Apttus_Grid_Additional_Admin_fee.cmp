@@ -1,0 +1,339 @@
+<aura:component controller="PCD_AdminFees_MultipleLOB" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="fafid" type="String"/>
+    <aura:attribute name="ali" type="String"/>
+    <aura:attribute name="selectedtabId" type="String" />
+     <aura:attribute name="Adminfeelist" type="List"/>
+     <aura:attribute name="selectedcount" type="Double"/>
+    <aura:attribute name="count" type="Double"/>
+    <aura:attribute name="LobName" type="String" />
+    <aura:attribute name="lobdesc" type="String" />
+    <aura:attribute name="selectedLOB" type="PCD_Multiple_LOB__c" />
+    <aura:attribute name="lstmultplelob" type="List" /> 
+    <aura:attribute name="wrapperList" type="List" /> 
+	<aura:attribute name="wrapperList340" type="List" />
+    <aura:attribute name="wrapperListManual" type="List" />
+     <aura:attribute name="baseLobId" type="String" />
+    <aura:attribute name="basefafId" type="String" />
+    <aura:attribute name="baselobDesId" type="String" />
+    
+    <aura:attribute name="selTabId" type="String"/>
+    <aura:attribute name="isAllSelected" type="Boolean" default="false"/>
+    <aura:attribute name="adminobjects" type="Billing_Administrative_Fees__c"/>
+    <aura:attribute name="norecord" type="Boolean" default="true"/>
+    
+     <aura:attribute name="loboptiondefault" type="List"/>
+    <aura:attribute name="loboption" type="List"/>
+    <aura:attribute name="mlobcreation" type="List"/>
+    <aura:attribute name="mlobcreationdefault" type="List"/>
+	
+     <aura:attribute name="isSelectAll" type="boolean" default="false"/>
+    <aura:attribute name="addlobcount" type="Boolean" default="false"/>
+    <aura:attribute name="dropdownOver" type="Boolean" default="false" />
+    <aura:attribute name="dropdownLength" type="Integer" default="4" />
+    
+    <!--<aura:attribute name="lob1" type="PCD_Multiple_LOB__c" />
+    <aura:attribute name="lob2" type="PCD_Multiple_LOB__c" />
+    <aura:attribute name="lob3" type="PCD_Multiple_LOB__c" />
+    <aura:attribute name="lob4" type="PCD_Multiple_LOB__c" />
+    <aura:attribute name="lob5" type="PCD_Multiple_LOB__c" />
+    <aura:attribute name="lob6" type="PCD_Multiple_LOB__c" />-->
+    
+     <aura:attribute name="lob1" type="LOB__c" />
+    <aura:attribute name="lob2" type="LOB__c" />
+    <aura:attribute name="lob3" type="LOB__c" />
+    <aura:attribute name="lob4" type="LOB__c" />
+    <aura:attribute name="lob5" type="LOB__c" />
+    <aura:attribute name="lob6" type="LOB__c" />
+    
+    <aura:attribute name="lob1Id" type="String" />
+    <aura:attribute name="lob2Id" type="String" />
+    <aura:attribute name="lob3Id" type="String" />
+    <aura:attribute name="lob4Id" type="String" />
+    <aura:attribute name="lob5Id" type="String" />
+    <aura:attribute name="lob6Id" type="String" />
+    
+    <aura:attribute name="faf1Id" type="String" />
+    <aura:attribute name="faf2Id" type="String" />
+    <aura:attribute name="faf3Id" type="String" />
+    <aura:attribute name="faf4Id" type="String" />
+    <aura:attribute name="faf5Id" type="String" />
+    <aura:attribute name="faf6Id" type="String" />
+    
+    <aura:attribute name="lob1visible" type="Boolean" default="false"/>
+    <aura:attribute name="lob2visible" type="Boolean" default="false"/>
+    <aura:attribute name="lob3visible" type="Boolean" default="false"/>
+    <aura:attribute name="lob4visible" type="Boolean" default="false"/>
+    <aura:attribute name="lob5visible" type="Boolean" default="false"/>
+    <aura:attribute name="lob6visible" type="Boolean" default="false"/>
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:attribute name="options" type="List" default="[
+                                                        {'label': 'LOB 1', 'value': 'LOB1'},
+                                                        {'label': 'LOB 2', 'value': 'LOB2'},
+                                                        {'label': 'LOB 3', 'value': 'LOB3'},
+                                                        {'label': 'LOB 4', 'value': 'LOB4'},     
+                                                        {'label': 'LOB 5', 'value': 'LOB5'},                                                   
+                                                        {'label': 'LOB 6', 'value': 'LOB6'}                                                 
+                                                        ]"/>        
+    <lightning:layout>
+        <lightning:tabset  selectedTabId="{!v.selectedtabId}">
+            <aura:if isTrue="{!v.lob1visible}">
+                <lightning:tab class="tab" label="LOB 1" id="LOB1" onactive="{!c.onChange }">
+                </lightning:tab>
+            </aura:if>
+            <aura:if isTrue="{!v.lob2visible}">
+                <lightning:tab class="tab" label="LOB 2" id="LOB2" onactive="{!c.onChange }">
+                </lightning:tab>
+            </aura:if>
+            <aura:if isTrue="{!v.lob3visible}">
+                <lightning:tab class="tab" label="LOB 3" id="LOB3" onactive="{!c.onChange }">
+                </lightning:tab>
+            </aura:if>
+            <aura:if isTrue="{!v.lob4visible}">
+                <lightning:tab class="tab" label="LOB 4" id="LOB4" onactive="{!c.onChange }">
+                </lightning:tab>
+            </aura:if>
+            <aura:if isTrue="{!v.lob5visible}">
+                <lightning:tab class="tab" label="LOB 5" id="LOB5" onactive="{!c.onChange }">
+                </lightning:tab>
+            </aura:if>
+            <aura:if isTrue="{!v.lob6visible}">
+                <lightning:tab class="tab" label="LOB 6" id="LOB6" onactive="{!c.onChange }">
+                </lightning:tab>
+            </aura:if>
+        </lightning:tabset>
+        <lightning:layoutitem size="4">
+            <div aura:id="main-div" class=" slds-picklist slds-dropdown-trigger slds-dropdown-trigger--click ">
+                <button class="slds-button slds-button--neutral slds-picklist__label" disabled="{!v.addlobcount}" style="width: 250px;" aria-haspopup="true" 
+                        onclick="{!c.handleClick}" onmouseleave="{!c.handleMouseOutButton}">
+                    <span class="slds-truncate" title="Add LOBs">Add LOBs</span>
+                    <lightning:icon iconName="utility:down" size="small" class="slds-icon" />
+                </button>
+                <div class="slds-dropdown slds-dropdown--left" style="width: 250px;" onmouseenter="{!c.handleMouseEnter}" onmouseleave="{!c.handleMouseLeave}">
+                    <ul class="{!'slds-dropdown__list slds-dropdown--length-' + v.dropdownLength}" style="width: 250px;" role="menu">
+                        <aura:iteration items="{!v.loboption}" var="option">
+                            <li class="{!'slds-dropdown__item ' + (option.selected ? 'slds-is-selected' : '')}" style="width: 250px;" role="presentation" 
+                                onclick="{!c.handleSelection}" data-value="{!option.label}" data-selected="{!option.selected}">
+                                <a href="javascript:void(0);" role="menuitemcheckbox" aria-checked="true" tabindex="0">
+                                    <span class="slds-truncate" style="width: 250px;">
+                                        <lightning:icon iconName="utility:check" size="x-small" class="slds-icon slds-icon--selected slds-icon--x-small 
+                                                                                                       slds-icon-text-default slds-m-right--x-small" />
+                                        {!option.label}
+                                    </span>
+                                </a>
+                            </li>
+                        </aura:iteration>
+                    </ul>
+                </div>   
+            </div>
+        </lightning:layoutitem>
+    </lightning:layout>
+	         <div class="slds-text-heading_small"><b>LOB {!v.LobName} - {!v.lobdesc}</b></div>
+      <div class="paddingleft slds-m-bottom_small slds-m-top_small "><p><b>Electronic Claim Adminstration Fee</b></p> </div> 
+    <aura:if isTrue="{!v.wrapperList.length != 0}">
+     <aura:iteration items="{!v.wrapperList}" var="wr" indexVar="index">
+          <div class="slds-p-bottom_small"></div>
+				<div class="slds-scrollable">
+				<table style="table-layout: unset !important;" class="slds-table slds-table_bordered inner">
+					<thead>
+						<tr class="slds-text-title_caps">
+                             <th style="width:3.25rem;" class="slds-text-align_right">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                    <label class="slds-checkbox">
+                                                        <ui:inputCheckbox click="{!c.checkAll}" class="check" aura:id="master" value="{!wr.ischecked}" name="{!index}"/>
+                                                        <span class="slds-checkbox_faux"></span>
+                                                        <span class="slds-form-element__label text"></span>
+                                                    </label>
+                                                </div>
+                                        </div>
+                                    </th>
+							
+							<th scope="col"><div class="yr" title="Year" style="width: 50px;">Year</div></th>
+							<th scope="col"><div class="lob"  title="LOB" style="width: 50px;">LOB</div></th>
+							<th scope="col"><div class="admtype"  title="Admin Fee Type" style="width:250px;">Admin Fee Type</div></th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- Use the Apex model and controller to fetch server side data -->
+						<aura:iteration items="{!wr.splist}" var="obj" indexVar="index1">
+						<tr>
+                            
+								  <th scope="row" class="slds-text-align_right" style="width:3.25rem;">
+                                            <div class="slds-form-element slds-size_1-of-">
+                                                <div class="slds-form-element__control">
+                                                    <label class="slds-checkbox">
+                                                        <ui:inputCheckbox change="{!c.handleSelectCheckBox}" aura:id="dependent" value="{!obj.isclick}"  text="{!obj.sp.Id}" name="{!index}"/>
+                                                        <span class="slds-checkbox_faux"></span>
+                                                        <span class="slds-form-element__label text"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" style="width: 50px;">
+                                                {!obj.sp.Year__c}
+                                            </div>
+                                        </th> 
+                                        <th scope="col">
+                                            <div class="slds-truncate" style="width: 50px;">
+                                                {!obj.sp.LOB__c}
+                                            </div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" style="width: 250px;">
+                                                {!obj.sp.Admin_Fee_Type__c}
+                                            </div>
+                                        </th>
+                                    </tr>
+						</aura:iteration>
+					</tbody>
+				</table>   
+				</div>
+    </aura:iteration>
+    </aura:if>
+    <aura:if isTrue="{!v.wrapperList.length == 0}">
+					<ui:message title="" severity="info" closable="false">
+						No records found.
+					</ui:message>
+	</aura:if>
+	<!--Manual Adminsitrative Fee-->
+   <div class="paddingleft slds-m-bottom_small slds-m-top_small "><p><b>Manual Claim Adminstration Fee</b></p> </div>
+    <aura:if isTrue="{!v.wrapperListManual.length != 0}">
+    
+     <aura:iteration items="{!v.wrapperListManual}" var="wr" indexVar="inde">
+          <div class="slds-p-bottom_small"></div>
+				<div class="slds-scrollable">
+				<table style="table-layout: unset !important;" class="slds-table slds-table_bordered inner">
+					<thead>
+						<tr class="slds-text-title_caps">
+                             <th style="width:3.25rem;" class="slds-text-align_right">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                    <label class="slds-checkbox">
+                                                        <ui:inputCheckbox click="{!c.checkAll1}" class="check" aura:id="master1" value="{!wr.ischecked}" name="{!inde}"/>
+                                                        <span class="slds-checkbox_faux"></span>
+                                                        <span class="slds-form-element__label text"></span>
+                                                    </label>
+                                                </div>
+                                        </div>
+                                    </th>
+							
+							<th scope="col"><div class="yr" title="Year" style="width: 50px;">Year</div></th>
+							<th scope="col"><div class="lob"  title="LOB" style="width: 50px;">LOB</div></th>
+							<th scope="col"><div class="admtype"  title="LOB" style="width: 250px;">Admin Fee Type</div></th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- Use the Apex model and controller to fetch server side data -->
+						<aura:iteration items="{!wr.splist}" var="obj" indexVar="index4">
+						<tr>
+								  <th scope="row" class="slds-text-align_right" style="width:3.25rem;">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <label class="slds-checkbox">
+                                                        <ui:inputCheckbox change="{!c.handleSelectCheckBox}" aura:id="dependent1" value="{!obj.isclick}"  text="{!obj.sp.Id}" name="{!inde}"/>
+                                                        <span class="slds-checkbox_faux"></span>
+                                                        <span class="slds-form-element__label text"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th scope="row">
+                                            <div class="slds-truncate" style="width: 50px;">
+                                                {!obj.sp.Year__c}
+                                            </div>
+                                        </th> 
+                                        <th scope="row">
+                                            <div class="slds-truncate" style="width: 50px;">
+                                                {!obj.sp.LOB__c}
+                                            </div>
+                                        </th>
+                                        <th scope="row">
+                                            <div class="slds-truncate" style="width: 250px;">
+                                                {!obj.sp.Admin_Fee_Type__c}
+                                            </div>
+                                        </th>
+                                    </tr>
+						</aura:iteration>
+					</tbody>
+				</table>   
+				</div>
+    </aura:iteration>
+    </aura:if>
+    <aura:if isTrue="{!v.wrapperListManual.length == 0}">
+					<ui:message title="" severity="info" closable="false">
+						No records found.
+					</ui:message>
+	</aura:if> 	
+	<!--340 B Administration fees-->
+	  <div class="paddingleft slds-m-bottom_small slds-m-top_small "><p><b>340B Administration Fee</b></p> </div> 
+    <aura:if isTrue="{!v.wrapperList340.length != 0}">
+   
+     <aura:iteration items="{!v.wrapperList340}" var="wr" indexVar="ind">
+          <div class="slds-p-bottom_small"></div>
+				<div class="slds-scrollable">
+				<table style="table-layout: unset !important;" class="slds-table slds-table_cell-buffer slds-table_bordered">
+					<thead>
+						<tr class="slds-text-title_caps">
+                             <th style="width:3.25rem;" class="slds-text-align_right">
+                                        <div class="slds-form-element">
+                                            <div class="slds-form-element__control">
+                                                    <label class="slds-checkbox">
+                                                        <ui:inputCheckbox click="{!c.checkAll2}" class="check" aura:id="master2" value="{!wr.ischecked}" name="{!ind}"/>
+                                                        <span class="slds-checkbox_faux"></span>
+                                                        <span class="slds-form-element__label text"></span>
+                                                    </label>
+                                                </div>
+                                        </div>
+                                    </th>
+							
+							<th scope="col"><div class="yr" title="Year">Year</div></th>
+							<th scope="col"><div class="lob"  title="LOB">LOB</div></th>
+							<th scope="col"><div class="admtype"  title="LOB">Admin Fee Type</div></th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- Use the Apex model and controller to fetch server side data -->
+						<aura:iteration items="{!wr.splist}" var="obj" indexVar="index5">
+						<tr>
+								  <th scope="row" class="slds-text-align_right" style="width:3.25rem;">
+                                            <div class="slds-form-element">
+                                                <div class="slds-form-element__control">
+                                                    <label class="slds-checkbox">
+                                                        <ui:inputCheckbox change="{!c.handleSelectCheckBox}" aura:id="dependent2" value="{!obj.isclick}"  text="{!obj.sp.Id}" name="{!ind}"/>
+                                                        <span class="slds-checkbox_faux"></span>
+                                                        <span class="slds-form-element__label text"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        
+                                        <th scope="row">
+                                            <div class="slds-truncate" style="width: 50px;">
+                                                {!obj.sp.Year__c}
+                                            </div>
+                                        </th> 
+                                        <th scope="row">
+                                            <div class="slds-truncate" style="width: 50px;">
+                                                {!obj.sp.LOB__c}
+                                            </div>
+                                        </th>
+                                        <th scope="row">
+                                            <div class="slds-truncate" style="width: 250px;">
+                                                {!obj.sp.Admin_Fee_Type__c}
+                                            </div>
+                                        </th>
+                                        
+                                    </tr>
+						</aura:iteration>
+					</tbody>
+				</table>   
+				</div>
+    </aura:iteration>
+    </aura:if>
+    <aura:if isTrue="{!v.wrapperList340.length == 0}">
+					<ui:message title="" severity="info" closable="false">
+					     No records found.
+					</ui:message>
+	</aura:if> 
+</aura:component>

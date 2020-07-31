@@ -1,0 +1,1383 @@
+<apex:page standardController="Rebate_Operations__c" extensions="RebateOperationNewEditClass" id="pg" lightningStylesheets="true">
+    
+    <!-- Jquery reference files --->
+    <apex:includeScript value="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" />
+        
+    <script>
+    var gncOldVal = '{!rebOpr.Guaranteed_Net_Cost_Gnc_Guarantee__c}';
+    var infoGNCVal = '{!infoGNCVal}';
+    var showGNCPopupNo = false;
+    var showGNCPopupYes = false;
+        
+    function setFocusOnLoad() {
+        document.getElementById('{!$Component.pg.frm.PB.PBS2.GuarGNC}').focus();
+        var CSDVal = document.getElementById(('{!$Component.Pg.frm.PB.PBS8.CSDescription}'));
+         var val=document.getElementById(('{!$Component.Pg.frm.PB.PBS8.CustomExId}'));
+            if(val.value=='Yes'){
+                CSDVal.disabled=false;
+            }
+            else{
+                CSDVal.disabled=true;
+            }
+            //set RMDTtype enabled diabled
+            var RTMDtypeId=document.getElementById(('{!$Component.pg.frm.PB.PBS2.rebateRTMDId}'));
+            var RTMDtypeval=document.getElementById(('{!$Component.pg.frm.PB.PBS2.rebateRTMDType}'));
+            if(RTMDtypeId.checked){
+                    RTMDtypeval.disabled=false;
+            }
+            else{
+                RTMDtypeval.disabled=true;
+            }
+            
+    }
+       
+    var GuarantExists = '{!GuarantExistsBool }';
+        
+        function GncRebateChangeJS(GncRebVal){
+        console.log(GuarantExists+'a');
+            if(GuarantExists =='true'){               
+                if(gncOldVal=='Yes' && GncRebVal=='No') {
+                   showGNCPopupNo = true;
+                   
+                } else {
+                   showGNCPopupNo = false; 
+                }
+                if(infoGNCVal  != 'Yes' && gncOldVal=='No' && GncRebVal=='Yes') {
+                   showGNCPopupYes = true;
+                } else {
+                   showGNCPopupYes = false; 
+                }  
+            } else {
+                if(gncOldVal=='No' && GncRebVal=='Yes') {
+                   showGNCPopupYes = true;
+                } else {
+                   showGNCPopupYes = false; 
+                }     
+                              
+            }  
+            
+        } 
+        
+        function customexidchanged(val){
+            var CSDVal = document.getElementById(('{!$Component.Pg.frm.PB.PBS8.CSDescription}'));
+            if(val=='Yes'){
+                CSDVal.disabled=false;
+            }
+            else{
+                CSDVal.disabled=true;
+                CSDVal.value='';
+            }
+        }
+        function onSave() {
+        console.log(showGNCPopup)
+            if(showGNCPopup) {
+               var modal = document.getElementById('myModal17');
+               modal.style.display = "block"; 
+            } else {
+                return true;
+            }
+            return false;
+        }             
+         function changeSpecialityRebatFuncJS(){
+         var sepval = document.getElementById('{!$Component.pg.frm.PB.PBS2.specrebId}').value;
+         var gncval = document.getElementById('{!$Component.pg.frm.PB.PBS2.GuarGNC}').value;
+         var contractval = document.getElementById('{!$Component.pg.frm.PB.PBS2.rebtContId}').value;
+         //if(contractval != '') {             
+             changeSpecialityRebatFunc(sepval,gncval,contractval);
+         //}
+         if(gncval == '' || contractval == ''){            
+             contractReq(gncval);
+         }
+         }      
+</script>
+    <style>
+        body {font-family: Arial, Helvetica, sans-serif;}
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 50%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+
+        /* Add Animation */
+        @-webkit-keyframes animatetop {
+            from {top:-300px; opacity:0} 
+            to {top:0; opacity:1}
+        }
+
+        @keyframes animatetop {
+            from {top:-300px; opacity:0}
+            to {top:0; opacity:1}
+        }
+
+        .modal-header {
+            padding: 0px;
+            height: 29px;
+            color: #ff0000;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            border-top-right-radius: .25rem;
+            border-top-left-radius: .25rem;
+            border-bottom: 2px solid rgb(221, 219, 218);
+            text-align: center;
+        }
+
+        .modal-body {
+            padding: 10px 16px;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            color: #3c3d3e;
+        }
+
+        .modal-footer {
+            padding: 5px;
+            padding-right: 4px;
+            text-align: right;   
+            color: #000000;
+            border-top: 2px solid rgb(221, 219, 218);
+            background-color: rgb(243, 242, 242);
+            border-bottom-left-radius: .25rem;
+            border-bottom-right-radius: .25rem;
+        }
+
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 1px 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 2px 2px;
+            -webkit-transition-duration: 0.4s; /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius : 20px;
+        }
+        .button2 {
+            background-color: rgba(0, 68, 135, 1.0); 
+            color: white; 
+            border: 2px solid rgba(0, 68, 135, 1.0);
+            border-radius: 5px;
+            width: 80px;
+            height: 28px;
+        }
+
+        .button2:hover {
+            background-color: #002080;
+            color: white;
+        }
+        .button5 {
+            background-color: #555555;
+            color: white;
+            border: 2px solid #555555;
+            border-radius: 5px;
+            width: 80px;
+            height: 28px;
+        }
+
+        .button5:hover {
+            background-color: #262626;
+            color: white;
+        }
+
+    </style>
+    <apex:form id="frm" rendered="{!NOT(showerrorBool)}">
+
+        <apex:pagemessages id="pmsg"></apex:pagemessages>
+        <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+        
+        <apex:pageBlock title="Rebate Operations Edit" id="PB">
+            <apex:pageBlockSection title="Rebate Operations Detail" id="PBS1">
+                <apex:outputField value="{!rebOpr.FAF_ID__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Rebate Operations Information" id="PBS2">           
+                <apex:inputField value="{!rebOpr.Guaranteed_Net_Cost_Gnc_Guarantee__c}" id="GuarGNC" required="true" onchange="GncRebateChangeJS(this.value),changeRebateGNCContractType('','',this.value);"/>                
+                <apex:inputField value="{!rebOpr.Specialty_Rebates__c}"  id="specrebId" required="{!checkspecialR}" onchange="changeSpecialityRebatFuncJS();"/>
+                <apex:inputField value="{!rebOpr.Rebate_Contract_Type__c}" id="rebtContId" required="{!checkcontracttype }"  onchange="changeRebateContractType(this.value,'');"/>
+                <apex:inputField value="{!rebOpr.Client_Share__c}" id="clientShareId" required="{!IF(rebateenableDisableMap['clientShareBool'],false,true)}" onblur="removeClientShareDecimal(this.value);"/>
+                <!--apex:inputField value="{!rebOpr.Rebate_Offering_Type__c}" required="true" onchange="changeRebateOfferingType(this.value);"/-->
+                 <apex:pageBlockSectionItem id="PBS2a">                  
+                    <apex:outputLabel for="contractTypePnl" value="Rebate Offering Type" />
+                    <apex:outputPanel id="contractTypePnl">
+                        <div class="requiredInput">
+                            <div id="requiredOfferingBlog1"></div>                           
+                            <apex:selectList value="{!rebOpr.Rebate_Offering_Type__c}" id="rebateofferingTypeId" required="{!IF(rebateenableDisableMap['OfferingTypeBool'],false,true)}" onchange="changeRebateOfferingType(this.value);" label="Rebate Offering Type"  size="1">
+                                <apex:selectOptions value="{!offeringTypeList}"/>
+                            </apex:selectList>
+                         </div> 
+                   </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!rebOpr.Client_MAF_Share__c}" id="clientMAFShareId" required="{!IF(rebatePassMAFCheck,true,false)}" onblur="removeClientMAFShareDecimal(this.value);" onclick="OnclickMAFshare(this.value);"/>
+                <apex:inputField value="{!rebOpr.Pass_MAF__c}" id="passMAFId" onchange="rebatePassMAF(this.checked);"/>
+                <apex:inputField value="{!rebOpr.Client_PP_Share__c}" id="clientPPShareId" required="{!IF(rebatePassPPCheck,true,false)}" onblur="removeClientPPShareDecimal(this.value);"/>
+                <apex:inputField value="{!rebOpr.Pass_PP__c}" id="passPPId" onchange="rebatePassPP(this.checked);"/>                                                    
+                <apex:pageBlockSectionItem />  
+                <apex:inputField value="{!rebOpr.Rebate_RTMD__c}" onchange="RTMDFlagchanged(this.checked)" id="rebateRTMDId"/><br>
+                <apex:inputField value="{!rebOpr.Rebate_RTMD_Type__c}" required="{!RTMDTypeRequired}" onchange="BillingRTMDPopup()" id="rebateRTMDType"/></br>
+                <apex:inputField value="{!rebOpr.RTMD_Options__c}"/>                               
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Formulary & Generic Step Therapy(GSTP) Options" id="PBS3">
+                <apex:inputField value="{!rebOpr.GSTP__c}" onchange="changeGSTP(this.value);"/>
+                <apex:inputField value="{!rebOpr.GSTP_Option__c}" required="true" onchange="changeGSTPOption(this.value);"/>
+                <apex:inputField value="{!rebOpr.Non_Specialty_Formulary_Option__c}" required="true" onchange="changeNonSpecOption(this.value);"/>
+                <apex:inputField value="{!rebOpr.Specialty_Formulary_Option__c}" required="true" onchange="changeSpecFormOption(this.value);"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Rebate Payment Terms" id="PBS4">
+                <apex:inputField value="{!rebOpr.Rebate_Payment_Term_Method_by_Contract__c}" id="rebatePayTermId" onchange="RebatePaymentTermMeth(this.checked)" />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Pay_On__c}"  id="payOnId" required="{!IF(rebateenableDisableMap['payOnBool'],false,true)}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Frequency__c}"  id="freqId" required="{!IF(rebateenableDisableMap['freqBool'],false,true)}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Speed__c}" id="speedId" required="{!IF(rebateenableDisableMap['speedBool'],false,true)}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Pay_After__c}" id="payAfterId" required="{!IF(rebateenableDisableMap['payAfterBool'],false,true)}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Rebate Reconciliation" id="PBS5">
+                <apex:inputField value="{!rebOpr.Recon_Basis__c}" id="reconBasisId" required="{!IF(rebateenableDisableMap['reconBasisBool'],false,true)}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Recon_Method__c}" id="reconMethodId" required="{!IF(rebateenableDisableMap['reconMethodBool'],false,true)}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Recon_Frequency__c}" id="reconFreqId" required="{!IF(rebateenableDisableMap['reconFreqBool'],false,true)}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Recon_Timeframe__c}" id="recontimeFrameId" required="{!IF(rebateenableDisableMap['recontimeFrameBool'],false,true)}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Recon_Level__c}" id="reconLevelId" required="{!IF(rebateenableDisableMap['reconLevelBool'],false,true)}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Rebate Guarantee Mirroring Options" id="PBS6">
+                <apex:inputField value="{!rebOpr.Specialty_Retail_Mirror_Retail_30__c}"  onchange="specialtyRetailPopup(this.checked);" id="specialtyRetailId" />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Retail_90_Mirror_Retail_30__c}"  onchange="retail90Popup(this.checked);" id="retail90Id"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.MChoice_Mirror_Mail__c}"  onchange="mchoicePopup(this.checked);" id="mchoiceId" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Rebate Guarantee Information" id="PBS7">
+                <apex:inputField value="{!rebOpr.Percentage_Guarantee__c}" id="perGuaranteeFlagId" onchange="perGuaranteeChange(this.checked);"/>
+                <!--apex:inputField value="{!rebOpr.Percentage_Guarantee__c}" id="perGuaranteeFlagId"/-->
+                <apex:inputField value="{!rebOpr.Rebate_Retail_90_Days_Supply_84__c}" id="retailDaysSupplyId" onchange="retailSupplyChange(this.checked);"/>
+                <!--<apex:outputLabel ></apex:outputLabel>-->
+                <apex:inputField value="{!rebOpr.Based_on_Days_Supply__c}" id="basedDaysSupplyId"/>
+                <apex:inputField value="{!rebOpr.Days_Supply__c}" id="daysSupplyId"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Rebate Guarantee Exclusion Options" id="PBS8">
+                <apex:inputField value="{!rebOpr.X340B__c}" required="true"/>
+                <apex:inputField value="{!rebOpr.Custom_Exclusion_s__c}" id="CustomExId" onchange="customexidchanged(this.value)"/>
+                <apex:inputField value="{!rebOpr.X340B_Exclusion_Option__c}" required="true"/>
+                <apex:inputField value="{!rebOpr.Custom_Strategy_Description__c}" id="CSDescription"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Select_Custom_Exclusion_s__c}" />
+                <apex:inputField value="{!rebOpr.LDD__c}" required="true"/>
+                <apex:inputField value="{!rebOpr.Exclude_Rebate_Class__c}"/>   
+                <apex:inputField value="{!rebOpr.LDD_Exclusion_Option__c}" required="true"/>                               
+                <apex:inputField value="{!rebOpr.Select_Rebate_Exclusion_Class_es__c}" required="true"/> 
+                <apex:inputField value="{!rebOpr.Biosimilars__c}"/>                 
+                <!--apex:inputField value="{!rebOpr.Select_Rebate_Exclusion_Class_es__c}" required="true"/--> 
+                <apex:inputField value="{!rebOpr.Compound__c}"/>
+                <apex:inputField value="{!rebOpr.OTC__c}"/>
+                <apex:inputField value="{!rebOpr.COB__c}"/>
+                <apex:inputField value="{!rebOpr.OTC_Exclusion_Option__c}" required="true"/>
+                <apex:inputField value="{!rebOpr.SSG__c}"/>
+                <apex:inputField value="{!rebOpr.Vaccine__c}"/>
+                <apex:inputField value="{!rebOpr.Paper__c}"/>
+                <apex:inputField value="{!rebOpr.Vaccine_Exclusion_Option__c}" required="true"/>                                                            
+                <apex:inputField value="{!rebOpr.ZBD__c}"/>                             
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Specialty Rebate Setup" id="PBS9">
+                <apex:inputField value="{!rebOpr.Specialty_Rebate_Setup_different_than__c}" id="SpecialtyRebateSetupId" onchange="specialtyRebateSetupchange(this.checked);"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Specialty_Rebate_Contract_Type__c}" id="contractTypeId" onchange="contractTypeChange(this.value,'');" required="{!contTypOfferTypeBool}"/>
+                <apex:inputField value="{!rebOpr.Specialty_Price_List__c}" id="priceListId"/>
+                <apex:pageBlockSectionItem id="PBSI1">
+                    <!--apex:outputText value="Specialty Rebate Offering Type"/>
+                    <apex:inputField value="{!rebOpr.Specialty_Rebate_Offering_Type__c}" id="offeringTypeId" onchange="offeringTypeChange(this.value);" required="{!contTypOfferTypeBool}"/-->
+                    <apex:outputLabel for="contractTypePnl" value="Specialty Rebate Offering Type" />
+                    <apex:outputPanel id="contractTypePnl">
+                        <div class="requiredInput">
+                            <div id="requiredOfferingBlog"></div>
+                           
+                            <apex:selectList value="{!rebOpr.Specialty_Rebate_Offering_Type__c}" id="offeringTypeId" required="{!contTypOfferTypeBool}" onchange="offeringTypeChange(this.value);" label="Specialty Rebate Offering Type"  size="1">
+                                <apex:selectOptions value="{!specofferingTypeList}"/>
+                            </apex:selectList>
+                         </div> 
+                   </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!rebOpr.Specialty_Client_Share__c}" id="specClintShareId" required="{!NOT(enableDisableMap['specClintShareBool'])}" onblur="removeSpcClientShareDecimal(this.value);"/>
+                <apex:inputField value="{!rebOpr.Specialty_Pass_MAF__c}" id="specpassMafId" onchange="specPassMAF(this.checked);"/>
+                <apex:inputField value="{!rebOpr.Specialty_Client_MAF_Share__c}" id="specClientMAFShaId" required="{!NOT(enableDisableMap['specClientMAFShaBool'])}" onblur="removeSpcClientMAFShareDecimal(this.value);"/>
+                <apex:inputField value="{!rebOpr.Specialty_Pass_PP__c}" id="specPassPPId" onchange="specPassPP(this.checked);"/>
+                <apex:inputField value="{!rebOpr.Specialty_Client_PP_Share__c}" id="specClientPPSharId" required="{!NOT(enableDisableMap['specClientPPSharbool'])}" onblur="removeSpcClientPPShareDecimal(this.value);"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Specialty Rebate Payment Terms" id="PBS10">
+                <apex:inputField value="{!rebOpr.Rebate_Specialty_Payment_Term_Method__c}" id="specPayTermMethId" />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Specialty_Pay_On__c}" id="specPayOnId" required="{!specialitypaymentTermReq}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Specialty_Frequency__c}" id="specFreqId" required="{!specialitypaymentTermReq}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Specialty_Speed__c}" id="specSpeedId" required="{!specialitypaymentTermReq}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Specialty_Pay_After__c}" id="specPayAftId" required="{!specialitypaymentTermReq}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Specialty Rebate Reconciliation" id="PBS11">
+                <apex:inputField value="{!rebOpr.Specialty_Recon_Basis__c}" id="specRecBasisId" required="{!specialitypaymentTermReq}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Specialty_Recon_Method__c}" id="specRecMethId" required="{!specialitypaymentTermReq}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Specialty_Recon_Frequency__c}" id="specRecFreqId" required="{!specialitypaymentTermReq}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Specialty_Recon_Timeframe__c}" id="specRecTimeFrmId" required="{!specialitypaymentTermReq}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!rebOpr.Specialty_Recon_Level__c}" id="specRecLevelId" required="{!specialitypaymentTermReq}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Specialty PDPD Option" id="PBS12">
+                <apex:inputField value="{!rebOpr.Specialty_PDPD__c}" />  <!--onchange="changespecialityPDPD(this.value);"-->
+                <apex:inputField value="{!rebOpr.Select_Specialty_PDPD_Therapy_Class_es__c}" required="true" id="SpecialtyPDPDTherapyClassId"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Specialty Rebate Guarantee Exclusion Options" id="PBS13">
+                <apex:inputField value="{!rebOpr.Exclude_Rebate_Specialty_Therapeutic__c}" />  <!--onchange="excluedeRebateSpeciality(this.value);"-->
+                <apex:inputField value="{!rebOpr.Select_Specialty_Therapy_Class_es__c}" required="true" id="SpecialtyTherapyClassId"/>
+            </apex:pageBlockSection>
+                     <apex:pageBlockSection title="Specialty Therapeutic Class Rebate Carve Out Guarantee" id="PBS14">
+                <apex:inputField value="{!rebOpr.Class_Carve_Out_Guarantee_Percentage__c}" onchange="ClassRebateCarveOutPopup(this.checked);" id="ClassRebateCarveOutId" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Additional Rebate Operations Information" id="PBS15">
+                <apex:inputField value="{!rebOpr.Additional_Rebate_Information__c}" style="width:800px"/>
+            </apex:pageBlockSection>
+            <apex:actionFunction name="RTMDChange" reRender="PBS2" oncomplete="disableRTMType();" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!RTMDTypeRequired}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="contractTypeChange" action="{!changeTypeField}" reRender="specliatyScrip, PBS9, PBS10, PBS11, PBSI1" oncomplete="document.getElementById(('{!$Component.Pg.frm.PB.PBS9.PBSI1.offeringTypeId}')).value = '';" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!specRebtContractType}" value="" />
+                <apex:param name="param2" assignTo="{!specRebtOfferingType}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="offeringTypeChange" action="{!changeTypeField}" reRender="specliatyScrip ,PBS9, PBS10, PBS11,popupPanel" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!specRebtOfferingType}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="specPassMAF" action="{!specPassMAFAction}" reRender="specliatyScrip, PBS9" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!specPassMAFCheck}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="specPassPP" action="{!specPassPPAction}" reRender="specliatyScrip, PBS9" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!specPassPPCheck}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="specialtyRebateSetupchange" action="{!oncheckspecialityAction}" reRender="specliatyScrip,PBS9,PBS10,PBS11,popupPanel" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!specialtyRebateSetupCheck}" value="" />
+            </apex:actionFunction>
+            <!--apex:actionFunction name="changespecialityPDPD" action="{!changespecialityPDPDAction}" reRender="PBS12" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!SpecialtyPDPDParam}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="excluedeRebateSpeciality" action="{!excluedeRebateSpecialityAction}" reRender="PBS13" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!excludeRebateTheraputic}" value="" />
+            </apex:actionFunction-->
+            <apex:actionFunction name="changeSpecialityRebatFunc" action="{!changeSpecialityRebateAction}" reRender="specliatyScrip, PBS9, PBS10, PBS11,specrebId,popupPanel" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!specialityRebateStr}" value="" />
+                <apex:param name="param2" assignTo="{!RebtGNC}" value="" />
+                <apex:param name="param3" assignTo="{!RebtContractType}" value="" />
+                
+            </apex:actionFunction>
+            <apex:actionFunction name="changeRebateContractType" action="{!rebatechangeTypeField}" reRender="Script2,PBS2,PBS2a,PBS4,PBS5,PBS7,rebtContId" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!RebtContractType}" value="" />
+                <apex:param name="param2" assignTo="{!RebtOfferingType}" value="" />
+            </apex:actionFunction>            
+             <apex:actionFunction name="changeRebateGNCContractType" action="{!rebatechangeTypeField}" reRender="PBS9,Script2,PBS2a,PBS4,PBS5,PBS7,rebtContId,PBS2" oncomplete="changeSpecialityRebatFuncJS();" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!RebtContractType}" value="" />
+                <apex:param name="param2" assignTo="{!RebtOfferingType}" value="" />
+                <apex:param name="param3" assignTo="{!RebtGNC}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="changeRebateOfferingType" action="{!rebatechangeTypeField}" reRender="Script2,PBS2,PBS4,PBS5,PBS7,popupPanel" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!RebtOfferingType}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="changeNonSpecOption" action="{!changeNonSpecOptionAction}" reRender="popupPanel" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!NonSpecialtyFormlryValue}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="changeSpecFormOption" action="{!changeSpecFormOptionAction}" reRender="popupPanel" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!SpecialtyFormlryValue}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="changeGSTPOption" action="{!changeGSTPOptionAction}" reRender="popupPanel" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!GSTPOptionValue}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="changeGSTP" action="{!changeGSTPAction}" reRender="popupPanel" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!GSTPValue}" value="" />
+            </apex:actionFunction>
+              <apex:actionFunction name="perGuaranteeChange" action="{!perGuaranteeretailDaysAction}" reRender="Script2,PBS7" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!perguaranteeFlag}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="retailSupplyChange" action="{!retailDaysSupplyAction}" reRender="Script2,PBS7" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!retailSupplyFlag}" value="" />
+            </apex:actionFunction>
+             <apex:actionFunction name="rebatePassMAF" action="{!rebatePassMAFAction}" reRender="Script2,PBS2" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!rebatePassMAFCheck}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="rebatePassPP" action="{!rebatePassPPAction}" reRender="Script2,PBS2" oncomplete="" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!rebatePassPPCheck}" value="" />
+            </apex:actionFunction>
+             <apex:actionFunction name="saveMethod" action="{!saveUpdateRO}" reRender="pmsg,PB,specliatyScrip,Script2" oncomplete="setFocusOnLoad();window.scrollTo(0, 0);" immediate="" status="status">
+                <apex:param name="param1" assignTo="{!showerrorFlag}" value="" />
+            </apex:actionFunction>            
+            <apex:actionFunction name="contractReq" action="{!contractReq}" reRender="Script2,PBS2" immediate="true" status="status">
+                <apex:param name="param1" assignTo="{!RebtGNC}" value="" />
+            </apex:actionFunction>
+        <apex:pageBlockButtons >
+            <apex:commandButton onclick="deleteWarningPopup();" title="Save" value="Save" reRender="" oncomplete=""/>
+            <!--apex:commandButton action="{!saveUpdateRO}" title="Save" value="Save" reRender="pmsg,PB,specliatyScrip,Script2" oncomplete="window.scrollTo(0, 0);"/-->
+             <apex:commandButton action="{!Cancel}" title="Cancel" value="Cancel" immediate="true"/>
+        </apex:pageBlockButtons>       
+        </apex:pageBlock>
+        
+        
+        <!--------------------------------------------------- New Modals starts here------------------------------------------------------->
+        <!-- The Modal -->
+        <div id="myModal1" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p>Proceeding with this action may result in removing the current value contained in Specialty Retail in the related Rebate Guarantee records</p>
+              
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button5" type="button" onclick="specialtyRetailCancel()">Cancel</button>
+              <button class="button button2" type="button" onclick="specialtyRetailOk()">OK</button>
+            </div>
+          </div>
+
+        </div>
+        <!-- The Modal -->
+        <div id="myModal2" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p>Proceeding with this action may result in removing the current value contained in Retail 90 in the related Rebate Guarantee records</p>
+              
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button5" type="button" onclick="retail90Cancel()">Cancel</button>
+              <button class="button button2" type="button" onclick="retail90Ok()">OK</button>
+            </div>
+          </div>
+
+        </div>
+        <!-- The Modal -->
+        <div id="myModal3" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p>Proceeding with this action may result in removing the current value contained in Mchoice in the related Rebate Guarantee records</p>
+              
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button5" type="button" onclick="mchoiceCancel()">Cancel</button>
+              <button class="button button2" type="button" onclick="mchoiceOk()">OK</button>
+            </div>
+          </div>
+
+        </div>
+        <!-- The Modal -->
+        <div id="myModal4" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p>You are required to add the corresponding RTMD Fee to the Billing Operations Component of this FAF or update the Rebate RTMD? to False</p>
+              
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button5" type="button" onclick="billingRTMDCancel()">Cancel</button>
+              <button class="button button2" type="button" onclick="billingRTMDOk()">OK</button>
+            </div>
+          </div>
+
+        </div>
+        <!-- The Modal -->
+        <div id="myModal5" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p>You are required to remove the corresponding RTMD Fee on the Billing Operations Component of this FAF or update the Rebate RTMD? to True.</p>
+              
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button5" type="button" onclick="billingRTMDuncheckCancel()">Cancel</button>
+              <button class="button button2" type="button" onclick="billingRTMDuncheckOk()">OK</button>
+            </div>
+          </div>
+
+        </div>
+        <!------------------------------------Percentage Warning messages as part of I4 defect fixing for 1.13.3.70, 1.13.3.73, 1.13.3.76 --------------------------------------------->
+        <!-- The Modal -->
+        <div id="myModal6" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p>Proceeding with this action may result in removing the current value contained in Specialty Retail(%) in the related Rebate Guarantee records</p>
+              
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button5" type="button" onclick="specialtyRetailCancelPer()">Cancel</button>
+              <button class="button button2" type="button" onclick="specialtyRetailOkPer()">OK</button>
+            </div>
+          </div>
+
+        </div>
+        <!-- The Modal -->
+        <div id="myModal7" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p>Proceeding with this action may result in removing the current value contained in Retail 90(%) in the related Rebate Guarantee records</p>
+              
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button5" type="button" onclick="retail90CancelPer()">Cancel</button>
+              <button class="button button2" type="button" onclick="retail90OkPer()">OK</button>
+            </div>
+          </div>
+
+        </div>
+        <!-- The Modal -->
+        <div id="myModal8" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p>Proceeding with this action may result in removing the current value contained in Mchoice(%) in the related Rebate Guarantee records</p>
+              
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button5" type="button" onclick="mchoiceCancelPer()">Cancel</button>
+              <button class="button button2" type="button" onclick="mchoiceOkPer()">OK</button>
+            </div>
+          </div>
+
+        </div>
+         
+        
+        <!-- The Modal -->
+        <div id="myModal16" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+                <p >
+                    <ul id="paragraphId" ></ul>                         
+                </p>                
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button2" type="button" onclick="popupContinue('myModal16')">Continue</button>
+              <button class="button button5" type="button" onclick="popupCancel('myModal16')">Cancel</button>              
+            </div>
+          </div>
+
+        </div>
+     <!------------------------Start Srini US249--------------------------------------------->     
+         <div id="myModal19" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p>You have changed the Class Carve Out Guarantee Percentage? This will have an impact on existing Rebate Guarantees do you wish to continue? </p>
+              
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button5" type="button" onclick="ClassCarveOutGuaranteePercentageCancel()">Cancel</button>
+              <button class="button button2" type="button" onclick="ClassCarveOutGuaranteePercentageOk()">OK</button>
+            </div>
+          </div>
+
+        </div>
+  <!-------------------------------------End Srini US249 ------------------------------------------------------>  
+  <!------------------------------------ US 152 Srini------------------->
+  <!-- The Modal -->
+        <div id="myModal21" class="modal">
+
+          <!-- Modal content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              
+              <h2><center>WARNING</center></h2>
+            </div>
+            
+            <div class="modal-body">
+              <p>You have changed the Percentage Guarantee? This will have an impact on existing Rebate Guarantees do you wish to continue?</p>
+              
+            </div>
+            
+            <div class="modal-footer">
+              <button class="button button5" type="button" onclick="PercentageGuaranteeCancel()">Cancel</button>
+              <button class="button button2" type="button" onclick="PercentageGuaranteeOk()">OK</button>
+            </div>
+          </div>
+
+        </div>
+  
+  <!------------------------------------end US 152--------------------->
+  
+        <apex:outputPanel id="popupPanel">
+        <script>
+        var showPopupOne = {!showPopUpWarningFlag};
+        var showPopupTwo = {!showPopupForNonSpecialty};
+        var showPopupThree = {!showPopupForSpecialty};
+        var showPopupFour = {!showPopupForGSTP};
+        function deleteWarningPopup(){
+            var message = ' ';
+            console.log(showPopupOne);
+            console.log(showPopupTwo);
+            console.log(showPopupThree);
+            console.log(showPopupFour);
+            console.log(message);
+            var counter = 0;
+             
+             
+            if(showPopupOne == true){
+                message = 'Changing the Rebate Offering Type or Specialty Rebate Offering Type will result in deleting all existing Rebate Guarantee records. Do you want to continue?';
+                counter++;
+            }
+            if(showPopupTwo == true && showPopupOne == false){
+                message = message.concat('<li>Changing the Non Specialty Formulary Option will result in updating any existing Rebate Guarantees records for Non Specialty Formulary to this value do you want to continue?</li>');
+                counter++;
+            }
+            if(showPopupThree == true && showPopupOne == false){
+                message = message.concat('<li>Changing the Specialty Formulary will result in updating any existing Rebate Gtees Specialty Class Carve Out records AND Rebate Guarantee records for Specialty Formulary to this value do you want to continue?</li>');
+                counter++;
+            }
+            if(showPopupFour == true && showPopupOne == false){
+                message = message.concat('<li>Changing the GSTP will result in updating any existing Rebate Guarantees records for GSTP to this value do you want to continue?</li>');
+                counter++;
+            }
+            if(showGNCPopupNo == true && showPopupOne == false){
+                message = message.concat('<li>Changing the value of Guaranteed Net Cost (Gnc) Guarantee? from Yes to No will have Guarantee impacts and remove any Gnc Guarantee Detail records. Do you wish to continue?</li>');
+                counter++;
+            } 
+            if(showGNCPopupYes == true && showPopupOne == false){
+                message = message.concat('<li>Changing the value of Guaranteed Net Cost (Gnc) Guarantee? from No to Yes will have Rebate impacts and remove any Rebate Guarantee records. Do you wish to continue?</li>');
+                counter++;
+            }                        
+            
+            if(counter<=1) {
+                message = message.replace('<li>', '');
+                message = message.replace('</li>', '');
+            }
+            console.log(message);
+            if(showPopupOne == true || showPopupTwo == true || showPopupThree == true || showPopupFour == true || showGNCPopupNo == true || showGNCPopupYes == true){
+                document.getElementById("paragraphId").innerHTML = message;
+                var modal = document.getElementById('myModal16');
+                modal.style.display = "block";
+            
+            }else{
+                saveMethod();
+            }           
+        }
+        function popupContinue(id){
+                var modal = document.getElementById(id);
+                modal.style.display = "none";
+                saveMethod();
+        }
+        function popupCancel(id){
+            var modal = document.getElementById(id);
+            modal.style.display = "none";           
+        }
+        </script>
+        </apex:outputPanel>
+
+        <apex:outputpanel id="specliatyScrip">
+        <script>
+            
+            var SpecialtyRebateSetupVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS9.SpecialtyRebateSetupId}'));
+            var specContractTypeVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS9.contractTypeId}'));
+            var specPriceListVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS9.priceListId}'));
+            var specOfferingTypeVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS9.PBSI1.offeringTypeId}'));
+            var specClintShareVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS9.specClintShareId}'));
+            var specpassMafVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS9.specpassMafId}'));
+            var specClientMAFShaVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS9.specClientMAFShaId}'));
+            var specPassPPvar = document.getElementById(('{!$Component.Pg.frm.PB.PBS9.specPassPPId}'));
+            var specClientPPSharVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS9.specClientPPSharId}'));
+            var specPayTermMethVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS10.specPayTermMethId}'));
+            var specPayOnVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS10.specPayOnId}'));
+            var specFreqVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS10.specFreqId}'));
+            var specSpeedVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS10.specSpeedId}'));
+            var specPayAftVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS10.specPayAftId}'));
+            var specRecBasisVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS11.specRecBasisId}'));
+            var specRecMethVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS11.specRecMethId}'));
+            var specRecFreqVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS11.specRecFreqId}'));
+            var specRecTimeFrmVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS11.specRecTimeFrmId}'));
+            var specRecLevelVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS11.specRecLevelId}'));
+                  
+            SpecialtyRebateSetupVar.disabled = {!specialityRebateBool};
+            specContractTypeVar.disabled = {!enableDisableMap['specContrartTypeBool']};
+            specPriceListVar.disabled = {!enableDisableMap['specPriceList']};
+            specOfferingTypeVar.disabled = {!enableDisableMap['specOfferingTypeBool']};
+            specClintShareVar.disabled = {!enableDisableMap['specClintShareBool']};
+            specpassMafVar.disabled = {!enableDisableMap['specpassMafBool']};
+            specClientMAFShaVar.disabled = {!enableDisableMap['specClientMAFShaBool']};
+            specPassPPvar.disabled = {!enableDisableMap['specPassPPBool']};
+            specClientPPSharVar.disabled = {!enableDisableMap['specClientPPSharbool']};
+            specPayTermMethVar.disabled = {!enableDisableMap['specPayTermMethBool']};
+            specPayOnVar.disabled = {!enableDisableMap['specPayOnBool']};
+            specFreqVar.disabled = {!enableDisableMap['specFreqBool']};
+            specSpeedVar.disabled = {!enableDisableMap['specSpeedBool']};
+            specPayAftVar.disabled = {!enableDisableMap['specPayAftBool']};
+            specRecBasisVar.disabled = {!enableDisableMap['specRecBasisBool']};
+            specRecMethVar.disabled = {!enableDisableMap['specRecMethBool']};
+            specRecFreqVar.disabled = {!enableDisableMap['specRecFreqBool']};
+            specRecTimeFrmVar.disabled = {!enableDisableMap['specRecTimeFrmBool']};
+            specRecLevelVar.disabled = {!enableDisableMap['specRecLevelBool']};
+
+            
+            if({!specialityRebateBool} == true){
+                SpecialtyRebateSetupVar.checked = {!rebOpr.Specialty_Rebate_Setup_different_than__c};
+            }
+            if({!enableDisableMap['specContrartTypeBool']} == true){
+                specContractTypeVar.value = '{!rebOpr.Specialty_Rebate_Contract_Type__c}';
+            }else{
+                document.getElementById('requiredOfferingBlog').className = 'requiredBlock'
+            }
+            if({!enableDisableMap['specPriceList']} == true){
+                specPriceListVar.value = '{!rebOpr.Specialty_Price_List__c}';
+            }
+            
+            //alert('{!rebOpr.Specialty_Rebate_Offering_Type__c}');
+            //if({!enableDisableMap['specOfferingTypeBool']} == true){
+                
+                specOfferingTypeVar.value = '{!rebOpr.Specialty_Rebate_Offering_Type__c}';
+            //}
+            if({!enableDisableMap['specClintShareBool']} == true){
+                specClintShareVar.value = '{!rebOpr.Specialty_Client_Share__c}';
+            }
+            if({!enableDisableMap['specpassMafBool']} == true){
+                specpassMafVar.checked = {!rebOpr.Specialty_Pass_MAF__c};
+            }
+            if({!enableDisableMap['specClientMAFShaBool']} == true){
+                specClientMAFShaVar.value = '{!rebOpr.Specialty_Client_MAF_Share__c}';
+            }
+            if({!enableDisableMap['specPassPPBool']} == true){
+                specPassPPvar.checked = {!rebOpr.Specialty_Pass_PP__c};
+            }
+            if({!enableDisableMap['specClientPPSharbool']} == true){
+                specClientPPSharVar.value = '{!rebOpr.Specialty_Client_PP_Share__c}';
+            }
+            if({!enableDisableMap['specPayTermMethBool']} == true){
+                specPayTermMethVar.checked = {!rebOpr.Rebate_Specialty_Payment_Term_Method__c};
+            }
+            if({!enableDisableMap['specPayOnBool']} == true){
+                specPayOnVar.value = '{!rebOpr.Specialty_Pay_On__c}';
+            }
+            if({!enableDisableMap['specFreqBool']} == true){
+                specFreqVar.value = '{!rebOpr.Specialty_Frequency__c}';
+            }
+            if({!enableDisableMap['specSpeedBool']} == true){
+                specSpeedVar.value = '{!rebOpr.Specialty_Speed__c}';
+            }
+            if({!enableDisableMap['specPayAftBool']} == true){
+                specPayAftVar.value = '{!rebOpr.Specialty_Pay_After__c}';
+            }
+            if({!enableDisableMap['specRecBasisBool']} == true){ 
+                specRecBasisVar.value = '{!rebOpr.Specialty_Recon_Basis__c}';
+            }
+            if({!enableDisableMap['specRecMethBool']} == true){
+                specRecMethVar.value = '{!rebOpr.Specialty_Recon_Method__c}';
+            }
+            if({!enableDisableMap['specRecFreqBool']} == true){
+                specRecFreqVar.value = '{!rebOpr.Specialty_Recon_Frequency__c}';
+            }
+            if({!enableDisableMap['specRecTimeFrmBool']} == true){
+                specRecTimeFrmVar.value = '{!rebOpr.Specialty_Recon_Timeframe__c}';
+            }
+            if({!enableDisableMap['specRecLevelBool']} == true){
+                specRecLevelVar.value = '{!rebOpr.Specialty_Recon_Level__c}';
+            } 
+           
+            if({!specClientShare} == true){
+                specClintShareVar.value = '{!rebOpr.Specialty_Client_Share__c}';
+            } 
+        </script>
+        </apex:outputpanel>
+        <apex:outputpanel >
+             <script>
+                //Akanksha 13 Aug - Defect fix for 3911 and 3907
+                function RTMDFlagchanged(status){
+                         
+                         if(!status && {!RTMDadminFlag} == true ){
+                              var modal = document.getElementById('myModal5');
+                              modal.style.display = "block";
+                         }
+                         else{
+                             RTMDChange(status);
+                         }
+                         
+                }
+                function disableRTMType(){
+                    var RTMDId=document.getElementById(('{!$Component.pg.frm.PB.PBS2.rebateRTMDId}'));
+                    if(!RTMDId.checked){
+                        document.getElementById(('{!$Component.pg.frm.PB.PBS2.rebateRTMDType}')).value="";
+                        document.getElementById(('{!$Component.pg.frm.PB.PBS2.rebateRTMDType}')).disabled=true;
+                    }
+                    else{
+                        document.getElementById(('{!$Component.pg.frm.PB.PBS2.rebateRTMDType}')).disabled=false;
+                    }
+                }
+                
+                function BillingRTMDPopup(){
+                     var status=document.getElementById(('{!$Component.pg.frm.PB.PBS2.rebateRTMDId}')).checked;
+                     var RTMDType=document.getElementById(('{!$Component.pg.frm.PB.PBS2.rebateRTMDType}')).value;
+                    if(status && (RTMDType=="POS Type 1") && {!RTMDadminFlag} == false){                  
+                        //var notificationMessageDiv = $("[id$='myModal4']");
+                        //notificationMessageDiv.show();  
+                        var modal = document.getElementById('myModal4');
+                        modal.style.display = "block";
+                    }    
+                }
+                
+                //Akanksha 13 Aug - Defect fix for 3911 and 3907
+                function billingRTMDOk(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS2.rebateRTMDId}')).checked = true;
+                    //var notificationMessageDiv = $("[id$='myModal4']");
+                    //notificationMessageDiv.hide();  
+                    var modal = document.getElementById('myModal4');
+                    modal.style.display = "none";
+                }
+                //Akanksha 13 Aug - Defect fix for 3911 and 3907
+                function billingRTMDCancel(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS2.rebateRTMDId}')).checked = false;
+                    //var notificationMessageDiv = $("[id$='myModal4']");
+                    //notificationMessageDiv.hide();
+                    var modal = document.getElementById('myModal4');
+                    modal.style.display = "none";
+                    RTMDChange(false);
+                }
+                //Akanksha 13 Aug - Defect fix for 3911 and 3907
+                 function billingRTMDuncheckOk(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS2.rebateRTMDId}')).checked = false;
+                    //var notificationMessageDiv = $("[id$='myModal5']");
+                    //notificationMessageDiv.hide();
+                    var modal = document.getElementById('myModal5');
+                    modal.style.display = "none";
+                    RTMDChange(false);
+                }
+                //Akanksha 13 Aug - Defect fix for 3911 and 3907
+                function billingRTMDuncheckCancel(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS2.rebateRTMDId}')).checked = true;
+                    //var notificationMessageDiv = $("[id$='myModal5']");
+                    //notificationMessageDiv.hide();
+                    var modal = document.getElementById('myModal5');
+                    modal.style.display = "none";
+                }
+            </script>
+        </apex:outputpanel>
+        <apex:outputpanel >
+            <script>
+                function specialtyRetailPopup(status) { 
+                    console.log('test');  
+                    var percenGuarantee = document.getElementById(('{!$Component.pg.frm.PB.PBS7.perGuaranteeFlagId}'));
+                    if(status && {!mirrorPopupBool} == true){                        
+                        //var notificationMessageDiv = $("[id$='myModal1']");
+                        //notificationMessageDiv.show(); 
+                        if(percenGuarantee.checked == false){
+                            var modal = document.getElementById('myModal1');
+                            modal.style.display = "block";
+                        }else{
+                            var modal = document.getElementById('myModal6');
+                            modal.style.display = "block";
+                        }
+                        
+                    }                                                                                                                 
+                }
+                function specialtyRetailOk(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS6.specialtyRetailId}')).checked = true;
+                    //var notificationMessageDiv = $("[id$='myModal1']");
+                    //notificationMessageDiv.hide();    
+                    var modal = document.getElementById('myModal1');
+                    modal.style.display = "none";
+                }
+                function specialtyRetailCancel(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS6.specialtyRetailId}')).checked = false;
+                    //var notificationMessageDiv = $("[id$='myModal1']");
+                    //notificationMessageDiv.hide();
+                    var modal = document.getElementById('myModal1');
+                    modal.style.display = "none";
+                }
+                function specialtyRetailOkPer(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS6.specialtyRetailId}')).checked = true;
+                    //var notificationMessageDiv = $("[id$='myModal1']");
+                    //notificationMessageDiv.hide();    
+                    var modal = document.getElementById('myModal6');
+                    modal.style.display = "none";
+                }
+                function specialtyRetailCancelPer(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS6.specialtyRetailId}')).checked = false;
+                    //var notificationMessageDiv = $("[id$='myModal1']");
+                    //notificationMessageDiv.hide();
+                    var modal = document.getElementById('myModal6');
+                    modal.style.display = "none";
+                }
+            </script>
+        </apex:outputpanel>
+        <apex:outputpanel >
+            <script>
+                function retail90Popup(status) {                    
+                    console.log('test'); 
+                    var percenGuarantee = document.getElementById(('{!$Component.pg.frm.PB.PBS7.perGuaranteeFlagId}'));
+                    if(status && {!mirrorPopupBool} == true){                        
+                        //var notificationMessageDiv = $("[id$='myModal2']");
+                        //notificationMessageDiv.show(); 
+                        if(percenGuarantee.checked == false){
+                            var modal = document.getElementById('myModal2');
+                            modal.style.display = "block";
+                        }else{
+                            var modal = document.getElementById('myModal7');
+                            modal.style.display = "block";
+                        }                      
+                    }                                                                                                                 
+                }
+                function retail90Ok(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS6.retail90Id}')).checked = true;
+                    //var notificationMessageDiv = $("[id$='myModal2']");
+                    //notificationMessageDiv.hide();  
+                    var modal = document.getElementById('myModal2');
+                    modal.style.display = "none";
+                }
+                function retail90Cancel(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS6.retail90Id}')).checked = false;
+                    //var notificationMessageDiv = $("[id$='myModal2']");
+                    //notificationMessageDiv.hide();
+                    var modal = document.getElementById('myModal2');
+                    modal.style.display = "none";
+                }
+                function retail90OkPer(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS6.retail90Id}')).checked = true;
+                    //var notificationMessageDiv = $("[id$='myModal2']");
+                    //notificationMessageDiv.hide();  
+                    var modal = document.getElementById('myModal7');
+                    modal.style.display = "none";
+                }
+                function retail90CancelPer(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS6.retail90Id}')).checked = false;
+                    //var notificationMessageDiv = $("[id$='myModal2']");
+                    //notificationMessageDiv.hide();
+                    var modal = document.getElementById('myModal7');
+                    modal.style.display = "none";
+                }
+        </script>
+        </apex:outputpanel>
+        <apex:outputpanel >
+            <script>
+                function mchoicePopup(status) {                    
+                    console.log('test'); 
+                    var percenGuarantee = document.getElementById(('{!$Component.pg.frm.PB.PBS7.perGuaranteeFlagId}'));
+                    if(status && {!mirrorPopupBool} == true){                        
+                        //var notificationMessageDiv = $("[id$='myModal3']");
+                        //notificationMessageDiv.show();  
+                        if(percenGuarantee.checked == false){
+                            var modal = document.getElementById('myModal3');
+                            modal.style.display = "block";
+                        }else{
+                            var modal = document.getElementById('myModal8');
+                            modal.style.display = "block";
+                        }
+                    }                                                                                                                 
+                }
+                function mchoiceOk(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS6.mchoiceId}')).checked = true;
+                    //var notificationMessageDiv = $("[id$='myModal3']");
+                    //notificationMessageDiv.hide();  
+                    var modal = document.getElementById('myModal3');
+                    modal.style.display = "none";
+                }
+                function mchoiceCancel(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS6.mchoiceId}')).checked = false;
+                    //var notificationMessageDiv = $("[id$='myModal3']");
+                    //notificationMessageDiv.hide();
+                    var modal = document.getElementById('myModal3');
+                    modal.style.display = "none";
+                } 
+                function mchoiceOkPer(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS6.mchoiceId}')).checked = true;
+                    //var notificationMessageDiv = $("[id$='myModal3']");
+                    //notificationMessageDiv.hide();  
+                    var modal = document.getElementById('myModal8');
+                    modal.style.display = "none";
+                }
+                function mchoiceCancelPer(){                    
+                    document.getElementById(('{!$Component.pg.frm.PB.PBS6.mchoiceId}')).checked = false;
+                    //var notificationMessageDiv = $("[id$='myModal3']");
+                    //notificationMessageDiv.hide();
+                    var modal = document.getElementById('myModal8');
+                    modal.style.display = "none";
+                }
+            </script>
+        </apex:outputpanel>
+        <!---------------------------------------Srini US 249 ------------------------------------------------------------------------->
+        <apex:outputpanel >
+            <script>
+                function ClassRebateCarveOutPopup(status) { 
+                      var modal = document.getElementById('myModal19');
+                      modal.style.display = "block";
+                }
+                function ClassCarveOutGuaranteePercentageOk(){                    
+                    var modal = document.getElementById('myModal19');
+                    modal.style.display = "none";
+                }
+                function ClassCarveOutGuaranteePercentageCancel(){                    
+                    var CarveOutGuarantee= document.getElementById(('{!$Component.pg.frm.PB.PBS14.ClassRebateCarveOutId}'));
+                    if(CarveOutGuarantee.checked){
+                        CarveOutGuarantee.checked=false;
+                    }
+                    else{
+                        CarveOutGuarantee.checked=true;
+                    }
+                    var modal = document.getElementById('myModal19');
+                    modal.style.display = "none";
+                }
+            </script>
+        </apex:outputpanel>      
+        <!-------------------------------Srini End US249---------------------------------------------------->      
+        <!---------------------------------------Start Srini US 152 ------------------------------------------------------------------------->
+        <apex:outputpanel >
+            <script>
+                function perGuaranteeChange(status) { 
+                            var modal = document.getElementById('myModal21');
+                            modal.style.display = "block";
+                }
+                function PercentageGuaranteeOk(){                    
+                    var modal = document.getElementById('myModal21');
+                    modal.style.display = "none";
+                }
+                function PercentageGuaranteeCancel(){                    
+                    var PercentageGuarantee= document.getElementById(('{!$Component.pg.frm.PB.PBS7.perGuaranteeFlagId}'));
+                    
+                    if(PercentageGuarantee.checked){
+                        PercentageGuarantee.checked=false;
+                    } 
+                    else{
+                        PercentageGuarantee.checked=true;
+                    }
+                    var modal = document.getElementById('myModal21');
+                    modal.style.display = "none";
+                }
+                
+            </script>
+        </apex:outputpanel>      
+        <!-------------------------------Srini End US152---------------------------------------------------->                            
+     <apex:outputpanel id="Script2">
+        <script>
+           // alert('{!rebateenableDisableMap['perGuaranteeFlagBool']}');
+           // alert('{!rebateenableDisableMap['retailDaysSupplyBool']}');
+            var offeringTypeVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.PBS2a.rebateofferingTypeId}'));
+            var clientShareVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.clientShareId}'));
+            var passMAFVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.passMAFId}'));
+            var passPPVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.passPPId}'));
+            var clientMAFShareVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.clientMAFShareId}'));
+            var clientPPShareVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.clientPPShareId}'));
+            var rebatePayTermVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS4.rebatePayTermId}'));
+            var payOnVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS4.payOnId}'));
+            var freqVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS4.freqId}'));
+            var speedVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS4.speedId}'));
+            var payAfterVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS4.payAfterId}'));
+            var reconBasisVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS5.reconBasisId}'));
+            var reconMethodVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS5.reconMethodId}'));
+            var reconFreqVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS5.reconFreqId}'));
+            var recontimeFrameVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS5.recontimeFrameId}'));
+            var reconLevelVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS5.reconLevelId}'));
+            var perGuaranteeFlagVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS7.perGuaranteeFlagId}'));
+            var retailDaysSupplyVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS7.retailDaysSupplyId}'));
+            var basedDaysSupplyVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS7.basedDaysSupplyId}'));
+            var daysSupplyVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS7.daysSupplyId}'));
+            
+            document.getElementById('requiredOfferingBlog1').className = 'requiredBlock' ; 
+            
+            offeringTypeVar.disabled = {!rebateenableDisableMap['OfferingTypeBool']};
+            clientShareVar.disabled = {!rebateenableDisableMap['clientShareBool']};
+            passMAFVar.disabled = {!rebateenableDisableMap['passMAFBool']};
+            passPPVar.disabled = {!rebateenableDisableMap['passPPBool']};
+            clientMAFShareVar.disabled = {!rebateenableDisableMap['clientMAFShareBool']};
+            clientPPShareVar.disabled = {!rebateenableDisableMap['clientPPShareBool']};
+            rebatePayTermVar.disabled = {!rebateenableDisableMap['rebatePayTermBool']};
+            payOnVar.disabled = {!rebateenableDisableMap['payOnBool']};
+            freqVar.disabled = {!rebateenableDisableMap['freqBool']};
+            speedVar.disabled = {!rebateenableDisableMap['speedBool']};
+            payAfterVar.disabled = {!rebateenableDisableMap['payAfterBool']};
+            reconBasisVar.disabled = {!rebateenableDisableMap['reconBasisBool']};
+            reconMethodVar.disabled = {!rebateenableDisableMap['reconMethodBool']};
+            reconFreqVar.disabled = {!rebateenableDisableMap['reconFreqBool']};
+            recontimeFrameVar.disabled = {!rebateenableDisableMap['recontimeFrameBool']};
+            reconLevelVar.disabled = {!rebateenableDisableMap['reconLevelBool']};
+            perGuaranteeFlagVar.disabled = {!rebateenableDisableMap['perGuaranteeFlagBool']};
+            retailDaysSupplyVar.disabled = {!rebateenableDisableMap['retailDaysSupplyBool']};
+            basedDaysSupplyVar.disabled = {!rebateenableDisableMap['basedOnDaysSupplyBool']};
+            daysSupplyVar.disabled = {!rebateenableDisableMap['daysSupplyBool']};
+            
+           // if({!rebateenableDisableMap['OfferingTypeBool']} == true){
+                offeringTypeVar.value = '{!rebOpr.Rebate_Offering_Type__c}';
+            //    alert('{!rebOpr.Rebate_Offering_Type__c}');
+           // }
+             if({!rebateenableDisableMap['clientShareBool']} == true){
+                clientShareVar.value = '{!rebOpr.Client_Share__c}';
+            }                
+            if({!rebateenableDisableMap['clientMAFShareBool']} == true){
+                clientMAFShareVar.value = '{!rebOpr.Client_MAF_Share__c}';
+            }
+            if({!rebateenableDisableMap['clientPPShareBool']} == true){
+                clientPPShareVar.value = '{!rebOpr.Client_PP_Share__c}';                
+            }
+            
+             if({!rebateenableDisableMap['passMAFBool']} == true){
+                //passMAFVar.checked = false;
+            //  clientMAFShareVar.disabled = true;
+            }
+           if({!rebateenableDisableMap['passPPBool']} == true){
+                passPPVar.checked = false;
+            //  clientPPShareVar.disabled = true;
+            }
+            if({!rebateenableDisableMap['payOnBool']} == true){
+                payOnVar.value = '{!rebOpr.Pay_On__c}';
+            }
+            if({!rebateenableDisableMap['freqBool']} == true){
+                freqVar.value = '{!rebOpr.Frequency__c}';
+            }
+            if({!rebateenableDisableMap['speedBool']} == true){
+                speedVar.value = '{!rebOpr.Speed__c}';
+            }
+            if({!rebateenableDisableMap['payAfterBool']} == true){
+                payAfterVar.value = '{!rebOpr.Pay_After__c}';
+            }
+            if({!rebateenableDisableMap['reconBasisBool']} == true){
+                reconBasisVar.value = '{!rebOpr.Recon_Basis__c}';
+            }
+            if({!rebateenableDisableMap['reconMethodBool']} == true){
+                reconMethodVar.value = '{!rebOpr.Recon_Method__c}';
+            }
+            if({!rebateenableDisableMap['reconFreqBool']} == true){
+                reconFreqVar.value = '{!rebOpr.Recon_Frequency__c}';
+            }
+            if({!rebateenableDisableMap['recontimeFrameBool']} == true){
+                recontimeFrameVar.value = '{!rebOpr.Recon_Timeframe__c}';
+            }
+            if({!rebateenableDisableMap['reconLevelBool']} == true){
+                reconLevelVar.value = '{!rebOpr.Recon_Level__c}';
+            }
+            if({!rebateenableDisableMap['perGuaranteeFlagBool']} == true){
+                perGuaranteeFlagVar.checked = false;
+            }
+            //10 Aug - Defect fix for 3931
+            if({!rebateenableDisableMap['retailDaysSupplyBool']} == true){
+                retailDaysSupplyVar.checked = false;
+                daysSupplyVar.value = '';
+               daysSupplyVar.disabled = true; 
+            }
+            if({!rebateenableDisableMap['basedOnDaysSupplyBool']} == true){
+                basedDaysSupplyVar.value = '{!rebOpr.Based_on_Days_Supply__c}';
+            }
+            if({!rebateenableDisableMap['daysSupplyBool']} == true){
+                daysSupplyVar.value = '{!rebOpr.Days_Supply__c}';
+            }            
+           if({!retailSupplyFlag} == false){
+               daysSupplyVar.value = '';
+               daysSupplyVar.disabled = true;                 
+            }
+         //   daysSupplyVar.disabled = {!rebateenableDisableMap['daysSupplyBool']};
+        </script>
+        </apex:outputpanel>
+        <script>
+        //var mass = document.getElementById(('{!$Component.pg.frm.PB.PBS2.rebtContId}')).focus();            
+            function removeClientShareDecimal(clientVal){               
+                var clientShareVar = document.getElementById(('{!$Component.pg.frm.PB.PBS2.clientShareId}'));
+                if(clientVal ==''){                 
+                    clientShareVar.value = null;
+                }else{                  
+                    clientShareVar.value = Math.floor(clientVal);
+                }               
+            }
+            function removeClientMAFShareDecimal(clientVal){
+                
+                var clientShareVar = document.getElementById(('{!$Component.pg.frm.PB.PBS2.clientMAFShareId}'));
+                if(clientVal ==''){                 
+                    clientShareVar.value = null;
+                }else{                  
+                    clientShareVar.value = Math.floor(clientVal);
+                } 
+                
+            }
+            function OnclickMAFshare(clientVal){
+                var clientShareVar = document.getElementById(('{!$Component.pg.frm.PB.PBS2.clientMAFShareId}'));
+                var clientShareVar1 = document.getElementById(('{!$Component.pg.frm.PB.PBS2.clientShareId}'));
+                
+                if(clientVal=='' && clientShareVar1.value!=null){
+                    clientShareVar.value= clientShareVar1.value;
+                }
+            }
+            function removeClientPPShareDecimal(clientVal){
+                var clientShareVar = document.getElementById(('{!$Component.pg.frm.PB.PBS2.clientPPShareId}'));
+                if(clientVal ==''){                 
+                    clientShareVar.value = null;
+                }else{                  
+                    clientShareVar.value = Math.floor(clientVal);
+                } 
+                
+            }
+            function removeSpcClientShareDecimal(clientVal){
+                var clientShareVar = document.getElementById(('{!$Component.pg.frm.PB.PBS9.specClintShareId}'));
+                if(clientVal ==''){                 
+                    clientShareVar.value = null;
+                }else{                  
+                    clientShareVar.value = Math.floor(clientVal);
+                } 
+                
+            }
+            function removeSpcClientMAFShareDecimal(clientVal){
+                var clientShareVar = document.getElementById(('{!$Component.pg.frm.PB.PBS9.specClientMAFShaId}'));
+                if(clientVal ==''){                 
+                    clientShareVar.value = null;
+                }else{                  
+                    clientShareVar.value = Math.floor(clientVal);
+                } 
+                
+            }
+            function removeSpcClientPPShareDecimal(clientVal){
+                var clientShareVar = document.getElementById(('{!$Component.pg.frm.PB.PBS9.specClientPPSharId}'));
+                if(clientVal ==''){                 
+                    clientShareVar.value = null;
+                }else{                  
+                    clientShareVar.value = Math.floor(clientVal);
+                } 
+                
+            }
+                    //To remove --None-- from speciality Rebate field   
+        //More Details https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+        //select the target node        
+        var target = document.getElementById('pg:frm:PB');
+        // create an observer instance
+        var observer = new MutationObserver(function(mutations) {
+        var specrebid = document.getElementById("{!$Component.pg.frm.PB.PBS2.specrebId}"); 
+        var gncval = document.getElementById('{!$Component.pg.frm.PB.PBS2.GuarGNC}').value;
+          
+          console.log(gncval);
+          if(gncval == 'Yes'){
+              var specItem = specrebid.options.item(0);
+              if(specItem!=null) {
+                  var x = specItem.text;
+                  if(x=='--None--') {
+                      specrebid.options.remove(0);
+                  }
+              }
+          }            
+        });
+        // configuration of the observer:
+        var config = { subtree: true, childList: true };
+        // pass in the target node, as well as the observer options
+        observer.observe(target, config);
+        </script>
+
+    </apex:form>
+    <apex:form rendered="{!showerrorBool}">
+        <apex:pageBlock title="Rebate Operation">
+            <h1>FAF can only contain one Rebate Operations record</h1>
+            <br/>
+            <br/>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton title="Cancel" action="{!Cancel}" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+
+    </apex:form>
+
+</apex:page>

@@ -1,0 +1,119 @@
+<!--
+ * Name      :NewPBMService.vfp
+ * Controller: NewPBMService_Controller
+-->
+
+<apex:page standardController="PBM_Services__c" extensions="NewPBMServices_Cntrlr" lightningStylesheets="true">
+
+   <!-- <apex:outputpanel layout="block" styleclass="customPopup" > -->
+    <apex:form >
+
+        <div class="slds-size_2-of-6">
+            <apex:messages />
+            <apex:pageBlock title="Services Edit" > 
+                <apex:pageBlockButtons location="both"> 
+                    <apex:commandButton value="Save" action="{!savePBMServices}"  />                    
+                    		<apex:commandButton value="Cancel" action="{!Cancel}"/>                
+                </apex:pageBlockButtons>                
+                <apex:pageBlockSection title="Services" columns="2" >
+                    <apex:pageBlockSectionItem rendered="{! and(pbm.Id != null , pbm.Id != '') }">
+                        <apex:outputLabel value="Service Type" for="type"/>
+                        <apex:outputField value="{!pbm.Type__c}" id="type"/> 
+                    </apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem rendered="{! and(pbm.Id != null , pbm.Id != '') }">
+                        <apex:outputLabel value="Created By" for="crtdBy"/>
+                        <apex:outputField value="{!pbm.CreatedById}" id="crtdBy"/> 
+                    </apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem rendered="{! and(pbm.Id != null , pbm.Id != '')  }">
+                        <apex:outputLabel value="LastModified By" for="modifyBy"/>
+                        <apex:outputField value="{!pbm.LastModifiedById}" id="modifyBy"/> 
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="FAF ID" for="fafId"/>
+                        <apex:outputField value="{!pbm.FAF_ID__c}" id="fafId"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel for="srvc" value="Fee Services"/>
+                        <apex:outputField style="margin-top:3px;" id="srvc" value="{!pbm.Fee_Services__c}"/>
+                    </apex:pageBlockSectionItem> 
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection title="Additional Information" columns="2">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Election" for="ele"/>
+                        <apex:inputField value="{!pbm.Election__c}" style="margin-top:3px;" id="ele"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Fee" for="amt"/>
+                        <apex:inputField value="{!pbm.Amount__c}" style="margin-top:3px;" id="amt" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem rendered="{! !adSerRdnly }" >
+                        <apex:outputLabel value="Service" for="ser"/>
+                        <apex:inputField value="{!pbm.Service__c}" style="margin-top:3px;" id="ser" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem rendered="{! adSerRdnly   }">
+                        <apex:outputLabel value="Service" for="ser1"/>
+                        <apex:outputField value="{!pbm.Service__c}" style="margin-top:3px;" id="ser1" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Basis" for="bas"/>
+                        <apex:inputField value="{!pbm.Basis2__c}" style="margin-top:3px;" id="bas" />
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Service Effective Date" for="sed"/>
+                        <apex:inputField value="{!pbm.Service_Effective_Date__c}" style="margin-top:3px;" id="sed"/> 
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Last Modified Date" for="lmd"/>
+                        <apex:inputField value="{!pbm.Last_Date_Modified__c}" style="margin-top:3px;" id="lmd"/> 
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Notes" for="note"/>
+                        <apex:inputField value="{!pbm.Notes__c}" style="margin-top:3px;" id="note"/> 
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="FAF Component" for="fafComp"/>
+                        <apex:inputField value="{!pbm.FAF_Component__c}" style="margin-top:3px;" id="fafComp"/> 
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+                
+                <apex:pageBlockSection title="Service Details" columns="2" >
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Service Description" for="servdesc"/>
+                        <apex:outputField value="{!pbm.Service_Description2__c}" style="margin-top:3px;" id="servdesc"/> 
+                    </apex:pageBlockSectionItem>
+                    
+                 </apex:pageBlockSection>               
+            </apex:pageBlock>   
+        </div>    
+        
+    </apex:form>
+    <style type="text/css">
+        .customPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: ;
+        /*z-index: 9999;*/
+        /*left: 40%;*/
+          padding:5px;
+          
+        /*position: absolute;*/
+            width: 100%;
+        /*margin-left: -250px;*/
+            top:30px;
+        }
+        .popupBackground{
+            background-color:#fafafa;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+    </style>
+
+
+</apex:page>

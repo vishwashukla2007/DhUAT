@@ -1,0 +1,21 @@
+<aura:component controller="Apttus_GridObjectdata" implements="force:appHostable,lightning:isUrlAddressable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId"  >
+<aura:attribute name="objects" type="Object" />
+<aura:attribute name="accountid" type="String" default="" /> 
+<aura:attribute name="taskid" type="String" default="" /> 
+<aura:attribute name="selected" type="Integer"/> 
+<aura:attribute name="title" type="String"/> 
+<aura:attribute name="headerTitle" type="Aura.Component[]">
+        <h2>
+            <b>{!v.title}</b>
+        </h2>
+</aura:attribute>
+<aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+<aura:handler event="c:Apttus_Grid_AccountId_Event" action="{!c.handleAccountId}"/>
+<div class="slds-card_boundary" style="height:30rem;width:20rem">
+<lightning:card title="{!v.headerTitle}" iconName="utility:switch" class="container slds-card_boundary  slds-scrollable_y">
+<aura:iteration items="{!v.objects}" var="item" indexVar="index">
+    <c:Apttus_PCD_Offer_Child_Page selected ="{!index}"  item="{!item}" />
+</aura:iteration>  
+</lightning:card>  
+</div>
+</aura:component>

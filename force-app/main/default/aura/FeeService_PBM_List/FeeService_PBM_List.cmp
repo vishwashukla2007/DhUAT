@@ -1,0 +1,119 @@
+<aura:component  controller="Feeservicechildlist" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:isUrlAddressable" access="global" >
+    <aura:attribute type="object" name="pbmList"/>    
+    <aura:attribute name="mycolumns" type="List"/>
+    <aura:attribute name="draftValues" type="Object" default="[]"/>
+    <aura:attribute name="SearchKeyWord" type="string"/> 
+    <aura:attribute name="isShowApprove" type="Boolean"/>
+    <aura:attribute name="isShowNew" type="Boolean"/>
+    <aura:attribute name="isShowApprove2" type="Boolean"/>
+    <aura:attribute name="isShowSubmitReview" type="Boolean"/>
+    <aura:attribute name="isShowError" type="Boolean" default="false"/>
+    <aura:attribute name="profileName" type="String" />
+    
+    <aura:attribute name="spinner" type="Boolean" default="false"/>
+    <!--Sorting Attributes -->
+    <aura:attribute name="sortDirection" type="String" default="asc" />
+    <aura:attribute name="defaultSortDirection" type="String" default="asc" />
+    <aura:attribute name="sortedBy" type="String" />
+    
+    <!-- Loading Atributes -->
+    <aura:attribute name="enableInfiniteLoading" type="Boolean" default="true"/>
+    <aura:attribute name="initialRows" type="Integer" default="50"/>
+    <aura:attribute name="currentCount" type="Integer" default="0"/>
+    <aura:attribute name="totalRows" type="Integer" default="0"/>
+    <aura:attribute name="loadOffset" type="Integer" default="1"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.onInit}"/>        
+    
+    
+    <!--loading spinner start-->
+    <aura:if isTrue="{!v.spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    <!-- Loading spinner end-->
+    
+    <lightning:card iconName="standard:account" title="BUY-UP SERVICES"> 
+        <aura:if isTrue="{!v.isShowError}">
+            <div class="errorDiv">
+                <div class="slds-notify_container slds-is-relative">
+                    <div class="slds-notify slds-notify_toast slds-theme_error" role="status">
+                        <span class="slds-assistive-text">error</span>
+                        <div class="slds-notify__content">
+                            <h2 class="slds-text-heading_small">BUY-UP SERVICES records have Errors.</h2>
+                        </div>
+                        <div class="slds-notify__close">
+                            <lightning:buttonIcon iconName="utility:close" size="large" variant="bare-inverse" title="Close" alternativeText="Close" onclick="{!c.closeError}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+        <div class="slds-m-top_large"></div>
+        <lightning:layout>
+            <div class="slds-m-left_medium"></div>
+            <div class="slds-size_4-of-12">
+                <span>
+                    <div class="slds-m-right_large"></div>
+                    <ui:inputText   value="{!v.SearchKeyWord}" placeholder="Search .."/>
+                </span>
+                <div class="slds-m-right_large"></div>
+            </div>
+            <div class="slds-m-left_large"></div>
+            <div class="slds-size_1-of-12">
+                <span>
+                    <lightning:button variant="brand" label="Search" title="Search" onclick="{!c.Searchlist}"/>
+                </span>
+            </div>
+            <div class="slds-size_2-of-12">
+                <span>
+                    <lightning:button variant="neutral" label="Clear Search" title="Clear Search" onclick="{!c.ClearSearch}"/>
+                </span>                
+            </div>
+            <div class="slds-size_4-of-12 ">
+                <div class="slds-float_right newButton">
+                    <aura:if isTrue="{!v.isShowApprove}">
+                        <aura:if isTrue="{!v.isShowApprove2}">
+                            <lightning:button variant="neutral" label="Approve" title="Approve" onclick="{!c.approveService}"/>
+                            <aura:set attribute="else">
+                                <lightning:button variant="neutral" label="Approve" title="Approve" disabled="true"/>
+                            </aura:set>
+                        </aura:if>
+                    </aura:if>
+                    <aura:if isTrue="{!v.isShowSubmitReview}">
+                        <lightning:button variant="neutral" label="Submit For Review" title="Submit For Review" onclick="{!c.submitForReview}"/>
+                    </aura:if>
+                    <aura:if isTrue = "{!v.isShowNew}">
+                        <lightning:button variant="neutral" label="New" title="New" onclick="{!c.createNewFeeServices}"/>
+                    </aura:if>
+                </div>
+            </div>            	            
+        </lightning:layout>  
+        <div class="slds-m-top_large"></div>
+        <div style="height:450px">
+            <lightning:datatable aura:id="pbmTable"
+                                 showRowNumberColumn="true"
+                                 columnWidthsMode ="auto"
+                                 maxColumnWidth="450"
+                                 data="{!v.pbmList }" 
+                                 columns="{! v.mycolumns }" 
+                                 draftValues="{!v.draftValues}"                              
+                                 keyField="Id" 
+                                 hideCheckboxColumn="true"                              
+                                 sortedDirection="{!v.sortDirection}"
+                                 sortedBy="{!v.sortedBy}"
+                                 onsort="{!c.handleSort}"
+                                 onsave="{! c.onSave }"
+                                 enableInfiniteLoading="{!v.enableInfiniteLoading}"
+                                 loadMoreOffset="{!v.loadOffset}"
+                                 onloadmore="{!c.loadMoreData }"/> 
+        </div>
+        <div class="slds-clearfix">
+        </div>
+    </lightning:card>  
+</aura:component>

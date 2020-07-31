@@ -1,0 +1,11 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+<aura:attribute name="accountid" type="String"/>   
+  <lightning:layout>
+   <lightning:layoutitem size="3">
+    <c:Apttus_PCD_Offer_Page/>
+   </lightning:layoutitem>
+   <lightning:layoutitem size="9">
+    <c:Apttus_PCD_LOB_Parent/>
+   </lightning:layoutitem>
+  </lightning:layout>
+</aura:component>

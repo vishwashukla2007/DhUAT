@@ -1,0 +1,31 @@
+<aura:component controller="Apttus_GridObjectdata" implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" >
+    
+    <aura:attribute name="percentageCheck" type="Boolean" default="false" />
+    
+    
+    <aura:if isTrue="{!v.percentageCheck}">
+        <tr class="slds-text-heading_label slds-line-height_reset">
+            <th scope="col"><div class="font" title="Retail"></div></th>
+            <th scope="col"><div class="yr font" title="YEAR">YEAR</div></th>
+            <th scope="col"><div class="planyr font" title="PLAN YEAR">PLAN YEAR</div></th>
+            <th scope="col"><div class="fontplandesign" title="PLAN DESIGN">PLAN DESIGN</div></th>
+            <th scope="col"><div class="font" title="Specialty Formulary">Specialty Formulary</div></th>
+            <th scope="col"><div class="font" title="Specialty Display Name">Specialty Formulary Display Name</div></th>
+            <th scope="col"><div class="font" title="Basis">Basis</div></th>
+            <th scope="col"><div class="font" title="Specialty(%)">Specialty(%)</div></th>
+        </tr>
+    </aura:if>
+    <aura:if isTrue="{!v.percentageCheck==false}">
+        <tr class="slds-text-heading_label slds-line-height_reset">
+            <th scope="col"><div class="font" title=""></div></th>
+            <th scope="col"><div class="yr font" title="YEAR">YEAR</div></th>
+            <th scope="col"><div class="planyr font" title="PLAN YEAR">PLAN YEAR</div></th>
+            <th scope="col"><div class="fontplandesign" title="PLAN DESIGN">PLAN DESIGN</div></th>
+            <th scope="col"><div class="font" title="Specialty Formulary">Specialty Formulary</div></th>
+            <th scope="col"><div class="font" title="Specialty Display Name">Specialty Formulary Display Name</div></th>
+            <th scope="col"><div class="font" title="Basis">Basis</div></th>
+            <th scope="col"><div class="font" title="Specialty($)">Specialty($)</div></th>
+        </tr>
+    </aura:if>
+    
+</aura:component>

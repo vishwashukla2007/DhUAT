@@ -1,0 +1,32 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="PCD_Extract_agreementline">
+<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+<aura:attribute name="recordIds" type="String"/>
+<aura:attribute name="agreementline" type="Apttus__AgreementLineItem__c[]" />
+<aura:attribute name="lobdesc" type="String"/>
+<aura:attribute name="isAccess" type="boolean" default="true"/>   
+<!-- <div class="c-container">  -->
+<div class="slds-scrollable" style="height:280rem;width:180rem">
+<div class="custom-box" style="width: 30rem;padding: 1rem;">
+<div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--2-of-2 slds-large-size--2-of-2 ">
+<div style="float:right;font-size:13px;" >
+<lightning:button aura:id="clickSubmit" value="clickSubmit" label="Submit All Question" 
+                                     variant="brand"
+                                     class="slds-button"
+                                     onclick="{!c.clickSubmit}"/> 
+</div> 
+</div> 
+<P>TASK ID - 16243 </P>
+<P>Offer # - 1 </P> 
+<P>Client Name - U-Haul International </P> 
+</div>
+<lightning:layout horizontalAlign="spread" verticalAlign="center" multipleRows="false" >
+<aura:iteration items="{!v.agreementline}" var="agreementline"> 
+<lightning:layoutItem  padding="around-medium" flexibility="grow" >
+<div class="custom-box" >
+<c:PCD_Questionaire  agreementline="{!agreementline}" recordIds="{!v.agreementline.Last_PCD_Question_Answer__c}"/>                                 
+</div>
+</lightning:layoutItem>
+</aura:iteration>
+</lightning:layout>
+</div>
+</aura:component>

@@ -1,0 +1,126 @@
+<apex:page standardController="Medicare_Part_D_Fees_Schedule__c" id="Pg" title="Medicare Fee Schedule Edit" extensions="MedicareFeesScheduleNewEditClass" lightningStylesheets="true" >
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script>
+        function setFocusOnLoad() {
+        document.getElementById('{!$Component.Pg.frm.PB.PBS2.psYear.yearId}').focus();
+    }   
+    </script>
+    
+    <script>
+    function refreshPage(){
+        // window.top.location.href =  "/{!Medicare_Part_D_Fees_Schedule__c.Id}";
+    }
+    </script>   
+    <script>
+    function displayFields()
+    {
+        var wtype = document.getElementById('{!$Component.frm.PB.PBS2.psType.typeId}').value;
+        if( wtype == 'Retiree Drug Subsidy')
+        { 
+            jQuery('[id$=FeeDescId]').show();
+            jQuery('[id$=FeeDescId2]').show(); 
+        }
+        else
+        {
+            //BasisId psBasis
+            jQuery('[id$=FeeDescId]').hide();
+            jQuery('[id$=FeeDescId2]').hide();
+            if(wtype != '' && wtype != null)
+                document.getElementById('{!$Component.frm.PB.PBS2.psBasis.BasisId}').value = 'PMPM';
+            
+        }
+    }
+    setTimeout(function(){displayFields();},1000);
+    function validate()
+    {
+        saveUpdateMFS();
+        
+    }
+    </script>
+    <apex:form id="frm">
+        <apex:pagemessages id="pmsg"></apex:pagemessages>
+        <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top:0; left:0; right:0;bottom:0;opacity:0.55; z-index:1000;background-color:black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top:0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+        
+        <apex:pageBlock title="Medicare Part D Fees Schedule Edit" id="PB">
+            <apex:outputText value="Any documents attached to the original record are not going to be cloned, please reattach any applicable documents to the newly created record." style="color:red;" rendered="{!showTextBool}" />
+            
+            <apex:pageBlockSection title="Medicare Part D Fees Schedule Detail" id="PBS1">
+                
+                <apex:outputField value="{!medFeeSchedObj.FAF_ID__c}"/>
+                <apex:outputLabel />
+                <apex:outputField value="{!medFeeSchedObj.Billing_Operations__c}"/>
+            </apex:pageBlockSection> 
+            <apex:pageBlockSection title="Medicare Part D Fee Schedule Information" id="PBS2">
+                <apex:pageBlockSectionItem id="psYear" >
+                    <apex:outputLabel value="Year" for="yearId" />
+                    <apex:inputField value="{!medFeeSchedObj.Year__c}" required="true" id="yearId"/>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem id="psType">
+                    <apex:outputLabel value="Type" for="typeId" />
+                    <apex:inputField value="{!medFeeSchedObj.Type__c}" required="true" id="typeId" onchange="displayFields();"/>
+                    
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Fee" for="pmFeedId" />
+                    <apex:inputField value="{!medFeeSchedObj.PMPM_Fee__c}" required="{!PMPMFeeRequired}" id="pmFeeId"/>
+                    
+                </apex:pageBlockSectionItem> 
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Fee Description" for="FeeDescId" id="FeeDescId2" />
+                    <apex:inputField value="{!medFeeSchedObj.Fee_Description__c}" id="FeeDescId" />
+                    
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem rendered="{!IF(ISNULL(medFeeSchedObj.Retiree_Drug_Subsidy__c), true , false)}" id="psBasis">
+                    <apex:outputLabel value="Basis" for="BasisId" /> 
+                    <apex:inputField value="{!medFeeSchedObj.Basis__c}" required="true" id="BasisId"/> 
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem rendered="{!IF(ISNULL(medFeeSchedObj.Retiree_Drug_Subsidy__c), false , true)}" id="psBasis2">
+                    <apex:outputLabel value="Basis" for="BasisId2" />
+                    <apex:inputField value="{!medFeeSchedObj.Basis2__c}" required="true" id="BasisId2"/>
+                    
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Service Effective Date" for="sed" />
+                    <apex:inputField value="{!medFeeSchedObj.Service_Effective_Date__c}" required="true" id="sed"/>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Path" for="PathIdnew" />   
+                    <apex:inputfield id="PathIdnew" value="{!medFeeSchedObj.Path__c}"/>
+                    
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Additional Information" for="addInfoId" />  
+                    <apex:inputField value="{!medFeeSchedObj.Additional_Information__c}" id="addInfoId" style="width:800px"/>
+                    
+                </apex:pageBlockSectionItem>
+                
+            </apex:pageBlockSection>  
+            
+            <apex:pageBlockButtons >
+                <!--<apex:commandButton title="Save" onclick="return Validate();" value="Save" status="status" action="{!saveUpdateMFS}" reRender="pmsg, PB" oncomplete="displayFields();window.scrollTo(0, 0);"/>-->
+                
+                <apex:commandButton title="Save" value="Save" onclick="validate();" oncomplete="refreshPage();"/>
+                <apex:commandButton title="Cancel" action="{!Cancel}" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+            
+        </apex:pageBlock>
+        <apex:actionFunction name="saveUpdateMFS" action="{!saveUpdateMFS}" rerender="pmsg, PB" status="status" oncomplete="displayFields();window.scrollTo(0, 0);"/>
+    </apex:form>
+    
+</apex:page>

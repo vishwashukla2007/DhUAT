@@ -1,0 +1,9 @@
+<aura:event type="APPLICATION">
+    <!-- Add aura:attribute tags to define event shape.
+         One sample attribute here. -->
+    <aura:attribute name="message" type="String"/>
+    <aura:attribute name="SaveRec" type="Boolean"/>
+    <aura:attribute name="isSavedAndClose" type="Boolean"/>
+    <aura:attribute name="isMatchToSave" type="Boolean" default="false"/>
+    <aura:attribute name="matchToToGrid" type="String" default=""/>
+</aura:event>

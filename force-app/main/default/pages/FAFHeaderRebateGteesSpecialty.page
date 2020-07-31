@@ -1,0 +1,3 @@
+<apex:page standardController="Rebate_Gtees_Specialty_Class_Carve_Outs__c" lightningStylesheets="true">
+    <c:FAFHeaderVC fafRecordId="{!Rebate_Gtees_Specialty_Class_Carve_Outs__c.FAF_ID__c}"></c:FAFHeaderVC>
+</apex:page>

@@ -1,0 +1,21 @@
+<apex:page standardController="FAF_Instructions__c" lightningStyleSheets="true" 
+            title="{!IF(FAF_Instructions__c.Id <> null, 'Edit '+FAF_Instructions__c.Name,'New FAF Instructions')}" >
+
+    <apex:form >
+        <apex:pagemessages id="pmsg"></apex:pagemessages>
+        <apex:pageBlock >
+            <apex:pageBlockSection title="FAF Instructions Detail">
+                <apex:outputField value="{!FAF_Instructions__c.FAF_ID__c}" />
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="FAF Instructions">
+                <apex:inputField value="{!FAF_Instructions__c.Type__c}" />
+                <apex:inputField value="{!FAF_Instructions__c.Instruction__c}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockButtons >
+                <apex:commandButton value="Save" action="{!save}" reRender="pmsg"/>
+                <apex:commandButton value="Cancel" action="{!cancel}" />
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

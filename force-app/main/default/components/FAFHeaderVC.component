@@ -1,0 +1,74 @@
+<apex:component controller="FAFHeaderController">
+    <style>
+       .fafTbl th
+       {
+         
+         padding:5px;
+        
+       }
+        
+        .fafTbl td
+       {
+        
+         margin-left:2px;
+         padding-left:initial;
+         
+       }  
+       
+       .fafTbl tr
+       {
+          border-bottom:1px solid; 
+       }
+       
+       .fafTbl tr:last-child
+       {
+          border-bottom:0px solid; 
+       }
+       
+    </style>
+    <apex:attribute name="fafRecordId" assignTo="{!fafId}" required="true" type="string" description="Need to pass FAF Id" />
+    <apex:attribute name="objType" assignTo="{!objectType}" type="string" description="Need object type but not mandatory" />
+    <apex:variable value="{!FAF}" var="fafRecord" />
+    <apex:pageBlock >
+        <!--
+        <apex:pageBlockSection columns="4">
+            <apex:repeat value="{!fields}" var="field">
+                <apex:outputField value="{!fafRecord[field]}" />
+            </apex:repeat>
+        </apex:pageBlockSection>
+        -->
+        <div style="border-bottom:1px solid;">
+        <table width="100%"  class="fafTbl" style="border-bottom:none;">
+            <apex:repeat value="{!fieldList}" var="fields">
+                <tr>
+                    <apex:repeat value="{!fields}" var="fld">
+                            <th>
+                                {!
+                                $ObjectType.Central_Hub__c.fields[fld].label
+                                }:
+                            </th>
+                            <td>
+                                <apex:outputField value="{!fafRecord[fld]}" rendered="{!AND(fld <> 'CreatedById', 
+                                fld<>'LastModifiedById',fld<>'Name' )}" />
+                                <apex:outputPanel rendered="{!fld = 'CreatedById'}">
+                                    <apex:outputField value="{!fafRecord[fld]}" />
+                                    <apex:outputText value=", " />
+                                    <apex:outputField value="{!fafRecord['CreatedDate']}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!fld = 'LastModifiedById'}">
+                                    <apex:outputField value="{!fafRecord[fld]}" /> 
+                                    <apex:outputText value=", " />
+                                    <apex:outputField value="{!fafRecord['LastModifiedDate']}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!fld = 'Name'}">
+                                    <apex:outputLink value="/{!fafId}" >{!fafRecord[fld]}</apex:outputLink>
+                                 </apex:outputPanel>
+
+                            </td>
+                    </apex:repeat>
+                </tr>
+            </apex:repeat>
+        </table>
+        </div>
+    </apex:pageBlock>
+</apex:component>

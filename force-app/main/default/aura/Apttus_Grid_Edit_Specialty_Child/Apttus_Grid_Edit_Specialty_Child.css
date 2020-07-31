@@ -1,0 +1,18 @@
+.THIS .slds-spinner_container  {
+    background-color: white;
+    height:80%;
+    width:30%;
+    top:5%;
+    left:40%;
+}
+
+.THIS .slds-backdrop_open {
+    opacity: 0.0 !important;
+}
+
+.THIS .planyr {
+    width: 190px;
+}
+.THIS .yr {
+    width: 50px;
+}

@@ -1,0 +1,6 @@
+<apex:page showHeader="false" sidebar="false">
+    <apex:form >
+        
+        <c:CAGCustomLookupVFComponent />
+    </apex:form>
+</apex:page>

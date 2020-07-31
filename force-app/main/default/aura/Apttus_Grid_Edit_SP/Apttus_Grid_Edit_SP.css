@@ -1,0 +1,25 @@
+.THIS .width {
+    width: 100%;
+}
+.THIS .brbasis {
+    width: 240px;
+}
+.THIS .gbasis {
+    width: 200px;
+}
+.THIS .planyr {
+    width: 190px;
+}
+.THIS .yr {
+    width: 50px;
+}
+.THIS .slds-form-element__label{
+    font-size: .77rem !important;
+}
+.THIS .slds-spinner_container  {
+    background-color: white;
+    height:25%;
+    width:30%;
+    top:50%;
+    left:50%;
+}

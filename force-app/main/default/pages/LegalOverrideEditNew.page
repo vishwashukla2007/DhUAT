@@ -1,0 +1,122 @@
+<apex:page standardController="Legal_Information__c"  extensions="LegalOverrideEditNewClass" sidebar="True" tabStyle="Account" title="Legal Information Edit" lightningStylesheets="true">
+  
+  <style>
+    .locationError { color: red; font-weight: strong;font-size:110%;}
+    </style>
+    
+    
+    <script>
+         
+        function textareaDep(checkbox){
+             
+            var area1 = document.getElementById('{!$Component.theForm.pb.pbs.area1}');
+            area1.value =  !checkbox.checked ? '' : area1.value;
+            area1.disabled= !checkbox.checked;
+        }    
+        
+    function saveAction()
+    {
+          var theForm = document.getElementById('{!$Component.theForm}');
+          var selects = theForm.getElementsByTagName('select');
+          for( var k in selects )
+          {
+              selects[k].disabled = false;
+          }
+          
+          var inputs = theForm.getElementsByTagName('input');
+          for( var k in inputs )
+          {
+              inputs[k].disabled = false;
+          }
+      }
+    </script>
+    <apex:form id="theForm" > 
+       
+        <apex:pageBlock title="Legal Information Edit" id="pb">
+        
+            <apex:pageBlockbuttons id="pb">
+            <apex:commandButton value="Save" action="{!save}" onclick="saveAction()" reRender="theForm"/>
+            <apex:commandButton value="Cancel" action="{!Cancel}" onclick="saveAction()" />
+            
+            </apex:pageBlockbuttons>
+            <apex:messages styleClass="locationError" />
+            <apex:pageBlockSection title="Legal Information Detail" columns="2" collapsible="false">
+                <apex:inputField value="{!Legal_Information__c.FAF_ID__c}" required="True"/>
+                          
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Legal Information" columns="2" collapsible="false" id="pbs2">
+                <apex:inputField value="{!Legal_Information__c.Mgmt_Override_No_Signature_Required__c}"/>
+                <apex:inputField value="{!Legal_Information__c.Pricing_effective_1st_day_of_month_fo__c}"/>
+                <apex:pageBlockSectionItem id="pbis1">
+                    <apex:outputLabel value="{!$ObjectType.Legal_Information__c.fields.Contract_Review_Completed__c.label}"/>
+                    <apex:actionRegion >
+                        <apex:inputcheckbox value="{!Legal_Information__c.Contract_Review_Completed__c}"  id="ReviewChckd">
+                            <apex:actionSupport event="onchange" rerender="pbs2" action="{!changeContractReview}">
+                                <apex:param assignTo="{!ContractReviewCheck}" value="{!Legal_Information__c.Contract_Review_Completed__c}" name="param1"/>
+                            </apex:actionSupport>    
+                        </apex:inputcheckbox> 
+                    </apex:actionRegion>
+                </apex:pageBlockSectionItem>
+                <apex:inputField value="{!Legal_Information__c.Contract_Review_Completed_By__c}" id="CompltdBy" required="{!reviewCompRquiredbol}" rendered="{!reviewCompRquiredbol}"/>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Competitive Market Check Clause" columns="2" collapsible="false">
+                <apex:inputField value="{!Legal_Information__c.Competitive_Market__c}"/>
+                <apex:inputField value="{!Legal_Information__c.Frequency__c}"/> 
+                <apex:inputField value="{!Legal_Information__c.Timing__c}"/> 
+                <apex:inputField value="{!Legal_Information__c.Schedule__c}"/> 
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Termination Rights" columns="2" collapsible="false" id="pbs1">
+                <apex:inputField value="{!Legal_Information__c.Term_Without_Cause__c}" id="termCauseId"  onchange="LegalInfoChangeTypeField(this.value);" />
+                <apex:inputField value="{!Legal_Information__c.Frequency_1__c}"/>
+                <apex:inputField value="{!Legal_Information__c.Without_Penalty__c}"/>
+                <apex:inputField value="{!Legal_Information__c.Days_Written_Notice_Before_Termination__c}" id="teminationId" required="true" />            
+            </apex:pageBlockSection>
+          
+            <apex:pageBlockSection title="Most Favored Nations Clause" columns="2" collapsible="false" id="pbs" >
+                <apex:inputField id="checkbox" value="{!Legal_Information__c.Most_Favored_Nations_Clause__c}" onchange="textareaDep(this);" />  
+                <apex:inputText value="{!Legal_Information__c.Most_Favored_Nations_Clause_Descrip__c}"   label="Most Favored Nations Clause - Descrip-->" id="area1"/>
+            </apex:pageBlockSection>
+           
+               <apex:pageBlockSection title="Client Audit Rights" columns="2" collapsible="false">
+                <apex:inputField value="{!Legal_Information__c.Client_Can_Audit_Retail_Pharmacy_Cont__c}"/>
+                <apex:inputField value="{!Legal_Information__c.Number_of_Pharmacy_Contracts__c}" />            
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="Additional Legal Information" columns="1" collapsible="false">
+                <apex:inputField value="{!Legal_Information__c.Additional_Legal_Information__c}" style="width:800px"/>            
+            </apex:pageBlockSection>
+            
+             <apex:actionFunction name="LegalInfoChangeTypeField"  reRender="daysWtihoutTermPanel" immediate="true" status="status" action="{!LegalInfoChangeTypeField}">
+                <apex:param name="param1" assignTo="{!TermWithoutCause}" value="" />
+            </apex:actionFunction>
+            
+           
+        </apex:pageBlock>
+    </apex:form>
+    
+    
+    <script>
+        textareaDep(document.getElementById('{!$Component.theForm.pb.pbs.checkbox}')); 
+     
+    </script>
+    <apex:outputpanel id="daysWtihoutTermPanel" >
+        <script>
+            var pickValEle=document.getElementById('{!$Component.theForm.pb.pbs1.teminationId}');
+            var optTermCause=document.getElementById('{!$Component.theForm.pb.pbs1.termCauseId}');
+            
+            if({!termWithoutCauseBol}){
+                pickValEle.disabled=true;
+            }
+            else{
+                
+                pickValEle.disabled=false;
+                pickValEle.value={!DaysWrittenNotice};
+            }
+         </script>
+    </apex:outputpanel>
+    
+           
+</apex:page>

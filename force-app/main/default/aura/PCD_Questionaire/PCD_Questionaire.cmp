@@ -1,0 +1,113 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" controller="PCD_Extract_Question_Answer">
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="pcdquestion" type="PCD_Question_Answer__c" />
+    <aura:attribute name="agreementline" type="Apttus__AgreementLineItem__c" />
+    <aura:attribute name="lobdesc" type="String"/>
+    <aura:attribute name="recordIds" type="String"/>
+     <aura:attribute name="picvalue" type="List"/>
+    <aura:attribute name="readonly" type="Boolean" default="false" />
+             <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--2-of-2 slds-large-size--2-of-2 slds-p-bottom_large">
+              <div style="float:right;font-size:13px;" >
+                   <lightning:button aura:id="clickSubmit" value="clickSubmit" label="Submit Question" 
+                                     variant="brand"
+                                     class="slds-button"
+                                     onclick="{!c.clickSubmit}"/> 
+                     <lightning:button aura:id="createPCD" value="createPCD" label="Create PCD" 
+                                     variant="brand"
+                                     class="slds-button"
+                                     onclick="{!c.createPCD}"/> 
+                  </div> 
+                    </div> 
+                <div  class="slds-p-top_medium">
+                <P>LOB - {!v.agreementline.LOB_Detail__c} </P> 
+                </div>
+                <div>
+                <lightning:select CLASS="text-label--small" disabled="{!v.readonly}" name="anychange" label="Are there any changes to the client’s previous terms and conditions?" required="true" >
+                <aura:iteration items="{!v.picvalue}" var="s">
+                 <option value="{!s}">{!s}</option>             
+                </aura:iteration> 
+                 <option value="YES" text="YES"></option>
+                </lightning:select>
+                </div>
+    
+    			<div >
+                <lightning:select CLASS="text-label--small" disabled="{!v.readonly}" name="anychange" label="Are there any changes to the client’s previous terms and conditions?" required="true" >
+                <aura:iteration items="{!v.picvalue}" var="s">
+                 <option value="{!s}">{!s}</option>             
+                </aura:iteration> 
+                 <option value="YES" text="YES"></option>
+                </lightning:select>
+                </div>
+    
+                <div >
+                <lightning:select CLASS="text-label--small" disabled="{!v.readonly}" name="anychange" label="No 'Med D HIF' tertiary network is found. Do you want to use the standard pricing for 'Med D HIF' tertiary network?" required="true" >
+                <aura:iteration items="{!v.picvalue}" var="s">
+                 <option value="{!s}">{!s}</option>             
+                </aura:iteration> 
+                 <option value="YES" text="YES"></option>
+                </lightning:select>
+                </div>
+    
+                <div >
+                <lightning:select CLASS="text-label--small" disabled="{!v.readonly}" name="anychange" label="No 'Med D IHS' tertiary network is found. Do you want to use the standard pricing for 'Med D IHS' tertiary network?" required="true" >
+                <aura:iteration items="{!v.picvalue}" var="s">
+                 <option value="{!s}">{!s}</option>             
+                </aura:iteration> 
+                 <option value="YES" text="YES"></option>
+                </lightning:select>
+                </div>
+    
+                 <div >
+                <lightning:select CLASS="text-label--small" disabled="{!v.readonly}" name="anychange" label="No 'Med D LTC' tertiary network is found. Do you want to use the standard pricing for 'Med D LTC' tertiary network?" required="true" >
+                <aura:iteration items="{!v.picvalue}" var="s">
+                 <option value="{!s}">{!s}</option>             
+                </aura:iteration> 
+                 <option value="YES" text="YES"></option>
+                </lightning:select>
+                </div>
+    
+                 <div >
+                <lightning:select CLASS="text-label--small" disabled="{!v.readonly}" name="anychange" label="No 'Med D TER' tertiary network is found. Do you want to use the standard pricing for 'Med D TER' tertiary network?" required="true" >
+                <aura:iteration items="{!v.picvalue}" var="s">
+                 <option value="{!s}">{!s}</option>             
+                </aura:iteration> 
+                 <option value="YES" text="YES"></option>
+                </lightning:select>
+                </div>
+    
+                <div >
+                <lightning:select CLASS="text-label--small" disabled="{!v.readonly}" name="anychange" label="Do you want to provide additional Retail Network options from what is currently modeled?" required="true" >
+                <aura:iteration items="{!v.picvalue}" var="s">
+                 <option value="{!s}">{!s}</option>             
+                </aura:iteration> 
+                 <option value="YES" text="YES"></option>
+                </lightning:select>
+                </div>
+    
+                <div >
+                <lightning:select CLASS="text-label--small" disabled="{!v.readonly}" name="anychange" label="Optional Network Name 1" required="true" >
+                <aura:iteration items="{!v.picvalue}" var="s">
+                 <option value="{!s}">{!s}</option>             
+                </aura:iteration> 
+                 <option value="YES" text="YES"></option>
+                </lightning:select>
+                </div>
+    
+                <div >
+                <lightning:select CLASS="text-label--small" disabled="{!v.readonly}" name="anychange" label="Network Type" required="true" >
+                <aura:iteration items="{!v.picvalue}" var="s">
+                 <option value="{!s}">{!s}</option>             
+                </aura:iteration> 
+                 <option value="YES" text="YES"></option>
+                </lightning:select>
+                </div>
+    
+                 <div >
+                <lightning:select CLASS="text-label--small" disabled="{!v.readonly}" name="anychange" label="Custom Network Description" required="true" >
+                <aura:iteration items="{!v.picvalue}" var="s">
+                 <option value="{!s}">{!s}</option>             
+                </aura:iteration> 
+                 <option value="YES" text="YES"></option>
+                </lightning:select>
+                </div>
+</aura:component>

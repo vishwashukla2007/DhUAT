@@ -1,0 +1,13 @@
+<aura:component implements="lightning:availableForFlowScreens">
+    
+    <div class="slds-align_absolute-center" style="font-size:28pt; color:blue">
+        <h1>Request Completed</h1>
+    </div>
+    <br/>
+    <br/>
+    
+    <div style="float: right;">
+        <lightning:button variant="brand" label="View Agreement Record" title="" onclick="{! c.handleClick }" />
+    </div>
+    
+</aura:component>

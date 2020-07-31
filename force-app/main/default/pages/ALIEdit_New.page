@@ -1,0 +1,13 @@
+<apex:page standardController="Apttus__AgreementLineItem__c">
+<!-- 
+<apex:page standardController="Apttus__AgreementLineItem__c" lightningStylesheets="true" title="ALI Edit_New" extensions="NewALIController" > 
+<script>
+.fontsz{
+    font: 30px;
+}
+</script>
+  <apex:form >
+  <apex:outputText value="No priviledge to Create/Edit/Delete Agreement Line Item Information" styleClass="fontsz"/>
+  <apex:commandButton value="Back" action="{!PageRedirect}"/>
+  </apex:form>-->
+</apex:page>

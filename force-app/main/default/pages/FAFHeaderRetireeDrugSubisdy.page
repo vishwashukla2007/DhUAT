@@ -1,0 +1,3 @@
+<apex:page standardController="Retiree_Drug_Subsidy__c" lightningStylesheets="true">
+    <c:FAFHeaderVC fafRecordId="{!Retiree_Drug_Subsidy__c.FAF_ID__c}"></c:FAFHeaderVC>
+</apex:page>

@@ -1,0 +1,13 @@
+<template>
+    <div class="mainWrapper">
+        <div class="innerWrapper">
+            <lightning-icon icon-name="utility:info" variant="inverse" size="small" title="Info"></lightning-icon>
+            <span class="errorText">{customLabel.agreementSyncErrorMessage}</span>
+            <template if:true={isChangeSummaryLinkVisible}>
+                <span class="changesSummaryLinkWrapper">
+                    <a href="javascript:void(0)" onclick={navigateToContractChangeSummary}>{customLabel.navigateToContractChangeSummaryLinkLabel}</a>
+                </span>
+            </template>
+        </div>
+    </div>
+</template>

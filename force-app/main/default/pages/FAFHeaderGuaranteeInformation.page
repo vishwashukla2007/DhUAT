@@ -1,0 +1,3 @@
+<apex:page standardController="Guarantees_Information__c" lightningStylesheets="true">
+    <c:FAFHeaderVC fafRecordId="{!Guarantees_Information__c.FAF_ID__c}"></c:FAFHeaderVC>
+</apex:page>

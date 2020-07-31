@@ -1,0 +1,364 @@
+<apex:page standardController="Mail_Guarantees__c" extensions="MailGuaranteesController" lightningStylesheets="true"
+title="Mail Guarantees Edit">
+    
+    <script>
+        function setFocusOnLoad() {
+            document.getElementById('{!$Component.theForm.pb.pbsMG.type}').focus();
+        }   
+    </script>    
+ <!-- <apex:slds />-->
+  
+  <style>
+        body {font-family: Arial, Helvetica, sans-serif;}
+       
+        /* The Modal (background) */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 1; 
+            padding-top: 100px; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        /* Modal Content */
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 50%;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+            -webkit-animation-name: animatetop;
+            -webkit-animation-duration: 0.4s;
+            animation-name: animatetop;
+            animation-duration: 0.4s
+        }
+
+        /* Add Animation */
+        @-webkit-keyframes animatetop {
+            from {top:-300px; opacity:0} 
+            to {top:0; opacity:1}
+        }
+
+        @keyframes animatetop {
+            from {top:-300px; opacity:0}
+            to {top:0; opacity:1}
+        }
+
+        .modal-header {
+            padding: 0px;
+            height: 29px;
+            color: #ff0000;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            border-top-right-radius: .25rem;
+            border-top-left-radius: .25rem;
+            border-bottom: 2px solid rgb(221, 219, 218);
+            text-align: center;
+        }
+
+        .modal-body {
+            padding: 10px 16px;
+            font-family: 'Salesforce Sans',Arial,sans-serif;
+            color: #3c3d3e;
+        }
+
+        .modal-footer {
+            padding: 5px;
+            padding-right: 4px;
+            text-align: right;   
+            color: #000000;
+            border-top: 2px solid rgb(221, 219, 218);
+            background-color: rgb(243, 242, 242);
+            border-bottom-left-radius: .25rem;
+            border-bottom-right-radius: .25rem;
+        }
+
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 1px 5px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 2px 2px;
+            -webkit-transition-duration: 0.4s; /* Safari */
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius : 20px;
+        }
+        .button2 {
+            background-color: rgba(0, 68, 135, 1.0); 
+            color: white; 
+            border: 2px solid rgba(0, 68, 135, 1.0);
+            border-radius: 5px;
+            width: 70px;
+            height: 28px;
+        }
+
+        .button2:hover {
+            background-color: #002080;
+            color: white;
+        }
+        .button5 {
+            background-color: #555555;
+            color: white;
+            border: 2px solid #555555;
+            border-radius: 5px;
+            width: 62px;
+            height: 28px;
+        }
+
+        .button5:hover {
+            background-color: #262626;
+            color: white;
+        }
+
+    </style>
+    <apex:outputpanel id="panelID">
+    <Script>
+     var abc;
+      abc = '{!Mail_Guarantees__c.Rate__c}';
+    </script>
+    </apex:outputpanel>
+<script>
+      
+      function typeDependency( typeValue )
+      {
+         var booleanValue = typeValue == 'SSG' ? true : false;
+         var mailGuaranteeTbl = document.getElementById('{!$Component.theForm.pb.pbsMGI}');
+         var selects = mailGuaranteeTbl.getElementsByTagName('select');
+         var ssgVal = document.getElementById('{!$Component.theForm.pb.pbsMGI.ssg}').value;
+         for( var k in selects ){
+             
+             if( selects[k].id != '{!$Component.theForm.pb.pbsMGI.ssg}' ){ 
+                 
+                 selects[k].disabled = booleanValue;
+                if( booleanValue ){
+                    selects[k].value = '';
+                }
+             }
+         }
+         //document.getElementById('{!$Component.theForm.pb.pbsMGI.ssg}').disabled = false;
+         //document.getElementById('{!$Component.theForm.pb.pbsMGI.ssg}').value = 'SSG';
+         
+         x340BDependancy( document.getElementById('{!$Component.theForm.pb.pbsMGI.x340B}').value );
+         LDDDependancy(document.getElementById('{!$Component.theForm.pb.pbsMGI.ldd}').value);
+         vaccineDependancy(document.getElementById('{!$Component.theForm.pb.pbsMGI.vaccine}').value);
+         
+      }
+      
+      function x340BDependancy( x340BVal )
+      {
+        var X340BInclusionOption = document.getElementById('{!$Component.theForm.pb.pbsMGI.X340BInclusionOption}');
+        if( x340BVal == 'Yes' )   
+        {
+            X340BInclusionOption.disabled = true;
+        }
+        else
+        {
+            <!-- X340BInclusionOption.value = ''; -->
+            X340BInclusionOption.disabled = false;
+        }
+      }
+    
+      function vaccineDependancy(vaccineVal)
+      {
+        var vaccineInclusionVal = document.getElementById('{!$Component.theForm.pb.pbsMGI.vaccineInclusionOption}');
+        if(vaccineVal == 'Yes')   
+        {
+            vaccineInclusionVal.disabled = true;
+        }
+        else
+        {
+            
+            vaccineInclusionVal.disabled = false;
+        }
+         
+      }
+      function LDDDependancy( ldd ){
+          var LDDInclusionOption = document.getElementById('{!$Component.theForm.pb.pbsMGI.LDDInclusionOption}');
+          if(ldd =='Yes')
+          {
+              LDDInclusionOption.disabled = true;
+          }
+          else
+          {
+              <!-- LDDInclusionOption.value =''; -->
+              LDDInclusionOption.disabled = false;
+          }
+      }
+      
+      function ssgDepandancy( ssgVal, isOnChange )
+      {
+          type=document.getElementById('{!$Component.theForm.pb.pbsMG.type}');
+          rate = document.getElementById('{!$Component.theForm.pb.pbsMG.rate}');
+          if( type.value=='SSG' && ssgVal == 'Yes' ){
+            rate.value = '';
+            rate.disabled = true; 
+          }
+          //else 
+            //rate.disabled = false;
+            
+       
+        if( isOnChange && ssgVal == 'No' )    
+        {
+            rate.value = abc;
+            document.getElementById('confirmModel').style.display = 'block';
+        }
+        
+      }
+      
+      function saveAction()
+      {
+          var theForm = document.getElementById('{!$Component.theForm}');
+          var selects = theForm.getElementsByTagName('select');
+          for( var k in selects )
+          {
+              selects[k].disabled = false;
+          }
+          
+          var inputs = theForm.getElementsByTagName('input');
+          for( var k in inputs )
+          {
+              inputs[k].disabled = false;
+          }
+      }
+     if('{!urlString}')
+     {
+         parent.window.location.href='{!urlString}';
+         
+     }
+     
+      
+  </script>
+  
+  <apex:pageMessages id="pgMsg" rendered="{!hasMethodExists}" />
+  <apex:form id="theForm">
+     
+     <apex:outputPanel rendered="{!NOT(hasMethodExists)}" >
+      <apex:pageBlock title="Mail Guarantees Edit" >
+          <apex:pageMessages id="messageText" />
+          
+              <center>
+                  <apex:commandButton value="Cancel" action="{!Cancel}" rendered="{!NOT(isExpandableView)}"/>
+                  <apex:commandButton immediate="true" action="{!Cancel}"  value="Cancel"  rendered="{!isExpandableView}" 
+                onclick="parent.window.location.href='/{!mailOperationsId}';return false;" />
+              </center>
+          
+      </apex:pageBlock>
+      </apex:outputPanel>
+      <apex:outputPanel rendered="{!hasMethodExists}">
+          
+                <apex:actionStatus id="status">
+                    <apex:facet name="start">
+                        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                            &nbsp;
+                        </div>
+                        <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                            <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                        </div>
+                    </apex:facet>
+                </apex:actionStatus>
+            
+          
+          <apex:actionFunction name="typeAction" immediate="true" rerender="theForm ,panelID"  action="{!populateRate}" status="status" >
+              <apex:param value="" name="mgtype" assignTo="{!Mail_Guarantees__c.Type__c}" />
+              <apex:param value="" name="ssgPickval" assignTo="{!Mail_Guarantees__c.SSG__c}" />
+          </apex:actionFunction>
+          
+          <apex:actionFunction name="x340BAction" immediate="true" rerender="theForm" >
+              <apex:param value="" name="x340BPickVal" assignTo="{!Mail_Guarantees__c.X340B__c}" />
+          </apex:actionFunction>
+          
+          <apex:actionFunction name="LLDAction" immediate="true" rerender="theForm" >
+              <apex:param value="" name="lldPickVal" assignTo="{!Mail_Guarantees__c.LDD__c}" />
+          </apex:actionFunction>
+          
+          <apex:actionFunction name="vaccineAction" immediate="true" rerender="theForm" >
+              <apex:param value="" name="vaccPickVal" assignTo="{!Mail_Guarantees__c.Vaccine__c}" />
+          </apex:actionFunction>
+          
+          <apex:pageBlock title="Mail Guarantees Edit" id="pb">
+            
+             <apex:pageBlockButtons >
+                <apex:commandButton action="{!saveMailGuarantees}"  value="Save"  onclick="this.onclick=function(){return false;};saveAction();" />                 
+                <apex:commandButton immediate="true" action="{!Cancel}"  value="Cancel" rendered="{!NOT(isExpandableView)}" />
+                <apex:commandButton immediate="true" action="{!Cancel}"  value="Cancel"  rendered="{!isExpandableView}" 
+                onclick="parent.window.location.href='/{!mailOperationsId}';return false;" />
+               
+              </apex:pageBlockButtons>
+              
+              <apex:pageBlockSection title="Mail Guarantees Detail" columns="2">        
+                   <apex:outputField id="fafid"  value="{!Mail_Guarantees__c.FAF_ID__c}" />
+                   <apex:outputField id="mailOp"  value="{!Mail_Guarantees__c.Mail_Pricing__c}" />
+              </apex:pageBlockSection>
+              
+              <apex:pageBlockSection title="Mail Guarantee" columns="2" id="pbsMG" >
+                    
+                   <apex:inputField id="type" required="true" value="{!Mail_Guarantees__c.Type__c}" 
+                   onchange="typeDependency(this.value);typeAction(this.value,document.getElementById('{!$Component.pb.pbsMGI.ssg}').value); "  />
+                   <apex:inputField id="rate"   value="{!Mail_Guarantees__c.Rate__c}"
+                   required="{!!IF(AND(Mail_Guarantees__c.Type__c = 'SSG',Mail_Guarantees__c.SSG__c = 'Yes'),true,false)}" />
+                   <!-- "{!!IF(AND(Mail_Guarantees__c.Type__c = 'SSG',Mail_Guarantees__c.SSG__c = 'Yes'),true,false)}" -->
+                   
+              </apex:pageBlockSection>
+              
+              <apex:pageBlockSection title="Mail Guarantee Inclusions" columns="2" id="pbsMGI">        
+                   <apex:inputField id="zbd" value="{!Mail_Guarantees__c.ZBD__c}" required="{!Mail_Guarantees__c.Type__c <> 'SSG'}" />
+                   <apex:inputField id="biosimilars"  value="{!Mail_Guarantees__c.Biosimilars__c}" required="{!Mail_Guarantees__c.Type__c <> 'SSG'}"  />
+                   <apex:inputField id="ssg" required="true" value="{!Mail_Guarantees__c.SSG__c}" 
+                   onchange=" ssgDepandancy(this.value, true);typeAction(document.getElementById('{!$Component.pb.pbsMG.type}').value,this.value);" />
+                   <!--required="{!IF(Mail_Guarantees__c.Type__c = 'SSG',true,false)}"-->
+                   <apex:inputField id="otc"  value="{!Mail_Guarantees__c.OTC__c}" required="{!Mail_Guarantees__c.Type__c <> 'SSG'}" />
+                   <apex:inputField id="x340B"  value="{!Mail_Guarantees__c.X340B__c}" required="{!Mail_Guarantees__c.Type__c <> 'SSG'}" onchange="x340BDependancy(this.value);x340BAction(this.value);" />
+                   <apex:inputField id="compound"   value="{!Mail_Guarantees__c.Compound__c}" required="{!Mail_Guarantees__c.Type__c <> 'SSG'}" />
+                   <apex:inputField id="X340BInclusionOption"  value="{!Mail_Guarantees__c.X340B_Inclusion_Option__c}" 
+                    required="{!IF(Mail_Guarantees__c.Type__c <> 'SSG' && Mail_Guarantees__c.X340B__c = 'No',true,false)}" />
+                   <apex:inputField id="vaccine"  value="{!Mail_Guarantees__c.Vaccine__c}" required="{!Mail_Guarantees__c.Type__c <> 'SSG'}" onchange="vaccineDependancy(this.value); vaccineAction(this.value);"/>
+                   
+                   <apex:inputField id="ldd"  value="{!Mail_Guarantees__c.LDD__c}" required="{!Mail_Guarantees__c.Type__c <> 'SSG'}" onchange="LDDDependancy(this.value);LLDAction(this.value);" />
+                   <apex:inputField id="vaccineInclusionOption"  value="{!Mail_Guarantees__c.Vaccine_Inclusion_Option__c}"  
+                   required="{!IF(Mail_Guarantees__c.Type__c <> 'SSG' && Mail_Guarantees__c.Vaccine__c = 'No',true,false)}" />
+                   
+                   <apex:inputField id="LDDInclusionOption"  value="{!Mail_Guarantees__c.LDD_Inclusion_Option__c}"  
+                   required="{!IF(Mail_Guarantees__c.Type__c <> 'SSG' && Mail_Guarantees__c.LDD__c = 'No',true,false)}" />
+                   <apex:inputField id="paper"  value="{!Mail_Guarantees__c.Paper__c}" required="{!Mail_Guarantees__c.Type__c <> 'SSG'}" />
+                   <apex:inputField id="cob"  value="{!Mail_Guarantees__c.COB__c}" required="{!Mail_Guarantees__c.Type__c <> 'SSG'}" />
+              </apex:pageBlockSection>
+              
+              <script>
+                    x340BDependancy( document.getElementById('{!$Component.pb.pbsMGI.x340B}').value );
+                    //vaccineDependancy(document.getElementById('{!$Component.pb.pbsMGI.vaccine}').value);
+                    typeDependency(document.getElementById('{!$Component.pb.pbsMG.type}').value);
+                    ssgDepandancy(document.getElementById('{!$Component.pb.pbsMGI.ssg}').value, false);
+                </script>
+            </apex:pageBlock>
+        </apex:outputPanel>
+  </apex:form>
+     <!-- The Modal 2 -->
+        <div id="confirmModel" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><center>WARNING</center></h2>
+                </div>
+            <div class="modal-body">
+              <p><center>For the Mail Guarantee Inclusion SSG value selected as No, select the SSG Exclusion List 
+                          and SSG Exclusivity Period within Mail Pricing record.</center></p>
+            </div>
+                <div class="modal-footer">
+                    <button class="button button2" type="button" onclick="document.getElementById('confirmModel').style.display='none';return false;">OK</button>
+                </div>
+            </div>
+         </div>
+
+</apex:page>

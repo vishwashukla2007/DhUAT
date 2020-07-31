@@ -1,0 +1,127 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" controller="Apttus_Specialty_Guarantee" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="readonly" type="Boolean" default="true" />
+    <aura:attribute name="isAccess" type="boolean"/>
+    <aura:attribute name="spriceid" type="String"/>
+    <aura:attribute name="params" type="String" />    
+    <aura:attribute name="clickNewModal" type="Boolean" default="false" />
+    <aura:attribute name="specialtyguarantee" type="Specialty_Guarantee__c[]" /> 
+    <aura:attribute name="isDeleteAlertOpen" type="Boolean" default="false" />
+    <aura:attribute name="isCreateable" type="Boolean" default="true"/>
+    <aura:attribute name="isDeletable" type="Boolean" default="true"/>
+    <aura:attribute name="isEditable" type="Boolean" default="true"/>
+    
+    <aura:if isTrue="{!v.clickNewModal}">
+        <c:Apttus_NewEditSGuarantee_VF aura:id="NewGuarantees" params="{!v.params}"/>  
+    </aura:if>
+    
+    
+    <lightning:layout horizontalAlign="left" verticalAlign="end">                                     
+        <div  class="slds-col slds-size_4-of-8">
+            <lightning:layout horizontalAlign="right" >
+                <lightning:layoutItem  padding="horizontal-medium"  flexibility="grow" size="6" class="paddingCSS">
+                    <span class="heading-align" >Specialty Guarantees</span>
+                </lightning:layoutItem>
+                <lightning:layoutItem  padding="horizontal-medium"  flexibility="grow" size="2"> 
+                </lightning:layoutItem>
+                <lightning:layoutItem  padding="horizontal-medium"  flexibility="grow" size="2">  
+                </lightning:layoutItem>
+                <lightning:layoutItem  padding="horizontal-medium"  flexibility="grow" size="2">            
+                </lightning:layoutItem>
+                <lightning:layoutItem  padding="horizontal-medium"  flexibility="grow" size="2">           
+                </lightning:layoutItem>
+                <lightning:layoutItem  padding="horizontal-medium"  flexibility="grow" size="2">          
+                </lightning:layoutItem>
+                <lightning:layoutItem  padding="horizontal-medium"  flexibility="grow" size="2">           
+                </lightning:layoutItem>
+                <lightning:layoutItem  padding="horizontal-medium"  flexibility="grow" size="2">           
+                </lightning:layoutItem>
+                <lightning:layoutItem  padding="horizontal-medium"  flexibility="grow" size="2">           
+                </lightning:layoutItem>
+                <lightning:layoutItem  padding="horizontal-medium"  flexibility="grow" size="2">
+                </lightning:layoutItem>
+                <lightning:layoutItem  padding="horizontal-medium"  flexibility="grow" size="4">
+                </lightning:layoutItem>
+                <div class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--2-of-2 slds-large-size--2-of-2" style="padding-bottom: 0.5rem;">
+                    <div style="float:right">
+                        <aura:if isTrue="{!v.isAccess}" >
+                            <lightning:button aura:id="clickNew" value="clickNew" label=" New Specialty Guarantee" 
+                                              variant="brand"  
+                                              onclick="{!c.clickNew}"/>  
+                            <aura:if isTrue="{!v.specialtyguarantee.length != 0}">
+                                <lightning:button aura:id="changeIt" label="Delete Specialty Guarantee"
+                                                  iconName="utility:delete"
+                                                  iconPosition="right"
+                                                  variant="destructive"
+                                                  onclick="{!c.deleteSelected}">
+                                </lightning:button>
+                            </aura:if>
+                        </aura:if>
+                    </div>
+                </div>
+                
+            </lightning:layout>
+        </div>
+    </lightning:layout>
+    
+    <div>
+        
+        <div style="margin-top: -2.3rem;">
+            <aura:if isTrue="{!v.specialtyguarantee.length != 0}">
+                <div class="slds-form-element__control" style="padding-left:12px;">
+                    <label class="slds-checkbox">
+                        <ui:inputCheckbox aura:id="cbox" change="{!c.selectAllRecords}"/>
+                        <span class="slds-checkbox--faux"></span>
+                        <span class="slds-form-element__label text"></span>
+                    </label>
+                </div>
+                <aura:iteration items="{!v.specialtyguarantee}" var="specialtyguarantee">         
+                    
+                    <div class="slds-grid slds-p-top_small">
+                        <div class="slds-col" style="padding-top: 25px;padding-left:12px; padding-right: 10px">
+                            <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <ui:inputCheckbox text="{!specialtyguarantee}" aura:id="cboxRow"  change="{!c.onCheckboxSelect}"/>				
+                                </div>
+                            </div>
+                        </div>   
+                        
+                        <div class="slds-col">
+                            <c:Apttus_Specialty_Guarantee   isAccess="{!v.isAccess}" specialtyguarantee="{!specialtyguarantee}"/>
+                        </div>
+                    </div>
+                </aura:iteration>
+            </aura:if>
+            <aura:if isTrue="{!v.specialtyguarantee.length == 0}">
+                <ui:message title="Information" severity="info" closable="false">
+                    Specialty Guarantee not defined.
+                </ui:message>
+            </aura:if>    
+            
+            <aura:if isTrue="{!v.isDeleteAlertOpen}">
+                <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                    <div class="slds-modal__container" style="Width: 31%;">
+                        <div class="slds-modal__header">
+                            <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeDeleteAlert}">
+                                X
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="header99" class="slds-text-heading--medium">Delete Retail Guarantee Record</h2>
+                        </div>
+                        <div class="slds-modal__content slds-p-around--medium">
+                            <center><p>
+                                Are you sure you want to delete the selected record(s).
+                                </p>
+                            </center>
+                        </div>
+                        <div class="slds-modal__footer">
+                            <lightning:button class="slds-button slds-button--neutral" onclick="{!c.closeDeleteAlert}">Cancel</lightning:button>
+                            <lightning:button class="slds-button slds-button--brand" onclick="{!c.deleteSelectedRec}">Delete</lightning:button>                    
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open"></div>        
+            </aura:if>
+        </div>
+    </div>
+</aura:component>

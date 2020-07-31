@@ -1,0 +1,111 @@
+<!--Level3 Custom Lookup Window component to open Lookup and display Group Information.
+Group Information are filtered based on Platform, Carrier, Account and Status
+It has Search Button to search on keyword and also Clear filter.
+User can select one record and will be added in the lookup
+
+Parent Component : Level3_Custom_Lookup
+Date: 10/01/2018
+
+-->
+<aura:component controller= "Level3customLookUpController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="carrid" type="String" default=""/>
+    <aura:attribute name="fafid" type="String" default=""/>
+    <aura:attribute name="carrname" type="String" default=""/>
+    <aura:attribute name="AccountId" type="String" />
+    <aura:attribute name="SelectedCarrier" type="String"/>
+    <aura:attribute name="SelectedAccount" type="String"/>
+    <aura:attribute name="platform" type="String" default="" access= "Global"/>
+    <aura:attribute name="lob" type="String" default="" access= "Global"/>
+    <aura:attribute name="SearchKeyWord" type="String" default=""/>
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="oRecord" type="sObject" />
+    <aura:attribute name="recordIdentify" type="String" default=""/>
+    <aura:attribute name="isOpen" type="Boolean" default="true"/>
+    <aura:attribute name="isClear" type="Boolean" default="false"/>
+    <aura:attribute name="isSearch" type="Boolean" default="true"/>
+    <aura:attribute name="isMessage" type="Boolean" default="false"/>
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:registerEvent name="oSelectedRecordEventLP" type="c:Level3_Custom_Lookup_SelectedRecords"/>
+    <aura:registerEvent name="carrieridselect" type="c:Level3_Custom_CarrierAdd_WSelect"/>
+        <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+           <aura:if isTrue="{!v.isOpen}"> 
+            <!--###### MODAL BOX Start######--> 
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- ###### MODAL BOX HEADER Start ######-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Group Information</h2>
+                    </header>
+                    <!--###### MODAL BOX BODY Part Start######-->
+                    <div class="slds-modal__content slds-p-around_large" id="modal-content-id-1">
+             		 <div class="slds-grid slds-gutters">
+ 						    <div class="slds-size_4-of-12">
+                            <span>
+                                 <div class="slds-m-right_large"></div>
+                                 <ui:inputText   value="{!v.SearchKeyWord}" placeholder="Search .."/>
+                            </span>
+                            <div class="slds-m-right_large"></div>
+                            </div>
+                         	<aura:if isTrue="{!v.isSearch}"> 
+                         	<div class="slds-size_3-of-12">
+                            <span>
+                                 <div class="slds-m-left_large"></div>
+                                 <lightning:button variant="brand" 
+                                          label="Search"
+                                          title="Search"
+                                          onclick="{! c.performsearch}"/>
+                            </span>
+                            </div>
+                            </aura:if>
+                         	<aura:if isTrue="{!v.isClear}"> 
+                            <div class="slds-size_3-of-12">
+                            <span>
+                                 <div class="slds-m-left_xx-small"></div>
+                                 <lightning:button variant="brand" 
+                                          label="Clear"
+                                          title="Clear"
+                                          onclick="{! c.clearsearch}"/>
+                            </span>
+                            </div>
+                            </aura:if>
+                         	<div class="slds-size_2-of-12">
+                            <span>
+                                <lightning:button variant="neutral" 
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.closeModel }"/>
+                            </span>
+                            </div>
+                     </div>
+                            <div class="slds-grid slds-gutters">
+ 						    <div class="slds-col">
+                            <span>
+                                <div class="slds-m-top_large"></div>
+                                <lightning:datatable
+               					    keyField="id"
+                					data="{! v.data }"
+                					columns="{! v.columns }"
+                					hideCheckboxColumn="false"
+                                    onrowselection="{!c.updateSelectedText }"/>
+                            </span>
+                            </div>
+                            </div>
+                    </div>
+                     <!--###### MODAL BOX FOOTER Part Start ######-->
+                    <footer class="slds-modal__footer">
+                                <aura:if isTrue="{!v.isMessage}"> 
+                                <p><lightning:formattedText value="Warning Message: No active Level 3/Group information found for the selected Level 2 ID" /></p>
+                                </aura:if>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+            <!--###### MODAL BOX Part END Here ######-->
+</aura:component>

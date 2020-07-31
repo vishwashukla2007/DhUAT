@@ -1,0 +1,109 @@
+.THIS {
+    background-color: ;
+}
+.THIS.slds-input{
+    font:none;
+}
+.THIS .text-heading--small {
+    font-size: 1rem;
+    line-height: 1.25;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+ .THIS .text-label--small {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+ .THIS .text-labels--small {
+    font-size: 0.65rem;
+    line-height: 0.90;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+    margin-right: 27px;
+}
+ .THIS .text-label--verysmall {
+    font-size: 0.65rem;
+    line-height: 0.90;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+ .THIS .text-label--checkbox {
+    font-size: 0.62rem;
+    line-height: 0.90;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+    color: black;
+}
+.THIS.selectlist  {
+  background-color: red;
+    height: 80px;
+ 	line-height: 80%;
+}
+.THIS .cust-new-buttons {
+    position: relative;
+    right: -600px;
+}
+.THIS .heading-align {    
+    font-size: 1rem;
+    line-height: 1.25;
+    font-weight: 600;
+}
+.THIS .margin-align{
+    margin-top: -23px;
+    font-size: 0.65rem;
+    line-height: 0.90;
+    font-weight: 600;
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
+
+}
+
+.THIS .margin-top{
+    margin-top: 19px;
+    text-align: right;
+    margin-right: -13px;
+}
+.THIS .margin-stop{
+    text-align: right;
+    margin-left: -128px;
+    margin-top: -24px;
+    margin-right: -18px;
+}
+.THIS input[type="checkbox"].black-checkbox:checked{
+    border-color: rgb(0, 178, 0); /*Choose your color*/
+    box-shadow: 0 0 3px #006A00; /*Choose a darker color for the shadow*/
+    background-color: rgb(0, 178, 0);
+}
+.THIS .slds-checkbox_faux{
+   background-color: green;
+}
+.THIS .ldd{
+    margin-left: -33px;
+    padding-right: .75rem;
+    padding-left: .75rem;
+    width: 41.6666666667%;
+}
+.THIS .size{
+    font-size: .90rem;
+}
+
+.THIS .ldd-noaccess {
+    width: 112px;
+}
+
+.THIS .right-aligns {
+    
+    text-align: right;
+    width:100%;
+    
+}
+.THIS .slds-form-element__label{
+    font-weight: 600 !important;
+}

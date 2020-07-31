@@ -1,0 +1,109 @@
+<apex:page standardController="Billing_Broker_TPA_Payments__c" extensions="BillingBrokerTPAPageNewEditClass" name="Broker/TPA Edit" title="Broker/TPA Edit" id="pg" label="Test"  lightningStylesheets="true">
+    <style> .slds-vf-scope .autoCompleteBoxScrolling {
+        -webkit-transform: none;
+        transform: none;
+        max-width: 350px !important;
+        }
+        </style>
+        <script>
+            function setFocusOnLoad() {
+                document.getElementById('{!$Component.pg.frm.PB.PBS2.PBSI1.year}').focus();
+            }   
+        </script>
+        
+ <!--<c:CustomLookupScriptVC objectName="Broker_TPA_Name_Support__c"  />    -->    
+    <apex:form id="frm" title="{!brokerTpaName}">
+        <apex:pagemessages id="pmsg"></apex:pagemessages>
+        <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>    
+        
+        <apex:pageBlock title="Billing Broker/TPA Payments Edit" id="PB">
+            <apex:pageBlockSection title="Billing Broker/TPA Payments Detail" id="PBS1">
+                <apex:outputField value="{!bbtp.FAF_ID__c}" />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:outputField value="{!bbtp.Billing_Operations__c}"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Broker/TPA Payment Information" id="PBS2">
+                <!-- Defect fix for Year required-->
+                 <apex:pageBlockSectionItem id="PBSI1">
+                   <apex:outputLabel for="yearPnl" value="Year" />
+                   <apex:outputPanel id="yearPnl">
+                      <div class="requiredInput">
+                       <div class="requiredBlock"></div>
+                       
+                       <apex:selectList value="{!bbtp.Year__c}"  required="true" label="Year" id="year" size="1">
+                       <apex:selectOptions value="{!yearList}" />
+                        </apex:selectList>
+                         </div> 
+                   </apex:outputPanel>
+               </apex:pageBlockSectionItem>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bbtp.LOB2__c}" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bbtp.BrokerTPA_Name__c}" required="true" id="lookup_BillingBroker" />
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bbtp.Pay_on__c}" onchange="validatefield(this.value);" id="payon" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bbtp.Type__c}" id="type" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bbtp.Metric__c}" id="metric" onchange="validateAmtField(this.value);" required="{!metricReqBool}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bbtp.Amount_Dollar__c}" id="dAmt" required="{!NOT(dollarFieldBool)}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bbtp.Amount_Percent__c}" id="pAmt" required="{!NOT(percentFieldBool)}"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bbtp.Effective_Date__c}" id="effectdt" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bbtp.Frequency__c}" required="true"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bbtp.Level__c}" id="level"/>
+                <apex:outputLabel ></apex:outputLabel>
+                <apex:inputField value="{!bbtp.Termination__c}" id="termdt"/>
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="Additional Broker/TPA Payment Information" id="PBS3">
+                <apex:inputField value="{!bbtp.Additional_Broker_TPA_Payment_Info__c}" style="width:800px"/>
+            </apex:pageBlockSection>
+            <apex:actionFunction name="validatefield" action="{!onchangePayOn}" reRender="PBS2, ScriptPanel" oncomplete="" immediate="true" status="status">
+                    <apex:param name="param2" assignTo="{!payOnStr}" value="" />
+            </apex:actionFunction>
+            <apex:actionFunction name="validateAmtField" action="{!onchangeMetricAction}" reRender="PBS2, ScriptPanel" oncomplete="" immediate="true" status="status">
+                    <apex:param name="param1" assignTo="{!metricStr}" value="" />
+            </apex:actionFunction>
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!saveUpdateBBTP}" title="Save" value="Save" reRender="pmsg,PB" oncomplete="window.scrollTo(0, 0);" status="status"/>
+                <apex:commandButton action="{!Cancel}"  title="Cancel" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+            <apex:outputpanel id="ScriptPanel">
+                <script>                
+                    var dAmtObj = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.dAmt}'));
+                    var pAmtObj = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.pAmt}'));
+                    var onloadMetricObj = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.metric}'));
+                    var onloadTypeObj = document.getElementById(('{!$Component.Pg.frm.PB.PBS2.type}'));
+                    dAmtObj.disabled = {!dollarFieldBool};
+                    pAmtObj.disabled = {!percentFieldBool};
+                    onloadMetricObj.disabled = {!NOT(metricReqBool)};
+                    onloadTypeObj.disabled = {!NOT(metricReqBool)};
+                    if({!percentFieldBool} == true)
+                        pAmtObj.value = '{!bbtp.Amount_Percent__c}';
+                    if({!dollarFieldBool} == true)
+                        dAmtObj.value = '{!bbtp.Amount_Dollar__c}';
+                    if({!NOT(metricReqBool)} == true){
+                        onloadMetricObj.value = '{!bbtp.Metric__c}';
+                        onloadTypeObj.value = '{!bbtp.Type__c}'
+                    }
+                    </script>
+            </apex:outputpanel>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

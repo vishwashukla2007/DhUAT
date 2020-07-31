@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Event template" >
+  <aura:attribute name="message" type="Boolean"/>
+  <aura:attribute name="priceid" type="String"/>
+</aura:event>

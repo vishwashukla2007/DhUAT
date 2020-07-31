@@ -1,0 +1,139 @@
+<apex:page standardController="Billing_Operations__c" id="Pg" title="Billing Operation Edit" name="Billing Operation Edit" extensions="BillingOperationsNewEditClass" lightningStylesheets="true" >
+    <script>
+        function setFocusOnLoad() {
+            document.getElementById('{!$Component.Pg.frm.PB.PBS2.platform}').focus();
+        }   
+    </script>
+      <apex:form id="frm" rendered="{!NOT(showerrorBool)}">
+        <apex:pagemessages id="pmsg"></apex:pagemessages>
+        <apex:outputPanel style="padding-left: 10px"/>
+        <apex:outputpanel >
+            <apex:actionStatus id="status">
+                <apex:facet name="start">
+                    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.55; z-index: 1000; background-color: black;">
+                        &nbsp;
+                    </div>
+                    <div style="position: fixed; left: 0; top: 0; bottom: 0; right: 0; z-index: 1001; margin: 20% 50%">
+                        <img class="waitingImage" src="/img/loading.gif" title="Please wait ..." />
+                    </div>
+                </apex:facet>
+            </apex:actionStatus>
+        </apex:outputpanel>
+        <apex:pageBlock title="Billing Operations Edit" id="PB">
+            <apex:pageBlockSection title="Billing Operations Detail" id="PBS1">
+               <apex:outputField value="{!billngOprationObj.FAF_ID__c}"/>
+            </apex:pageBlockSection> 
+            <apex:pageBlockSection title="Platform Billing Frequency & Claim Counting Methodology" id="PBS2">
+               <apex:inputField value="{!billngOprationObj.Platform__c}" id="platform"/>
+               <apex:inputField value="{!billngOprationObj.Claim_Billing__c}" />
+               <apex:inputField value="{!billngOprationObj.Method__c}" />
+               <apex:inputField value="{!billngOprationObj.Admin_Fee_Billing__c}" />
+            </apex:pageBlockSection> 
+            <apex:pageBlockSection title="Claim and Admin Fee Payment Terms" id="PBS3">
+               <apex:inputField value="{!billngOprationObj.Billing_Claim_Payment_Terms__c}" required="true" id="claimId" onchange="changeBillingClaim(this.value);"/>
+               <apex:inputField value="{!billngOprationObj.Billing_Admin_Payment_Terms__c}" required="true" id="adminId" onchange="changeAdminClaim(this.value);"/>
+               <apex:inputField value="{!billngOprationObj.Additional_Claim_Payment_Term_Info__c}" id="addClaimId" required="{! !changeClaimBool}"/>
+               <apex:inputField value="{!billngOprationObj.Additional_Admin_Fee_Payment_Term_Info__c}" id="addAdminId"  required="{! !changeAdminBool}" />
+            </apex:pageBlockSection> 
+            <apex:pageBlockSection title="Legacy Billing Ancillary Fee Schedule" id="PBS4">
+               <apex:inputField value="{!billngOprationObj.Fee_Schedule_Type__c}" />
+               <apex:inputField value="{!billngOprationObj.Fee_Schedule_Path__c}"></apex:inputField>
+               <apex:inputField value="{!billngOprationObj.Deviation_from_Current_Fees__c}" />
+               <apex:inputField value="{!billngOprationObj.Describe_Deviation_from_Current_Fees__c}" />
+            </apex:pageBlockSection> 
+            <apex:pageBlockSection title="Pharmacy Audit Information" id="PBS5">
+               <apex:inputField value="{!billngOprationObj.Pharmacy_Audit_Retention__c}" onchange="billingAuditReten(this.value);"/>
+               <apex:inputField value="{!billngOprationObj.Client_Share__c}" Id="clientShareId" onkeyup="updateCVSShare(this.value);" onblur="removeClientShareDecimal(this.value);"/>
+               <apex:outputLabel ></apex:outputLabel>
+               <apex:inputField value="{!billngOprationObj.CVS_Share__c}" Id="cvsShareID"/>
+            </apex:pageBlockSection> 
+            <apex:pageBlockSection title="Additional Information" columns="1" id="PBS6">
+               <apex:inputField value="{!billngOprationObj.Additional_Broker_TPA_Information__c}" style="width:800px"/>
+               <apex:inputField value="{!billngOprationObj.Additional_Billing_Information__c}" style="width:800px"/>
+            </apex:pageBlockSection>
+            <apex:actionFunction name="billingAuditRetenNew" action="{!billingAuditRetenAct}" reRender="PBS5, scriptpanel" oncomplete="" immediate="true" status="status">
+                    <apex:param name="param1" assignTo="{!pharmacyauditRet}" value=""/>
+            </apex:actionFunction>
+            <apex:actionFunction name="changeBillingClaim" action="{!changePaymentTerms}" reRender="scriptpanel2,PBS3" oncomplete="" immediate="true" status="status">
+                    <apex:param name="param1" assignTo="{!changeClaimFlag}" value="" />
+                </apex:actionFunction>
+                <apex:actionFunction name="changeAdminClaim" action="{!changePaymentTerms}" reRender="scriptpanel2,PBS3" oncomplete="" immediate="true" status="status">
+                    <apex:param name="param2" assignTo="{!changeAdminFlag}" value="" />
+                </apex:actionFunction>
+            <apex:pageBlockButtons >
+                <apex:commandButton id="saveBtn" title="Save" action="{!saveUpdateBillOp}" value="Save" reRender="pmsg, PB" oncomplete="window.scrollTo(0, 0);" status="status"/>
+                <apex:commandButton title="Cancel" action="{!Cancel}" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+            <script>
+                var cvsShareVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS5.cvsShareId}'));
+                cvsShareVar.disabled = true;
+            </script>
+            <apex:outputPanel id="scriptpanel">
+            <script>
+                var clientShareVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS5.clientShareId}'));
+                var cvsShareVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS5.cvsShareId}'));
+                clientShareVar.disabled = {!auditRetEnbDisbBool};
+                cvsShareVar.disabled = true;
+            </script>
+        </apex:outputPanel>
+        
+        <apex:outputPanel id="scriptpanel2">
+            <script>
+                var billingClaimVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS3.addClaimId}'));
+                var billingAdminVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS3.addAdminId}'));
+                billingClaimVar.disabled = {!changeClaimBool};
+                 if({!changeClaimBool}){
+                billingClaimVar.value = '';
+                }
+                billingAdminVar.disabled = {!changeAdminBool};              
+                if({!changeAdminBool}){
+                billingAdminVar.value = '';
+                }
+            </script>
+        </apex:outputPanel>
+        </apex:pageBlock>
+        <Script>
+            function updateCVSShare(clientVal){
+                var clientShareVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS5.clientShareId}'));
+                var cvsShareVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS5.cvsShareId}'));
+                if(clientVal > 100 || clientVal < 0){
+                    cvsShareVar.value = 0;
+                }else{
+                    if(clientVal == ''){
+                        cvsShareVar.value = '';
+                    }else{
+                        cvsShareVar.value = 100-parseInt(clientVal);
+                    }
+                }
+             }
+             function billingAuditReten(picval){
+                 var clientShareVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS5.clientShareId}'));
+                 var cvsShareVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS5.cvsShareId}'));
+                 clientShareVar.value = '';
+                 cvsShareVar.value = '';
+                 billingAuditRetenNew(picval);
+             }
+             
+             function removeClientShareDecimal(clientVal){
+                var clientShareVar = document.getElementById(('{!$Component.Pg.frm.PB.PBS5.clientShareId}'));
+                if(clientVal ==''){                 
+                    clientShareVar.value = null;
+                }else{                  
+                    clientShareVar.value = Math.floor(clientVal);
+                } 
+                
+            }
+        </script>
+        
+    </apex:form>    
+    <apex:form rendered="{!showerrorBool}">
+        <apex:pageBlock title="Billing Operation">
+            <h1>FAF can only contain one Billing Operations record.</h1>
+            <br/>
+            <br/>
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton title="Cancel" action="{!Cancel}" value="Cancel" immediate="true"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+    </apex:form>  
+</apex:page>

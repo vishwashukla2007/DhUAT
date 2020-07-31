@@ -1,0 +1,21 @@
+.THIS {
+  background-color: white;
+  zoom: 90%;
+
+}
+
+.THIS .link_style{
+    font-size: medium;
+
+}
+
+.THIS .tableLayout  tr td{
+     padding:10px !important;
+     width: 1300px!important;
+}
+.THIS .btnimp{
+        margin-top: 16px !important;
+}
+.THIS .slds-grow .slds-textarea{
+  height:75px;
+}

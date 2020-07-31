@@ -1,0 +1,42 @@
+.THIS .right-aligns {
+    
+    text-align: right;
+    width:100%;
+    /*margin-top: 14px;
+    margin-right: -725px;*/
+}
+
+ .THIS .text-heading--small {
+    font-size: 1rem;
+    line-height: 1.25;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+ .THIS .text-label--small {
+    font-size: 0.65rem;
+    line-height: 0.90;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+ .THIS .text-label--verysmall {
+    font-size: 0.62rem;
+    line-height: 0.90;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+ .THIS .text-label--checkbox {
+    font-size: 0.62rem;
+    line-height: 0.90;
+    font-weight: 600;
+    padding-left: 0rem;
+    padding-right: 0rem;
+    color: black;
+}
+ .THIS .link_style {
+    width: 130px;
+    padding-top: 30px;
+    font-size: medium;
+}
